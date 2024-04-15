@@ -20,5 +20,14 @@ module.exports = {
   ignorePatterns: ['.eslintrc.js', 'next.config.js', 'tailwind.config.js', 'postcss.config.js'],
   rules: {
     'prettier/prettier': 'error',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      },
+    ],
   },
 };
