@@ -1,4 +1,4 @@
-import { TileObject } from '@/app/types';
+import { TileObject } from '@/types';
 
 import { calculateOptions } from './calculateOptions';
 import { findTilesIndicesWithLeastOptions } from './findTilesIndicesWithLeastOptions';
@@ -6,8 +6,13 @@ import { pickRandomArrayIndex } from './pickRandomArrayIndex';
 
 export function collapseGrid(grid: TileObject[], cols: number, rows: number): TileObject[] {
   const tilesWithNewOptions = calculateOptions(grid, cols, rows);
-  const leastOptionsTiles = findTilesIndicesWithLeastOptions(tilesWithNewOptions);
-  const randomTileIndex = leastOptionsTiles[pickRandomArrayIndex(leastOptionsTiles)];
+  const leastOptionsTilesIndices = findTilesIndicesWithLeastOptions(tilesWithNewOptions);
+
+  if (leastOptionsTilesIndices.length === 0) {
+    return tilesWithNewOptions;
+  }
+
+  const randomTileIndex = leastOptionsTilesIndices[pickRandomArrayIndex(leastOptionsTilesIndices)];
 
   tilesWithNewOptions[randomTileIndex].collapsed = true;
   tilesWithNewOptions[randomTileIndex].options = [

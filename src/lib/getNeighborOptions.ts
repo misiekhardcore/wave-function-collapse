@@ -1,7 +1,7 @@
 import { TileObject } from '../types';
 import { tiles } from './tiles';
 
-export function getNorthNeighborOptions(
+export function getTopOptions(
   { col, row }: TileObject,
   grid: TileObject[],
   _cols: number,
@@ -12,10 +12,10 @@ export function getNorthNeighborOptions(
       ? grid.find((tile) => tile.col === col && tile.row === row - 1 && tile.collapsed)
       : undefined;
   if (!northNeighbor) return [];
-  return tiles[northNeighbor.options[0]].s;
+  return tiles[northNeighbor.options[0]].bottom;
 }
 
-export function getEastNeighborOptions(
+export function getRightOptions(
   { col, row }: TileObject,
   grid: TileObject[],
   cols: number,
@@ -26,10 +26,10 @@ export function getEastNeighborOptions(
       ? grid.find((tile) => tile.col === col + 1 && tile.row === row && tile.collapsed)
       : undefined;
   if (!eastNeighbor) return [];
-  return tiles[eastNeighbor.options[0]].w;
+  return tiles[eastNeighbor.options[0]].left;
 }
 
-export function getSouthNeighborOptions(
+export function getBottomOptions(
   { col, row }: TileObject,
   grid: TileObject[],
   _cols: number,
@@ -40,10 +40,10 @@ export function getSouthNeighborOptions(
       ? grid.find((tile) => tile.col === col && tile.row === row + 1 && tile.collapsed)
       : undefined;
   if (!southNeighbor) return [];
-  return tiles[southNeighbor.options[0]].n;
+  return tiles[southNeighbor.options[0]].top;
 }
 
-export function getWestNeighborOptions(
+export function getLeftOptions(
   { col, row }: TileObject,
   grid: TileObject[],
   _cols: number,
@@ -54,5 +54,5 @@ export function getWestNeighborOptions(
       ? grid.find((tile) => tile.col === col - 1 && tile.row === row && tile.collapsed)
       : undefined;
   if (!westNeighbor) return [];
-  return tiles[westNeighbor.options[0]].e;
+  return tiles[westNeighbor.options[0]].right;
 }

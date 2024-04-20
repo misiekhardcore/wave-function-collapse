@@ -10,8 +10,8 @@ export type TileObject = Position & {
 
 export type Tile = {
   id: number;
-  n: number[];
-  e: number[];
-  s: number[];
-  w: number[];
+  top: number[];
+  right: number[];
+  bottom: number[];
+  left: number[];
 };

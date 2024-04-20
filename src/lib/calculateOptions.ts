@@ -1,11 +1,11 @@
-import { TileObject } from '@/app/types';
+import { TileObject } from '@/types';
 
 import { getCommonOptions } from './getCommonOptions';
 import {
-  getEastNeighborOptions,
-  getNorthNeighborOptions,
-  getSouthNeighborOptions,
-  getWestNeighborOptions,
+  getRightOptions,
+  getTopOptions,
+  getBottomOptions,
+  getLeftOptions,
 } from './getNeighborOptions';
 
 export function calculateOptions(grid: TileObject[], cols: number, rows: number): TileObject[] {
@@ -14,10 +14,10 @@ export function calculateOptions(grid: TileObject[], cols: number, rows: number)
       continue;
     }
 
-    const northOptions = getNorthNeighborOptions(grid[i], grid, cols, rows);
-    const eastOptions = getEastNeighborOptions(grid[i], grid, cols, rows);
-    const southOptions = getSouthNeighborOptions(grid[i], grid, cols, rows);
-    const westOptions = getWestNeighborOptions(grid[i], grid, cols, rows);
+    const northOptions = getTopOptions(grid[i], grid, cols, rows);
+    const eastOptions = getRightOptions(grid[i], grid, cols, rows);
+    const southOptions = getBottomOptions(grid[i], grid, cols, rows);
+    const westOptions = getLeftOptions(grid[i], grid, cols, rows);
     const commonOptions = getCommonOptions(
       grid[i].options,
       northOptions,
