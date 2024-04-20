@@ -2,12 +2,8 @@ export function getCommonOptions(...optionsArrays: (number[] | undefined)[]): nu
   const definedOptions = optionsArrays.filter(
     (options): options is number[] => !!options && options?.length > 0
   );
-  const results: number[] = [];
-
-  definedOptions[0]?.forEach((option) => {
-    if (definedOptions.every((options) => options.includes(option))) {
-      results.push(option);
-    }
+  const results = definedOptions.shift()?.filter((option) => {
+    return definedOptions.every((options) => options.indexOf(option) !== -1);
   });
-  return results;
+  return results || [];
 }

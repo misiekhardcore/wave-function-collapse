@@ -28,7 +28,8 @@ export function CanvasGrid({ grid, cols, tileSize }: CanvasGridProps) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    grid.forEach((tile, idx) => {
+    for (let idx = 0; idx < grid.length; idx++) {
+      const tile = grid[idx];
       const x = (idx % cols) * tileSize;
       const y = Math.floor(idx / cols) * tileSize;
       if (tile.options.length !== 1) {
@@ -44,7 +45,7 @@ export function CanvasGrid({ grid, cols, tileSize }: CanvasGridProps) {
           return img.addEventListener('load', () => ctx.drawImage(img, x, y, tileSize, tileSize));
         else ctx.drawImage(img, x, y, tileSize, tileSize);
       }
-    });
+    }
   }, [grid, cols, images, tileSize]);
 
   return (

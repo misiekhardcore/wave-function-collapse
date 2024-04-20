@@ -1,6 +1,6 @@
 import { TileObject } from '@/types';
 
-import { pickRandomArrayIndex } from './pickRandomArrayIndex';
+import { pickRandomArrayElement } from './pickRandomArrayElement';
 import { tiles } from './tiles';
 
 export function generateInitialGrid(
@@ -15,18 +15,18 @@ export function generateInitialGrid(
     collapsed: false,
   }));
 
-  const randomIndicies: number[] = [];
+  const randomTiles: TileObject[] = [];
   Array.from({ length: countOfInitialTiles }).forEach(() => {
-    let randomIndex = pickRandomArrayIndex(grid);
-    while (randomIndicies.includes(randomIndex)) {
-      randomIndex = pickRandomArrayIndex(grid);
+    let randomTile = pickRandomArrayElement(grid);
+    while (randomTiles.includes(randomTile)) {
+      randomTile = pickRandomArrayElement(grid);
     }
-    randomIndicies.push(randomIndex);
+    randomTiles.push(randomTile);
   });
-  randomIndicies.forEach((idx) => {
-    grid[idx] = {
-      ...grid[idx],
-      options: [tiles[pickRandomArrayIndex(tiles)].id],
+  randomTiles.forEach((tile) => {
+    grid[grid.indexOf(tile)] = {
+      ...tile,
+      options: [pickRandomArrayElement(tiles).id],
       collapsed: true,
     };
   });

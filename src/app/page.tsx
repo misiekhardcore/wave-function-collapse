@@ -7,14 +7,14 @@ import { collapseGrid, generateInitialGrid } from '@/lib';
 
 import styles from './page.module.scss';
 
-const COLS = 30;
+const COLS = 100;
 const MIN_COLS = 2;
 const MAX_COLS = 50;
-const ROWS = 30;
+const ROWS = 70;
 const MIN_ROWS = 2;
 const MAX_ROWS = 40;
 const INITIAL_TILES_COUNT = 10;
-const TILE_SIZE = 20;
+const TILE_SIZE = 10;
 
 let interval: NodeJS.Timeout;
 let timeout: NodeJS.Timeout;
@@ -52,7 +52,7 @@ export default function Home() {
     interval = setInterval(() => {
       setGrid((grid) => {
         try {
-          const nextGrid = collapseGrid(grid, cols, rows);
+          const nextGrid = collapseGrid(grid, cols);
           if (nextGrid.every((tile) => tile.collapsed)) {
             setInProgress(false);
             clearInterval(interval);
@@ -82,7 +82,7 @@ export default function Home() {
       setGrid((grid) => {
         let newGrid = grid;
         while (!newGrid.every((tile) => tile.collapsed)) {
-          newGrid = collapseGrid(newGrid, cols, rows);
+          newGrid = collapseGrid(newGrid, cols);
         }
         setInProgress(false);
         console.log('done');
