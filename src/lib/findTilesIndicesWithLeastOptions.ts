@@ -1,4 +1,4 @@
-import { TileObject } from '@/app/types';
+import { TileObject } from '@/types';
 
 export function findTilesIndicesWithLeastOptions(grid: TileObject[]): number[] {
   const minOptions = Math.min(
