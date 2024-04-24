@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
-import { CanvasGrid, DivGrid } from '@/components';
-import { collapseGrid, generateInitialGrid } from '@/lib';
+import { CanvasGrid, DivGrid, TilesPreview } from '@/components';
+import { collapseGrid, generateInitialGrid, tiles } from '@/lib';
 
 import styles from './page.module.scss';
 
@@ -152,6 +152,7 @@ export default function Home() {
       <p>Generated in: {getElapsedTime(startTime, endTime)}</p>
       {inProgress && <p className={styles.loading}>Work in progress...</p>}
       <OutputGrid grid={grid} cols={cols} tileSize={TILE_SIZE} />
+      <TilesPreview tiles={tiles} />
     </main>
   );
 }
