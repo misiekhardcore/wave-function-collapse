@@ -1240,21 +1240,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
+"@types/node@npm:*, @types/node@npm:^22.0.0":
   version: 22.10.1
   resolution: "@types/node@npm:22.10.1"
   dependencies:
     undici-types: "npm:~6.20.0"
   checksum: 10c0/0fbb6d29fa35d807f0223a4db709c598ac08d66820240a2cd6a8a69b8f0bc921d65b339d850a666b43b4e779f967e6ed6cf6f0fca3575e08241e6b900364c234
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^20":
-  version: 20.17.9
-  resolution: "@types/node@npm:20.17.9"
-  dependencies:
-    undici-types: "npm:~6.19.2"
-  checksum: 10c0/1c37c3618407d56b76301578edabcb4c6a7ef093d0811c50fc4df8df68fc546797a294cafac0e50789f4e0e485cd1d6871964d8e6222fd420658bdae89c1fb4a
   languageName: node
   linkType: hard
 
@@ -1267,29 +1258,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prop-types@npm:*":
-  version: 15.7.12
-  resolution: "@types/prop-types@npm:15.7.12"
-  checksum: 10c0/1babcc7db6a1177779f8fde0ccc78d64d459906e6ef69a4ed4dd6339c920c2e05b074ee5a92120fe4e9d9f1a01c952f843ebd550bee2332fc2ef81d1706878f8
+"@types/react-dom@npm:^19.0.0":
+  version: 19.0.1
+  resolution: "@types/react-dom@npm:19.0.1"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10c0/fb40069a7c5c70475155dff91d25ff5a51226c14d45c8ad55894480366876426981c8be63ef322486af879bb220bf48443f2344c1a89cb75a47a1a761acee9d3
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18":
-  version: 18.3.2
-  resolution: "@types/react-dom@npm:18.3.2"
+"@types/react@npm:*, @types/react@npm:^19.0.0":
+  version: 19.0.1
+  resolution: "@types/react@npm:19.0.1"
   dependencies:
-    "@types/react": "npm:^18"
-  checksum: 10c0/22510231af67044a9542633b5b52ec16a8d71fa1da177f82428b8120d36619fd874c3b975b2eda6895baa53667f9fe8cba3acea1232a0244dffe8b11f6b32284
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:^18":
-  version: 18.3.14
-  resolution: "@types/react@npm:18.3.14"
-  dependencies:
-    "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/d925fbfcf084238b93d1a0b5406d4cf9aeb37c4a1191559aa4ee107c2e55cc15327989140f03eddda4d471f5b935d4673fd74a86f451860edea18eae48ca44f8
+  checksum: 10c0/25eb69114abb9a6d5fc4414ee584388275bbc9ac32976449cf58b95fe9880efe6b3f936c3842be9bed8c571546a9752e8d3e2095288381e9c809269f5f574f2e
   languageName: node
   linkType: hard
 
@@ -7683,13 +7666,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~6.19.2":
-  version: 6.19.8
-  resolution: "undici-types@npm:6.19.8"
-  checksum: 10c0/078afa5990fba110f6824823ace86073b4638f1d5112ee26e790155f481f2a868cc3e0615505b6f4282bdf74a3d8caad715fd809e870c2bb0704e3ea6082f344
-  languageName: node
-  linkType: hard
-
 "undici-types@npm:~6.20.0":
   version: 6.20.0
   resolution: "undici-types@npm:6.20.0"
@@ -7820,9 +7796,9 @@ __metadata:
     "@testing-library/react": "npm:^16.0.0"
     "@types/jest": "npm:^29.5.12"
     "@types/jest-image-snapshot": "npm:^6"
-    "@types/node": "npm:^20"
-    "@types/react": "npm:^18"
-    "@types/react-dom": "npm:^18"
+    "@types/node": "npm:^22.0.0"
+    "@types/react": "npm:^19.0.0"
+    "@types/react-dom": "npm:^19.0.0"
     "@typescript-eslint/eslint-plugin": "npm:^8.0.0"
     "@typescript-eslint/parser": "npm:^8.0.0"
     autoprefixer: "npm:^10.4.19"
