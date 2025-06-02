@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.1",
-    "@eslint/js": "9.27.0",
+    "@eslint/js": "9.28.0",
     "@testing-library/dom": "10.4.0",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.3.0",
@@ -47,7 +47,7 @@
     "@typescript-eslint/eslint-plugin": "8.33.0",
     "@typescript-eslint/parser": "8.33.0",
     "canvas": "3.1.0",
-    "eslint": "9.27.0",
+    "eslint": "9.28.0",
     "eslint-config-next": "15.3.3",
     "eslint-config-prettier": "10.1.5",
     "eslint-plugin-prettier": "5.4.1",
