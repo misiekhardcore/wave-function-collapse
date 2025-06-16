@@ -2076,12 +2076,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:19.1.7":
-  version: 19.1.7
-  resolution: "@types/react@npm:19.1.7"
+"@types/react@npm:19.1.8":
+  version: 19.1.8
+  resolution: "@types/react@npm:19.1.8"
   dependencies:
     csstype: "npm:^3.0.2"
-  checksum: 10c0/3bb8fb865debad4328b0d623e1c669f2ee90e9302638a64e65a0a1c61efca4f4ef91f58b55ff94075358c190d80bb8472a5823c6901d8cdc9009dd436a1dcab1
+  checksum: 10c0/4908772be6dc941df276931efeb0e781777fa76e4d5d12ff9f75eb2dcc2db3065e0100efde16fde562c5bafa310cc8f50c1ee40a22640459e066e72cd342143e
   languageName: node
   linkType: hard
 
@@ -4348,15 +4348,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-testing-library@npm:7.5.1":
-  version: 7.5.1
-  resolution: "eslint-plugin-testing-library@npm:7.5.1"
+"eslint-plugin-testing-library@npm:7.5.2":
+  version: 7.5.2
+  resolution: "eslint-plugin-testing-library@npm:7.5.2"
   dependencies:
     "@typescript-eslint/scope-manager": "npm:^8.15.0"
     "@typescript-eslint/utils": "npm:^8.15.0"
   peerDependencies:
     eslint: ^8.57.0 || ^9.0.0
-  checksum: 10c0/c6165af44ca9c1061349afd781c000311f902f7b7fa4925361f28e17f4d3fc2c615a8d679ff7f5267793e2985542c2b08d1f102db117087d2c4cff8d542bd92c
+  checksum: 10c0/69ac926262c9a4119006d710b5e013de40897c6214bde32716bc25ab2c7607d09202a4d4eb167d0be98a048addccc7ba5b967394037d5cb6814234c95c440ad3
   languageName: node
   linkType: hard
 
@@ -7610,14 +7610,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:8.5.4":
-  version: 8.5.4
-  resolution: "postcss@npm:8.5.4"
+"postcss@npm:8.5.5":
+  version: 8.5.5
+  resolution: "postcss@npm:8.5.5"
   dependencies:
     nanoid: "npm:^3.3.11"
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
-  checksum: 10c0/0feff648614a834f7cd5396ea6b05b658ca0507e10a4eaad03b56c348f6aec93f42a885fc1b30522630c6a7e49ae53b38a061e3cba526f2d9857afbe095a22bb
+  checksum: 10c0/6415873fab84de05c2d8fd18f72ea6654bca437bb4b9f02ca819c438501e4b3a450023e575e17587c6eaa5bedddaaa4dad3af210f5cf166e30cec09cac58baf8
   languageName: node
   linkType: hard
 
@@ -9369,7 +9369,7 @@ __metadata:
     "@types/jest": "npm:29.5.14"
     "@types/jest-image-snapshot": "npm:6.4.0"
     "@types/node": "npm:22.15.31"
-    "@types/react": "npm:19.1.7"
+    "@types/react": "npm:19.1.8"
     "@types/react-dom": "npm:19.1.6"
     "@typescript-eslint/eslint-plugin": "npm:8.34.0"
     "@typescript-eslint/parser": "npm:8.34.0"
@@ -9379,7 +9379,7 @@ __metadata:
     eslint-config-next: "npm:15.3.3"
     eslint-config-prettier: "npm:10.1.5"
     eslint-plugin-prettier: "npm:5.4.1"
-    eslint-plugin-testing-library: "npm:7.5.1"
+    eslint-plugin-testing-library: "npm:7.5.2"
     husky: "npm:9.1.7"
     jest: "npm:30.0.0"
     jest-environment-jsdom: "npm:30.0.0"
@@ -9388,7 +9388,7 @@ __metadata:
     lint-staged: "npm:16.1.0"
     next: "npm:15.3.3"
     pinst: "npm:3.0.0"
-    postcss: "npm:8.5.4"
+    postcss: "npm:8.5.5"
     prettier: "npm:3.5.3"
     react: "npm:19.1.0"
     react-dom: "npm:19.1.0"
