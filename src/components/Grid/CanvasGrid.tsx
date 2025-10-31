@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { forwardRef, useEffect, useMemo } from 'react';
 
 import { tiles } from '@/lib';
 import { TileObject } from '@/types';
@@ -11,7 +11,10 @@ type CanvasGridProps = {
   tileSize: number;
 };
 
-export function CanvasGrid({ grid, cols, tileSize }: CanvasGridProps) {
+export const CanvasGrid = forwardRef<HTMLCanvasElement, CanvasGridProps>(function CanvasGrid(
+  { grid, cols, tileSize },
+  ref
+) {
   const rows = grid.length / cols;
   const images = useMemo(() => {
     if (typeof window === 'undefined' || typeof document === 'undefined') return [];
@@ -50,10 +53,11 @@ export function CanvasGrid({ grid, cols, tileSize }: CanvasGridProps) {
 
   return (
     <canvas
+      ref={ref}
       data-testid="canvas"
       width={cols * tileSize}
       height={rows * tileSize}
       style={{ width: cols * tileSize, height: rows * tileSize }}
     />
   );
-}
+});
