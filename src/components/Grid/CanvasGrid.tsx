@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { forwardRef, useEffect, useMemo } from 'react';
 
 import { tiles } from '@/lib';
 import { TileObject } from '@/types';
@@ -11,7 +11,10 @@ type CanvasGridProps = {
   tileSize: number;
 };
 
-export function CanvasGrid({ grid, cols, tileSize }: CanvasGridProps) {
+export const CanvasGrid = forwardRef<HTMLCanvasElement, CanvasGridProps>(function CanvasGrid(
+  { grid, cols, tileSize },
+  ref
+) {
   const rows = grid.length / cols;
   const images = useMemo(() => {
     if (typeof window === 'undefined' || typeof document === 'undefined') return [];
@@ -23,7 +26,7 @@ export function CanvasGrid({ grid, cols, tileSize }: CanvasGridProps) {
   }, []);
 
   useEffect(() => {
-    const canvas = document.querySelector('canvas');
+    const canvas = typeof ref !== 'function' && ref?.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -46,14 +49,17 @@ export function CanvasGrid({ grid, cols, tileSize }: CanvasGridProps) {
         else ctx.drawImage(img, x, y, tileSize, tileSize);
       }
     }
-  }, [grid, cols, images, tileSize]);
+  }, [grid, cols, images, tileSize, ref]);
 
   return (
     <canvas
+      ref={ref}
       data-testid="canvas"
       width={cols * tileSize}
       height={rows * tileSize}
       style={{ width: cols * tileSize, height: rows * tileSize }}
     />
   );
-}
+});
+
+CanvasGrid.displayName = 'CanvasGrid';

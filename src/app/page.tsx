@@ -1,9 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { CanvasGrid, TilesPreview } from '@/components';
-import { collapseGrid, generateInitialGrid, tiles } from '@/lib';
+import {
+  collapseGrid,
+  generateInitialGrid,
+  tiles,
+  downloadCanvasAsImage,
+  generateDownloadFilename,
+} from '@/lib';
 
 import styles from './page.module.scss';
 
@@ -26,6 +32,7 @@ export default function Home() {
   const [inProgress, setInProgress] = useState(false);
   const [startTime, setStartTime] = useState<number>();
   const [endTime, setEndTime] = useState<number>();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     setGrid(generateInitialGrid(INITIAL_TILES_COUNT, cols, rows));
@@ -97,6 +104,13 @@ export default function Home() {
     clearInterval(interval);
   }
 
+  function handleDownload() {
+    const filename = generateDownloadFilename();
+    downloadCanvasAsImage(canvasRef.current, filename);
+  }
+
+  const isPatternComplete = grid.every((tile) => tile.collapsed);
+
   return (
     <main className={styles.main} style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
       <div className={styles.form}>
@@ -129,10 +143,13 @@ export default function Home() {
           generate and display
         </button>
         <button onClick={handleRestart}>restart</button>
+        <button disabled={!isPatternComplete || inProgress} onClick={handleDownload}>
+          download pattern
+        </button>
       </div>
       <p>Generated in: {getElapsedTime(startTime, endTime)}</p>
       {inProgress && <p className={styles.loading}>Work in progress...</p>}
-      <CanvasGrid grid={grid} cols={cols} tileSize={TILE_SIZE} />
+      <CanvasGrid grid={grid} cols={cols} tileSize={TILE_SIZE} ref={canvasRef} />
       <TilesPreview tiles={tiles} />
     </main>
   );
