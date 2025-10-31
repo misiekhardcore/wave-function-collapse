@@ -1,9 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { CanvasGrid, DivGrid, TilesPreview } from '@/components';
-import { collapseGrid, generateInitialGrid, tiles } from '@/lib';
+import {
+  collapseGrid,
+  generateInitialGrid,
+  tiles,
+  downloadCanvasAsImage,
+  downloadGridAsImage,
+  generateDownloadFilename,
+} from '@/lib';
 
 import styles from './page.module.scss';
 
@@ -19,11 +26,6 @@ const TILE_SIZE = 10;
 let interval: NodeJS.Timeout;
 let timeout: NodeJS.Timeout;
 
-const grids = {
-  DivGrid,
-  CanvasGrid,
-};
-
 export default function Home() {
   const [grid, setGrid] = useState(generateInitialGrid(INITIAL_TILES_COUNT, COLS, ROWS));
   const [cols, setCols] = useState(COLS);
@@ -31,7 +33,8 @@ export default function Home() {
   const [inProgress, setInProgress] = useState(false);
   const [startTime, setStartTime] = useState<number>();
   const [endTime, setEndTime] = useState<number>();
-  const [outputGrid, setOutputGrid] = useState<keyof typeof grids>('CanvasGrid');
+  const [outputGrid, setOutputGrid] = useState<'DivGrid' | 'CanvasGrid'>('CanvasGrid');
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     setGrid(generateInitialGrid(INITIAL_TILES_COUNT, cols, rows));
@@ -103,7 +106,18 @@ export default function Home() {
     clearInterval(interval);
   }
 
-  const OutputGrid = grids[outputGrid] || DivGrid;
+  function handleDownload() {
+    const filename = generateDownloadFilename();
+    if (outputGrid === 'CanvasGrid') {
+      // For CanvasGrid, use the canvas element directly
+      downloadCanvasAsImage(canvasRef.current, filename);
+    } else {
+      // For DivGrid, create a canvas from the grid data
+      downloadGridAsImage(grid, cols, TILE_SIZE, tiles, filename);
+    }
+  }
+
+  const isPatternComplete = grid.every((tile) => tile.collapsed);
 
   return (
     <main className={styles.main} style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
@@ -135,7 +149,7 @@ export default function Home() {
           <select
             value={outputGrid}
             id="output"
-            onChange={(e) => setOutputGrid(e.target.value as keyof typeof grids)}
+            onChange={(e) => setOutputGrid(e.target.value as 'DivGrid' | 'CanvasGrid')}
           >
             <option value="DivGrid">DivGrid</option>
             <option value="CanvasGrid">CanvasGrid</option>
@@ -148,10 +162,17 @@ export default function Home() {
           generate and display
         </button>
         <button onClick={handleRestart}>restart</button>
+        <button disabled={!isPatternComplete || inProgress} onClick={handleDownload}>
+          download pattern
+        </button>
       </div>
       <p>Generated in: {getElapsedTime(startTime, endTime)}</p>
       {inProgress && <p className={styles.loading}>Work in progress...</p>}
-      <OutputGrid grid={grid} cols={cols} tileSize={TILE_SIZE} />
+      {outputGrid === 'CanvasGrid' ? (
+        <CanvasGrid ref={canvasRef} grid={grid} cols={cols} tileSize={TILE_SIZE} />
+      ) : (
+        <DivGrid grid={grid} cols={cols} tileSize={TILE_SIZE} />
+      )}
       <TilesPreview tiles={tiles} />
     </main>
   );
