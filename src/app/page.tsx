@@ -11,8 +11,6 @@ import {
   generateDownloadFilename,
 } from '@/lib';
 
-import styles from './page.module.scss';
-
 const COLS = 100;
 const MIN_COLS = 2;
 const MAX_COLS = 50;
@@ -57,12 +55,10 @@ export default function Home() {
           if (nextGrid.every((tile) => tile.collapsed)) {
             setInProgress(false);
             clearInterval(interval);
-            console.log('done');
             setEndTime(Date.now());
           }
           return nextGrid.slice();
-        } catch (error) {
-          console.log('error', error);
+        } catch (_error) {
           setGrid(grid);
           setInProgress(false);
           clearInterval(interval);
@@ -86,7 +82,6 @@ export default function Home() {
           newGrid = collapseGrid(newGrid, cols);
         }
         setInProgress(false);
-        console.log('done');
         setEndTime(Date.now());
         clearTimeout(timeout);
 
@@ -112,9 +107,9 @@ export default function Home() {
   const isPatternComplete = grid.every((tile) => tile.collapsed);
 
   return (
-    <main className={styles.main} style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
-      <div className={styles.form}>
-        <label htmlFor="cols">
+    <main className="p-4 items-center flex flex-col gap-4 max-w-[1200px] w-full mx-auto">
+      <div className="items-end flex gap-4 flex-wrap">
+        <label htmlFor="cols" className="min-w-fit">
           Number of columns
           <input
             type="number"
@@ -123,9 +118,10 @@ export default function Home() {
             id="cols"
             value={cols}
             onChange={(e) => setCols(parseInt(e.target.value) || 1)}
+            className="w-full"
           />
         </label>
-        <label htmlFor="rows">
+        <label htmlFor="rows" className="min-w-fit">
           Number of rows
           <input
             type="number"
@@ -134,21 +130,32 @@ export default function Home() {
             min={MIN_ROWS}
             value={rows}
             onChange={(e) => setRows(parseInt(e.target.value) || 1)}
+            className="w-full"
           />
         </label>
-        <button disabled={inProgress} onClick={handleGenerateOnFly}>
+        <button disabled={inProgress} onClick={handleGenerateOnFly} className="min-w-fit">
           generate on fly
         </button>
-        <button disabled={inProgress} onClick={handleGenerateAndDisplay}>
+        <button disabled={inProgress} onClick={handleGenerateAndDisplay} className="min-w-fit">
           generate and display
         </button>
-        <button onClick={handleRestart}>restart</button>
-        <button disabled={!isPatternComplete || inProgress} onClick={handleDownload}>
+        <button onClick={handleRestart} className="min-w-fit">
+          restart
+        </button>
+        <button
+          disabled={!isPatternComplete || inProgress}
+          onClick={handleDownload}
+          className="min-w-fit"
+        >
           download pattern
         </button>
       </div>
       <p>Generated in: {getElapsedTime(startTime, endTime)}</p>
-      {inProgress && <p className={styles.loading}>Work in progress...</p>}
+      {inProgress && (
+        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background/50 p-8">
+          Work in progress...
+        </p>
+      )}
       <CanvasGrid grid={grid} cols={cols} tileSize={TILE_SIZE} ref={canvasRef} />
       <TilesPreview tiles={tiles} />
     </main>
