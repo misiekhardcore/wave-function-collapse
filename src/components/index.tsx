@@ -1,2 +1,2 @@
-export { CanvasGrid, DivGrid } from './Grid';
+export { CanvasGrid } from './Grid';
 export { TilesPreview } from './TilesPreview';
