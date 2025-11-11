@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { CanvasGrid, TilesPreview } from '@/components';
 import {
@@ -13,15 +13,12 @@ import {
 
 const COLS = 100;
 const MIN_COLS = 2;
-const MAX_COLS = 50;
+const MAX_COLS = 100;
 const ROWS = 70;
 const MIN_ROWS = 2;
-const MAX_ROWS = 40;
+const MAX_ROWS = 70;
 const INITIAL_TILES_COUNT = 10;
 const TILE_SIZE = 10;
-
-let interval: NodeJS.Timeout;
-let timeout: NodeJS.Timeout;
 
 export default function Home() {
   const [grid, setGrid] = useState(generateInitialGrid(INITIAL_TILES_COUNT, COLS, ROWS));
@@ -31,37 +28,30 @@ export default function Home() {
   const [startTime, setStartTime] = useState<number>();
   const [endTime, setEndTime] = useState<number>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    setGrid(generateInitialGrid(INITIAL_TILES_COUNT, cols, rows));
-    clearInterval(interval);
-  }, [rows, cols]);
-
-  useEffect(() => {
-    return () => clearInterval(interval);
-  }, [rows, cols]);
+  const timeoutRef = useRef<NodeJS.Timeout>(undefined);
+  const intervalRef = useRef<NodeJS.Timeout>(undefined);
 
   function handleGenerateOnFly() {
     handleRestart();
-    setStartTime(Date.now());
+    setStartTime(() => Date.now());
 
     if (inProgress) return;
 
     setInProgress(true);
-    interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setGrid((grid) => {
         try {
           const nextGrid = collapseGrid(grid, cols);
           if (nextGrid.every((tile) => tile.collapsed)) {
             setInProgress(false);
-            clearInterval(interval);
+            clearInterval(intervalRef.current);
             setEndTime(Date.now());
           }
           return nextGrid.slice();
         } catch (_error) {
           setGrid(grid);
           setInProgress(false);
-          clearInterval(interval);
+          clearInterval(intervalRef.current);
           return grid;
         }
       });
@@ -70,12 +60,12 @@ export default function Home() {
 
   function handleGenerateAndDisplay() {
     handleRestart();
-    setStartTime(Date.now());
+    setStartTime(() => Date.now());
 
     if (inProgress) return;
 
     setInProgress(true);
-    timeout = setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       setGrid((grid) => {
         let newGrid = grid;
         while (!newGrid.every((tile) => tile.collapsed)) {
@@ -83,25 +73,47 @@ export default function Home() {
         }
         setInProgress(false);
         setEndTime(Date.now());
-        clearTimeout(timeout);
+        clearTimeout(timeoutRef.current);
 
         return newGrid.slice();
       });
     });
   }
 
-  function handleRestart() {
+  function handleReset() {
     setStartTime(undefined);
     setEndTime(undefined);
     setInProgress(false);
+    clearTimeout(timeoutRef.current);
+    clearInterval(intervalRef.current);
+  }
+
+  function handleRestart() {
+    handleReset();
     setGrid(generateInitialGrid(INITIAL_TILES_COUNT, cols, rows));
-    clearTimeout(timeout);
-    clearInterval(interval);
   }
 
   function handleDownload() {
     const filename = generateDownloadFilename();
     downloadCanvasAsImage(canvasRef.current, filename);
+  }
+
+  function handleColsChange(e: React.ChangeEvent<HTMLInputElement>) {
+    handleReset();
+    let newCols = parseInt(e.target.value) || 1;
+    if (newCols < MIN_COLS) newCols = MIN_COLS;
+    if (newCols > MAX_COLS) newCols = MAX_COLS;
+    setCols(newCols);
+    setGrid(generateInitialGrid(INITIAL_TILES_COUNT, newCols, rows));
+  }
+
+  function handleRowsChange(e: React.ChangeEvent<HTMLInputElement>) {
+    handleReset();
+    let newRows = parseInt(e.target.value) || 1;
+    if (newRows < MIN_ROWS) newRows = MIN_ROWS;
+    if (newRows > MAX_ROWS) newRows = MAX_ROWS;
+    setRows(newRows);
+    setGrid(generateInitialGrid(INITIAL_TILES_COUNT, cols, newRows));
   }
 
   const isPatternComplete = grid.every((tile) => tile.collapsed);
@@ -117,7 +129,7 @@ export default function Home() {
             min={MIN_COLS}
             id="cols"
             value={cols}
-            onChange={(e) => setCols(parseInt(e.target.value) || 1)}
+            onChange={handleColsChange}
             className="w-full"
           />
         </label>
@@ -129,7 +141,7 @@ export default function Home() {
             max={MAX_ROWS}
             min={MIN_ROWS}
             value={rows}
-            onChange={(e) => setRows(parseInt(e.target.value) || 1)}
+            onChange={handleRowsChange}
             className="w-full"
           />
         </label>
