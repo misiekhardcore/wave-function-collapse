@@ -159,14 +159,27 @@ Husky is configured to run lint-staged before commits:
 
 ## Common Tasks
 
+### Code Quality Principles
+
+Follow these best practices when writing code:
+
+- **SOLID**: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
+- **KISS**: Keep It Simple, Stupid - favor simple, readable solutions over complex ones
+- **DRY**: Don't Repeat Yourself - extract common logic into reusable functions
+
 ### Adding a New Feature
 
-1. Implement the feature with TypeScript
-2. Add comprehensive tests
-3. Ensure code follows existing patterns in `lib/` or `components/`
-4. Run `yarn lint:fix` to format code
-5. Run `yarn test` to verify tests pass
-6. Run `yarn build` to ensure no build errors
+Work iteratively in small increments:
+
+1. Break down the feature into small, self-contained modules
+2. For each module:
+   - Implement the functionality with TypeScript
+   - Write comprehensive tests for the new code
+   - Run `yarn lint:fix` to format code
+   - Run `yarn test` to verify tests pass
+   - Run `yarn build` to ensure no build errors
+3. Repeat until all criteria are met, linting works, and all tests pass
+4. Ensure code follows existing patterns in `lib/` or `components/`
 
 ### Fixing a Bug
 
@@ -177,16 +190,23 @@ Husky is configured to run lint-staged before commits:
 
 ### Adding a New Component
 
+Work iteratively in small increments:
+
 1. Create component in appropriate directory under `src/components/`
 2. Export from `index.tsx` in the component directory
-3. Add tests in `.test.tsx` file
-4. Follow React best practices (use hooks, functional components)
-5. Use Tailwind CSS for styling
+3. Implement component logic incrementally:
+   - Write the basic component structure
+   - Add tests in `.test.tsx` file
+   - Run `yarn lint:fix` and `yarn test`
+   - Add more functionality in small steps
+   - Test after each change
+4. Repeat until all criteria are met, linting works, and all tests pass
+5. Follow React best practices (use hooks, functional components)
+6. Use Tailwind CSS for styling
 
 ## Important Notes
 
 - This is a Next.js App Router project (not Pages Router)
-- The app uses Turbopack for development (`yarn dev --turbopack`)
 - Canvas rendering is used for grid visualization
 - Keep algorithm logic separate from UI components
 - Maintain test coverage when modifying core algorithm files
