@@ -6,12 +6,12 @@ This is a Next.js application that implements the Wave Function Collapse algorit
 
 ## Technology Stack
 
-- **Framework**: Next.js 15.5.6 with React 19.2.0
-- **Language**: TypeScript 5.9.3
-- **Styling**: Tailwind CSS 4.1.16
-- **Testing**: Jest 30.2.0 with React Testing Library
-- **Linting**: ESLint 9.39.1 with TypeScript ESLint and Prettier
-- **Package Manager**: Yarn 4.11.0
+- **Framework**: Next.js with React
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Testing**: Jest with React Testing Library
+- **Linting**: ESLint with TypeScript ESLint and Prettier
+- **Package Manager**: Yarn (see `package.json` for specific versions)
 
 ## Development Workflow
 
@@ -72,24 +72,19 @@ yarn prettier
 
 ### TypeScript
 
-- Strict mode is enabled in `tsconfig.json`
+- Strict mode is enabled - see `tsconfig.json` for complete configuration
 - Use explicit types where it improves code clarity
-- Unused variables prefixed with `_` are allowed (e.g., `_unusedParam`)
-- Target ES6 with modern ESNext modules
+- Unused variables prefixed with `_` are allowed per ESLint configuration
 
 ### Formatting
 
-- **Print Width**: 100 characters
-- **Quotes**: Single quotes for strings
-- **Trailing Commas**: ES5 style (objects, arrays, etc.)
-- **Line Endings**: LF (Unix style)
+- Code formatting is managed by Prettier - see `prettier.config.js` for configuration
 - Prettier is enforced via ESLint - all formatting violations should be fixed automatically
 
 ### ESLint Rules
 
-- TypeScript recommended rules are enforced
-- Prettier errors are treated as ESLint errors
-- Testing Library plugin is configured for test files
+- ESLint configuration is in `eslint.config.mjs`
+- TypeScript, Prettier, and Testing Library plugins are configured
 - Next.js core web vitals and TypeScript rules are enabled
 
 ### File Organization
@@ -112,7 +107,7 @@ src/
 
 ### Import Aliases
 
-- Use `@/*` to import from `src/*` (e.g., `import { Grid } from '@/components'`)
+- Use `@/*` to import from `src/*` (e.g., `import { CanvasGrid } from '@/components'`)
 
 ## Testing Requirements
 
@@ -128,10 +123,10 @@ describe('functionName', () => {
   it('should do something specific', () => {
     // Arrange
     const input = setupTestData();
-    
+
     // Act
     const result = functionName(input);
-    
+
     // Assert
     expect(result).toBe(expected);
   });
@@ -158,6 +153,7 @@ The core algorithm is implemented across several modules:
 ## Pre-commit Hooks
 
 Husky is configured to run lint-staged before commits:
+
 - Automatically formats and lints staged files
 - Ensures code quality before changes are committed
 
@@ -184,7 +180,7 @@ Husky is configured to run lint-staged before commits:
 1. Create component in appropriate directory under `src/components/`
 2. Export from `index.tsx` in the component directory
 3. Add tests in `.test.tsx` file
-4. Follow React 19 best practices (use hooks, functional components)
+4. Follow React best practices (use hooks, functional components)
 5. Use Tailwind CSS for styling
 
 ## Important Notes
