@@ -13,7 +13,7 @@
     "wave-function-collapse"
   ],
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "yarn lint && next build",
     "start": "next start",
     "eslint": "eslint .",
