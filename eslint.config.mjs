@@ -1,15 +1,38 @@
 import nextCoreWebVitals from 'eslint-config-next/core-web-vitals';
 import tsParser from '@typescript-eslint/parser';
 import prettier from 'eslint-plugin-prettier';
-import globals from 'globals';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import testingLibrary from 'eslint-plugin-testing-library';
 import { ESLint } from 'eslint';
 
+// Helper function to clean global keys (remove leading/trailing whitespace)
+function cleanGlobals(globalsObj) {
+  const cleaned = {};
+  for (const [key, value] of Object.entries(globalsObj)) {
+    const trimmedKey = key.trim();
+    if (trimmedKey) {
+      cleaned[trimmedKey] = value;
+    }
+  }
+  return cleaned;
+}
+
 // Filter out the config that defines @typescript-eslint plugin to avoid redefinition
-const filteredNextConfig = nextCoreWebVitals.filter(
-  (config) => !(config.plugins && config.plugins['@typescript-eslint'])
-);
+// Also clean any globals that have whitespace issues
+const filteredNextConfig = nextCoreWebVitals
+  .filter((config) => !(config.plugins && config.plugins['@typescript-eslint']))
+  .map((config) => {
+    if (config.languageOptions?.globals) {
+      return {
+        ...config,
+        languageOptions: {
+          ...config.languageOptions,
+          globals: cleanGlobals(config.languageOptions.globals),
+        },
+      };
+    }
+    return config;
+  });
 
 /** @type {ESLint.ConfigData[]} */
 export default [
@@ -19,10 +42,6 @@ export default [
       parser: tsParser,
       sourceType: 'module',
       parserOptions: {},
-      globals: {
-        ...globals.browser,
-        ...globals.jest,
-      },
     },
     plugins: {
       '@typescript-eslint': tseslint,
