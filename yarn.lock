@@ -2233,7 +2233,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tailwindcss/postcss@npm:^4.1.16":
+"@tailwindcss/postcss@npm:4.1.16":
   version: 4.1.16
   resolution: "@tailwindcss/postcss@npm:4.1.16"
   dependencies:
@@ -4722,7 +4722,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-next@npm:^16.0.2":
+"eslint-config-next@npm:16.0.2":
   version: 16.0.2
   resolution: "eslint-config-next@npm:16.0.2"
   dependencies:
@@ -7857,7 +7857,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next@npm:^16.0.2":
+"next@npm:16.0.2":
   version: 16.0.2
   resolution: "next@npm:16.0.2"
   dependencies:
@@ -9628,7 +9628,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss@npm:4.1.16, tailwindcss@npm:^4.1.16":
+"tailwindcss@npm:4.1.16":
   version: 4.1.16
   resolution: "tailwindcss@npm:4.1.16"
   checksum: 10c0/11beec3112686767292f43d602ffa26068be6b505adba7929ad17b2a3d8e262bdb2eb7c8d226325654ab8268ddd0ca7b7231df8ba59a77becbdae0df9f86268a
@@ -10205,7 +10205,7 @@ __metadata:
   dependencies:
     "@eslint/eslintrc": "npm:3.3.1"
     "@eslint/js": "npm:9.39.1"
-    "@tailwindcss/postcss": "npm:^4.1.16"
+    "@tailwindcss/postcss": "npm:4.1.16"
     "@testing-library/dom": "npm:10.4.1"
     "@testing-library/jest-dom": "npm:6.9.1"
     "@testing-library/react": "npm:16.3.0"
@@ -10213,14 +10213,14 @@ __metadata:
     "@types/jest": "npm:30.0.0"
     "@types/jest-image-snapshot": "npm:6.4.0"
     "@types/node": "npm:24.10.0"
-    "@types/react": "npm:^19.2.4"
-    "@types/react-dom": "npm:^19.2.3"
+    "@types/react": "npm:19.2.4"
+    "@types/react-dom": "npm:19.2.3"
     "@typescript-eslint/eslint-plugin": "npm:8.46.3"
     "@typescript-eslint/parser": "npm:8.46.3"
     canvas: "npm:3.2.0"
     classnames: "npm:2.5.1"
     eslint: "npm:9.39.1"
-    eslint-config-next: "npm:^16.0.2"
+    eslint-config-next: "npm:16.0.2"
     eslint-config-prettier: "npm:10.1.8"
     eslint-plugin-prettier: "npm:5.5.4"
     eslint-plugin-testing-library: "npm:7.13.3"
@@ -10230,13 +10230,13 @@ __metadata:
     jest-image-snapshot: "npm:6.5.1"
     jiti: "npm:2.6.1"
     lint-staged: "npm:16.2.6"
-    next: "npm:^16.0.2"
+    next: "npm:16.0.2"
     postcss: "npm:8.5.6"
     prettier: "npm:3.6.2"
     react: "npm:19.2.0"
     react-dom: "npm:19.2.0"
     sass: "npm:1.93.3"
-    tailwindcss: "npm:^4.1.16"
+    tailwindcss: "npm:4.1.16"
     ts-node: "npm:10.9.2"
     typescript: "npm:5.9.3"
   languageName: unknown

@@ -27,12 +27,12 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@tailwindcss/postcss": "^4.1.16",
+    "@tailwindcss/postcss": "4.1.16",
     "classnames": "2.5.1",
-    "next": "^16.0.2",
+    "next": "16.0.2",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "tailwindcss": "^4.1.16"
+    "tailwindcss": "4.1.16"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.1",
@@ -44,13 +44,13 @@
     "@types/jest": "30.0.0",
     "@types/jest-image-snapshot": "6.4.0",
     "@types/node": "24.10.0",
-    "@types/react": "^19.2.4",
-    "@types/react-dom": "^19.2.3",
+    "@types/react": "19.2.4",
+    "@types/react-dom": "19.2.3",
     "@typescript-eslint/eslint-plugin": "8.46.3",
     "@typescript-eslint/parser": "8.46.3",
     "canvas": "3.2.0",
     "eslint": "9.39.1",
-    "eslint-config-next": "^16.0.2",
+    "eslint-config-next": "16.0.2",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-prettier": "5.5.4",
     "eslint-plugin-testing-library": "7.13.3",

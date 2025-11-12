@@ -5,20 +5,23 @@ import tseslint from '@typescript-eslint/eslint-plugin';
 import testingLibrary from 'eslint-plugin-testing-library';
 import { ESLint } from 'eslint';
 
-// Helper function to clean global keys (remove leading/trailing whitespace)
-function cleanGlobals(globalsObj) {
-  const cleaned = {};
-  for (const [key, value] of Object.entries(globalsObj)) {
-    const trimmedKey = key.trim();
-    if (trimmedKey) {
-      cleaned[trimmedKey] = value;
-    }
+// Fix for globals@16.4.0 whitespace bug in Next.js 16.0.2
+// See: https://github.com/sindresorhus/globals/issues/239
+function fixGlobalsWhitespace(globalsObj) {
+  if (!globalsObj) return globalsObj;
+
+  const fixed = { ...globalsObj };
+
+  // Fix known globals with trailing whitespace
+  if ('AudioWorkletGlobalScope ' in fixed) {
+    fixed.AudioWorkletGlobalScope = fixed['AudioWorkletGlobalScope '];
+    delete fixed['AudioWorkletGlobalScope '];
   }
-  return cleaned;
+
+  return fixed;
 }
 
 // Filter out the config that defines @typescript-eslint plugin to avoid redefinition
-// Also clean any globals that have whitespace issues
 const filteredNextConfig = nextCoreWebVitals
   .filter((config) => !(config.plugins && config.plugins['@typescript-eslint']))
   .map((config) => {
@@ -27,7 +30,7 @@ const filteredNextConfig = nextCoreWebVitals
         ...config,
         languageOptions: {
           ...config.languageOptions,
-          globals: cleanGlobals(config.languageOptions.globals),
+          globals: fixGlobalsWhitespace(config.languageOptions.globals),
         },
       };
     }
