@@ -81,7 +81,6 @@ yarn prettier
 
 - Code formatting is managed by Prettier - see `prettier.config.js` for configuration
 - Prettier is enforced via ESLint - all formatting violations should be fixed automatically
-- Key Prettier settings: 100 char line width, single quotes, ES5 trailing commas, LF line endings
 
 ### ESLint Rules
 
