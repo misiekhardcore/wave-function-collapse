@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { CanvasGrid, TilesPreview } from '@/components';
 import {
@@ -30,6 +30,13 @@ export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout>(undefined);
   const intervalRef = useRef<NodeJS.Timeout>(undefined);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timeoutRef.current);
+      clearInterval(intervalRef.current);
+    };
+  }, []);
 
   function handleGenerateOnFly() {
     handleRestart();
