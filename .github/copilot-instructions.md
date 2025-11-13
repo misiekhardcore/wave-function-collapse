@@ -51,6 +51,7 @@ yarn test:watch
 - Use Jest with React Testing Library for component tests
 - Tests should cover both logic functions and React components
 - Snapshot testing is used for visual components (e.g., CanvasGrid)
+- Visual regression testing uses `jest-image-snapshot` with configurable failure thresholds
 
 ### Linting and Formatting
 
@@ -80,6 +81,7 @@ yarn prettier
 
 - Code formatting is managed by Prettier - see `prettier.config.js` for configuration
 - Prettier is enforced via ESLint - all formatting violations should be fixed automatically
+- Key Prettier settings: 100 char line width, single quotes, ES5 trailing commas, LF line endings
 
 ### ESLint Rules
 
@@ -154,8 +156,10 @@ The core algorithm is implemented across several modules:
 
 Husky is configured to run lint-staged before commits:
 
+- Runs TypeScript type checking (`tsc --noEmit`) on TypeScript files
 - Automatically formats and lints staged files
 - Ensures code quality before changes are committed
+- See `lint-staged.config.js` for complete configuration
 
 ## Common Tasks
 
