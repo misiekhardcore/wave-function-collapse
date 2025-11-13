@@ -28,8 +28,8 @@ export default function Home() {
   const [startTime, setStartTime] = useState<number>();
   const [endTime, setEndTime] = useState<number>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout>(undefined);
-  const intervalRef = useRef<NodeJS.Timeout>(undefined);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     return () => {
@@ -51,14 +51,14 @@ export default function Home() {
           const nextGrid = collapseGrid(grid, cols);
           if (nextGrid.every((tile) => tile.collapsed)) {
             setInProgress(false);
-            clearInterval(intervalRef.current);
+            if (intervalRef.current) clearInterval(intervalRef.current);
             setEndTime(Date.now());
           }
           return nextGrid.slice();
         } catch (_error) {
           setGrid(grid);
           setInProgress(false);
-          clearInterval(intervalRef.current);
+          if (intervalRef.current) clearInterval(intervalRef.current);
           return grid;
         }
       });
@@ -80,7 +80,7 @@ export default function Home() {
         }
         setInProgress(false);
         setEndTime(Date.now());
-        clearTimeout(timeoutRef.current);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
         return newGrid.slice();
       });
@@ -91,8 +91,8 @@ export default function Home() {
     setStartTime(undefined);
     setEndTime(undefined);
     setInProgress(false);
-    clearTimeout(timeoutRef.current);
-    clearInterval(intervalRef.current);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (intervalRef.current) clearInterval(intervalRef.current);
   }
 
   function handleRestart() {
