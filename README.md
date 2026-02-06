@@ -24,28 +24,28 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 
 This project includes a CI workflow that runs on all pull requests and pushes to the main branch. The workflow performs the following checks in parallel:
 
-- **ESLint**: Code quality and linting checks
-- **Prettier**: Code formatting validation
-- **TypeScript**: Type checking
-- **Build**: Ensures the project builds successfully
-- **Tests**: Runs the full test suite
+- **Build**: Runs linting (ESLint + Prettier), TypeScript type checking, and Next.js build
+- **Test**: Runs the full test suite with Jest
+
+The build step runs `yarn build`, which executes:
+
+1. `yarn lint` - ESLint checks (including Prettier formatting via eslint-plugin-prettier)
+2. `next build` - Next.js build with TypeScript type checking
 
 All checks must pass before a pull request can be merged.
 
 To run these checks locally:
 
 ```bash
-# Run linting (ESLint + Prettier)
-yarn lint
-
-# Run TypeScript type checking
-yarn tsc --noEmit
+# Run build (includes lint and TypeScript checks)
+yarn build
 
 # Run tests
 yarn test
 
-# Build the project
-yarn build
+# Or run checks individually:
+yarn lint          # ESLint + Prettier
+yarn tsc --noEmit  # TypeScript type checking
 ```
 
 ## Learn More
