@@ -1,65 +1,54 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import js from '@eslint/js';
-import { FlatCompat } from '@eslint/eslintrc';
-import { defineConfig, globalIgnores } from 'eslint/config';
-import tsParser from '@typescript-eslint/parser';
-import testingLibrary from 'eslint-plugin-testing-library';
+import nextCoreWebVitals from 'eslint-config-next/core-web-vitals';
 import prettier from 'eslint-plugin-prettier';
-import eslint from '@eslint/js';
-import tseslint from '@typescript-eslint/eslint-plugin';
+import testingLibrary from 'eslint-plugin-testing-library';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
+// Modify the Next.js config to add custom TypeScript rules
+const config = nextCoreWebVitals.map((cfg, index) => {
+  // The TypeScript plugin is in config index 1
+  if (index === 1 && cfg.plugins?.['@typescript-eslint']) {
+    return {
+      ...cfg,
+      rules: {
+        ...cfg.rules,
+        '@typescript-eslint/no-unused-vars': [
+          'error',
+          {
+            argsIgnorePattern: '^_',
+            varsIgnorePattern: '^_',
+            caughtErrorsIgnorePattern: '^_',
+            destructuredArrayIgnorePattern: '^_',
+            ignoreRestSiblings: true,
+          },
+        ],
+      },
+    };
+  }
+  return cfg;
 });
 
-export default defineConfig([
+export default [
+  ...config,
   {
-    languageOptions: {
-      parser: tsParser,
-      sourceType: 'module',
-      parserOptions: {},
-    },
-
     plugins: {
       'testing-library': testingLibrary,
       prettier,
-      '@typescript-eslint': tseslint,
     },
-
     rules: {
-      ...eslint.configs.recommended.rules,
-      ...tseslint.configs.recommended.rules,
       'prettier/prettier': 'error',
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
     },
   },
-  ...compat.extends(
-    'next/core-web-vitals',
-    'next/typescript',
-    'next',
-    'plugin:@typescript-eslint/recommended'
-  ),
-  globalIgnores([
-    '**/jest.config.js',
-    '**/jest.setup.js',
-    '**/lint-staged.config.js',
-    '**/next.config.js',
-    '.next',
-    '.yarn',
-    '.swc',
-    'node_modules',
-  ]),
-]);
+  {
+    ignores: [
+      '**/jest.config.js',
+      '**/jest.setup.js',
+      '**/lint-staged.config.js',
+      '**/next.config.js',
+      '**/prettier.config.js',
+      '**/eslint.config.mjs',
+      '.next',
+      '.yarn',
+      '.swc',
+      'node_modules',
+    ],
+  },
+];
