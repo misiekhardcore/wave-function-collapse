@@ -22,10 +22,11 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 
 ## Continuous Integration
 
-This project includes a CI workflow that runs on all pull requests and pushes to the main branch. The workflow performs the following checks:
+This project includes a CI workflow that runs on all pull requests and pushes to the main branch. The workflow performs the following checks in parallel:
 
 - **ESLint**: Code quality and linting checks
 - **Prettier**: Code formatting validation
+- **TypeScript**: Type checking
 - **Build**: Ensures the project builds successfully
 - **Tests**: Runs the full test suite
 
@@ -36,6 +37,9 @@ To run these checks locally:
 ```bash
 # Run linting (ESLint + Prettier)
 yarn lint
+
+# Run TypeScript type checking
+yarn tsc --noEmit
 
 # Run tests
 yarn test
