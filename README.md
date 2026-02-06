@@ -20,6 +20,34 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
+## Continuous Integration
+
+This project includes a CI workflow that runs on all pull requests and pushes to the main branch. The workflow performs the following checks in parallel:
+
+- **Build**: Runs linting (ESLint + Prettier), TypeScript type checking, and Next.js build
+- **Test**: Runs the full test suite with Jest
+
+The build step runs `yarn build`, which executes:
+
+1. `yarn lint` - ESLint checks (including Prettier formatting via eslint-plugin-prettier)
+2. `next build` - Next.js build with TypeScript type checking
+
+All checks must pass before a pull request can be merged.
+
+To run these checks locally:
+
+```bash
+# Run build (includes lint and TypeScript checks)
+yarn build
+
+# Run tests
+yarn test
+
+# Or run checks individually:
+yarn lint          # ESLint + Prettier
+yarn tsc --noEmit  # TypeScript type checking
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
