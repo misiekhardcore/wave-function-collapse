@@ -60,7 +60,7 @@
     "jest-image-snapshot": "6.5.1",
     "jiti": "2.6.1",
     "lint-staged": "16.3.1",
-    "postcss": "8.5.6",
+    "postcss": "8.5.8",
     "prettier": "3.8.1",
     "sass": "1.97.3",
     "ts-node": "10.9.2",
