@@ -6850,9 +6850,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-image-snapshot@npm:6.5.1":
-  version: 6.5.1
-  resolution: "jest-image-snapshot@npm:6.5.1"
+"jest-image-snapshot@npm:6.5.2":
+  version: 6.5.2
+  resolution: "jest-image-snapshot@npm:6.5.2"
   dependencies:
     chalk: "npm:^4.0.0"
     get-stdin: "npm:^5.0.1"
@@ -6862,11 +6862,11 @@ __metadata:
     pngjs: "npm:^3.4.0"
     ssim.js: "npm:^3.1.1"
   peerDependencies:
-    jest: ">=20 <=29"
+    jest: ">=20 <31"
   peerDependenciesMeta:
     jest:
       optional: true
-  checksum: 10c0/f58ff224cc400929c13b955f5d31a2cd751d17276c529ab93842c264dfd21509c8da3a65a39ad6f174ba8a4abf7e0ff9baa39a530c864d94f093864df4f3e4ba
+  checksum: 10c0/e6921806ed65467d3b8fd415bbc2d6939e8e8c59fbc529af8379d88352ad657ce16a28a6b6f5103058c42b785e3de08715eb798f331d73467c9c17651fb11e5a
   languageName: node
   linkType: hard
 
@@ -10449,7 +10449,7 @@ __metadata:
     husky: "npm:9.1.7"
     jest: "npm:30.2.0"
     jest-environment-jsdom: "npm:30.2.0"
-    jest-image-snapshot: "npm:6.5.1"
+    jest-image-snapshot: "npm:6.5.2"
     jiti: "npm:2.6.1"
     lint-staged: "npm:16.3.2"
     next: "npm:16.1.6"
