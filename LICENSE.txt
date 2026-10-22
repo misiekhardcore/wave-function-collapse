@@ -1,0 +1,51 @@
+# Wave Function Collapse Visualizer
+## License: MIT (MIT)
+
+Copyright © 2024 Michael Konopski <misiekhardcore@gmail.com>
+https://github.com/misiekhardcore/
+
+Permission is hereby granted, free of charge, to any person obtaining a copy 
+of this software and associated documentation files (the "Software"), to deal 
+in the Software without restriction, including without limitation the rights 
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies 
+of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+### License Terms (MIT)
+The MIT License applies only to the code in this repository. Any third-party components included as dependencies are licensed under their respective open source licenses.
+
+The above copyright notice and this permission notice shall be included in all 
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+includingsuitability for a particular purpose. IN NO EVENT SHALL THE AUTHORS OR 
+COPRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,DAMAGESOR OTHER LIABILITYWHETHERIN AN ACTION OF CONTRACT,TORT OR OTHERWISE,ARISING FROM OUTOF THE USE
+OF THIS SOFTWARE,EVENIFADVISED OFTHEPOSSIBILITYOFSUCHDAMAGE.
+---
+### Commercial Use and Attribution (Recommended)
+*This section is a courtesy suggestion for commercial projects.*
+
+If you use this software in a commercial product or website, attribution is appreciated but not required. If provided, the following format is recommended:
+
+```
+The Wave Function Collapse visualizer uses code from WFC 
+(https://github.com/misiekhardcore/wave-function-collapse), MIT licensed.
+```
+---
+### Third-Party Components and Licenses
+This project includes third-party dependencies with their own licenses. Full license details for each package are available in:
+
+1. The `node_modules/` directory (standard Node.js behavior)
+2. Run: `yarn why --dev <package-name>` to see licensing info per dependency group
+3. See [npm's License page](https://www.npmjs.com/license) for summary tables of major packages used in this project.
+---
+### Fork Attribution (GitHub Standard Practice)
+The MIT license does not require attribution, but GitHub recommends that forks include a `NOTICE` file or banner stating:
+
+> This repository is a fork of [original-repo](https://github.com/original-owner/repo-name).
+>
+When forking this project in the future and distributing it publicly,
+consider adding such a notice.
+---
+### Trademark Notice
+The "Wave Function Collapse" algorithm name refers to concepts originally developed by Michael Jarvis (2014) and popularized through community implementations. This repository is independent of any official branding or trademark claims associated with the original author's work on r/tilegames.

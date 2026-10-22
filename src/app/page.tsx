@@ -33,8 +33,8 @@ export default function Home() {
 
   useEffect(() => {
     return () => {
-      timeoutRef.current && clearTimeout(timeoutRef.current);
-      intervalRef.current && clearInterval(intervalRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
 

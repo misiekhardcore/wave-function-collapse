@@ -1,8 +1,8 @@
 {
   "name": "wave-function-collapse",
   "packageManager": "yarn@4.12.0",
-  "description": "This is a program to generate a 2D patern using wave function collapse algorithm.",
-  "version": "0.0.0-SNAPSHOT",
+  "description": "Interactive Wave Function Collapse algorithm visualizer and pattern generator built with Next.js, TypeScript, React, and Canvas.",
+  "version": "1.0.0",
   "author": {
     "name": "Michael Konopski",
     "email": "misiekhardcore@gmail.com",
@@ -10,7 +10,16 @@
   },
   "license": "MIT",
   "keywords": [
-    "wave-function-collapse"
+    "wfc",
+    "wave-function-collapse",
+    "pattern-generation",
+    "algorithm-visualization",
+    "procedural-content",
+    "tiling",
+    "nextjs",
+    "react",
+    "typescript",
+    "canvas"
   ],
   "scripts": {
     "dev": "next dev",

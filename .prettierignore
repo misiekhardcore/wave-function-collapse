@@ -1,0 +1,9 @@
+.next
+out
+.swc
+.yarn
+node_modules
+next-env.d.ts
+yarn.lock
+build
+package.json
