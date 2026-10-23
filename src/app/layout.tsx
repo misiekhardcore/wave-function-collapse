@@ -33,6 +33,33 @@ export const metadata: Metadata = {
     description:
       'Interactive wave function collapse algorithm visualizer. Explore procedural pattern generation and tile-based algorithms.',
   },
+  // Explicit favicon and icon references
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
+  // Web app manifest
+  manifest: '/manifest.json',
+  // SEO robots
+  robots: {
+    index: true,
+    follow: true,
+  },
+  // Alternate URLs
+  alternates: {
+    canonical: 'https://wave-function-collapse.misiekhardcore.dev',
+  },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1.0,
+  maximumScale: 5.0,
+  themeColor: '#1a1a2e',
 };
 
 export default function RootLayout({
@@ -42,6 +69,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
+      <head>
+        {/* Favicon links */}
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
+        <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16" />
+        <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+      </head>
       <body className={`${inter.className} h-full`}>{children}</body>
     </html>
   );

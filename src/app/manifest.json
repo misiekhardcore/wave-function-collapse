@@ -1,0 +1,23 @@
+{
+  "name": "Wave Function Collapse Visualizer",
+  "short_name": "WFC Visualizer",
+  "description": "Interactive wave function collapse algorithm visualizer. Explore procedural pattern generation, tile-based algorithms, and visualize the WFC solving process in real-time.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "https://wave-function-collapse.misiekhardcore.dev",
+  "scope": "https://wave-function-collapse.misiekhardcore.dev",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "categories": ["productivity", "developer-tools", "entertainment"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "16x16 32x32 48x48 64x64 128x128 256x256",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": []
+}
