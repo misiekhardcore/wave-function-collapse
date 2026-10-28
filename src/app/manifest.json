@@ -8,8 +8,8 @@
   "scope": "https://wave-function-collapse.misiekhardcore.dev",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#1a1a2e",
-  "theme_color": "#1a1a2e",
+  "background_color": "#ffffff",
+  "theme_color": "#252525",
   "categories": ["productivity", "developer-tools", "entertainment"],
   "icons": [
     {

@@ -38,11 +38,14 @@ An interactive **Wave Function Collapse algorithm** implementation and visualiza
 
 ### Core Functionality
 
-- 🧩 **Real-time visualization** of the WFC solving process with "generate on fly" mode
+- 🧩 **Real-time visualization** of the WFC solving process with "watch it solve" mode
 - ⚡ **Instant generation** — complete patterns in one click
 - 🔢 **Customizable grid sizes**: 2–100 columns × 2–70 rows
 - 💾 Export generated patterns as PNG images
-- 📊 Performance metrics: track completion time for each generation
+- 📊 Performance metrics: live progress and completion time for each generation
+- 🌗 **Light, dark and system themes** — the canvas repaints together with the page
+- 📱 Responsive layout that scales the pattern down to the viewport instead of scrolling
+- ⌨️ Keyboard-operable tile picker with screen-reader labels
 
 ### Tile System
 
@@ -67,12 +70,21 @@ wfc/
 │   ├── app/                      # Next.js App Router
 │   │   ├── layout.tsx            # Root with metadata, SEO config
 │   │   └── page.tsx              # Main UI component
-│   ├── components/               # React Components
+│   ├── components/               # React Components (barrel-exported)
+│   │   ├── AppHeader/            # Sticky header, title and theme toggle
 │   │   ├── Grid/
-│   │   │   ├── CanvasGrid.tsx    # HTML5 Canvas rendering layer
+│   │   │   ├── CanvasGrid.tsx    # HiDPI, theme-aware canvas rendering layer
 │   │   │   └── index.tsx         # Exports & barrel imports
-│   │   └── TilesPreview/
-│   │       └── TilesPreview.tsx  # Tile selector + neighbor visualization
+│   │   ├── Panel/                # Titled card used by every panel
+│   │   ├── PatternControls/      # Grid size fields and generation actions
+│   │   ├── Stage/                # Status badge, progress readout and canvas surface
+│   │   ├── ThemeProvider/        # next-themes provider
+│   │   ├── ThemeToggle/          # Light / system / dark switch
+│   │   ├── TilesPreview/
+│   │   │   └── TilesPreview.tsx  # Tile selector + neighbor compatibility diagram
+│   │   └── ui/                   # shadcn/ui primitives (button, card, slider, …)
+│   ├── hooks/
+│   │   └── usePatternGenerator.ts # Grid state machine: animate, generate, restart, export
 │   ├── lib/                      # WFC Algorithm Core (100% tested)
 │   │   ├── collapseGrid.ts        ← Main algorithm loop
 │   │   ├── generateInitialGrid.ts ← Grid initialization with seed tiles
@@ -156,22 +168,23 @@ The algorithm ensures that when placing a tile at position `(row, col)`, its edg
 
 ## 🎨 UI Controls Explained
 
-| Control                                 | Action                                                       |
-| --------------------------------------- | ------------------------------------------------------------ |
-| **Number of columns/rows**              | Adjust grid dimensions → generates new pattern instantly     |
-| **Generate on Fly** (interval mode)     | Real-time visualization — watch algorithm solve step-by-step |
-| **Generate and Display** (instant mode) | Complete the entire pattern in one click                     |
-| **Restart**                             | Reset to current size with fresh seed tiles                  |
-| **Download Pattern**                    | Save completed grid as PNG image file                        |
+| Control                        | Action                                                                          |
+| ------------------------------ | ------------------------------------------------------------------------------- |
+| **Columns / Rows**             | Set the grid dimensions with the number field or slider → regenerates instantly |
+| **Generate pattern** (instant) | Solve the whole grid in one go                                                  |
+| **Watch it solve** (animated)  | Step through the algorithm frame by frame, about 20 s for a full grid           |
+| **Restart**                    | Reset to the current size with fresh seed tiles (also cancels a run in flight)  |
+| **PNG**                        | Save the completed grid as an image; disabled until the pattern is solved       |
+| **Theme switch**               | Pin light or dark, or follow the operating system                               |
+| **Tile picker**                | Inspect a tile and the tiles allowed on each of its four sides                  |
 
 ## 📊 Performance Benchmarks
 
-| Grid Size           | Avg Completion Time | Memory Usage |
-| ------------------- | ------------------- | ------------ |
-| 10×8 (small)        | ~45ms               | <2MB heap    |
-| 30×20 (medium)      | ~1.2s               | ~8MB heap    |
-| **60×40** (default) | **~2–3 seconds**    | ~15MB heap   |
-| 90×70 (large)       | ~8–12s              | ~25MB heap   |
+| Grid Size      | Avg Completion Time | Memory Usage |
+| -------------- | ------------------- | ------------ | --- | -------------------- | ---------------- | ---------- |
+| 10×8 (small)   | ~45ms               | <2MB heap    |
+| 30×20 (medium) | ~1.2s               | ~8MB heap    |     | **100×70** (default) | **~2–3 seconds** | ~15MB heap |
+| 90×70 (large)  | ~8–12s              | ~25MB heap   |
 
 _Measured on modern desktop browsers with CanvasKit optimization enabled._
 
@@ -185,10 +198,14 @@ _Measured on modern desktop browsers with CanvasKit optimization enabled._
 
 ### Styling & UI
 
-| Library         | Version | Purpose                                        |
-| --------------- | ------- | ---------------------------------------------- |
-| Tailwind CSS v4 | 4.x     | Utility-first styling with PostCSS integration |
-| classnames      | 2.5.x   | Runtime conditional className composition      |
+| Library         | Version | Purpose                                                |
+| --------------- | ------- | ------------------------------------------------------ |
+| Tailwind CSS v4 | 4.x     | Utility-first styling with PostCSS integration         |
+| shadcn/ui       | 4.x     | Accessible component primitives copied into `ui/`      |
+| Radix UI        | 1.8.x   | Underlying primitives (label, slider, toggle group, …) |
+| next-themes     | 0.4.x   | Light / dark / system theme with persistence           |
+| lucide-react    | 1.63.x  | Icon set                                               |
+| classnames      | 2.5.x   | Runtime conditional className composition              |
 
 ### Development Tools (DevDeps)
 
@@ -243,8 +260,8 @@ Contributions welcome! Areas of interest:
 
 - Adding more tile sets with visual previews
 - Performance optimization for larger grids (WebAssembly)
-- Mobile-responsive UI improvements
-- Accessibility features (screen reader announcements, keyboard navigation)
+- Playback controls (pause and step) for the animated solve
+- Additional export formats beyond PNG
 
 See `.github/CONTRIBUTING.md` for detailed guidelines.
 

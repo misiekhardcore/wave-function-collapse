@@ -1,187 +1,57 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-
-import { CanvasGrid, TilesPreview } from '@/components';
-import {
-  collapseGrid,
-  generateInitialGrid,
-  tiles,
-  downloadCanvasAsImage,
-  generateDownloadFilename,
-} from '@/lib';
-
-const COLS = 100;
-const MIN_COLS = 2;
-const MAX_COLS = 100;
-const ROWS = 70;
-const MIN_ROWS = 2;
-const MAX_ROWS = 70;
-const INITIAL_TILES_COUNT = 10;
-const TILE_SIZE = 10;
+import { CanvasGrid, PatternControls, Stage, TilesPreview } from '@/components';
+import { TILE_SIZE, usePatternGenerator } from '@/hooks';
+import { getElapsedTime, tiles } from '@/lib';
 
 export default function Home() {
-  const [grid, setGrid] = useState(generateInitialGrid(INITIAL_TILES_COUNT, COLS, ROWS));
-  const [cols, setCols] = useState(COLS);
-  const [rows, setRows] = useState(ROWS);
-  const [inProgress, setInProgress] = useState(false);
-  const [startTime, setStartTime] = useState<number>();
-  const [endTime, setEndTime] = useState<number>();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, []);
-
-  function handleGenerateOnFly() {
-    handleRestart();
-    setStartTime(() => Date.now());
-
-    if (inProgress) return;
-
-    setInProgress(true);
-    intervalRef.current = setInterval(() => {
-      setGrid((grid) => {
-        try {
-          const nextGrid = collapseGrid(grid, cols);
-          if (nextGrid.every((tile) => tile.collapsed)) {
-            setInProgress(false);
-            if (intervalRef.current) clearInterval(intervalRef.current);
-            setEndTime(Date.now());
-          }
-          return nextGrid.slice();
-        } catch (_error) {
-          setGrid(grid);
-          setInProgress(false);
-          if (intervalRef.current) clearInterval(intervalRef.current);
-          return grid;
-        }
-      });
-    });
-  }
-
-  function handleGenerateAndDisplay() {
-    handleRestart();
-    setStartTime(() => Date.now());
-
-    if (inProgress) return;
-
-    setInProgress(true);
-    timeoutRef.current = setTimeout(() => {
-      setGrid((grid) => {
-        let newGrid = grid;
-        while (!newGrid.every((tile) => tile.collapsed)) {
-          newGrid = collapseGrid(newGrid, cols);
-        }
-        setInProgress(false);
-        setEndTime(Date.now());
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-
-        return newGrid.slice();
-      });
-    });
-  }
-
-  function handleReset() {
-    setStartTime(undefined);
-    setEndTime(undefined);
-    setInProgress(false);
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  }
-
-  function handleRestart() {
-    handleReset();
-    setGrid(generateInitialGrid(INITIAL_TILES_COUNT, cols, rows));
-  }
-
-  function handleDownload() {
-    const filename = generateDownloadFilename();
-    downloadCanvasAsImage(canvasRef.current, filename);
-  }
-
-  function handleColsChange(e: React.ChangeEvent<HTMLInputElement>) {
-    handleReset();
-    let newCols = parseInt(e.target.value) || 1;
-    if (newCols < MIN_COLS) newCols = MIN_COLS;
-    if (newCols > MAX_COLS) newCols = MAX_COLS;
-    setCols(newCols);
-    setGrid(generateInitialGrid(INITIAL_TILES_COUNT, newCols, rows));
-  }
-
-  function handleRowsChange(e: React.ChangeEvent<HTMLInputElement>) {
-    handleReset();
-    let newRows = parseInt(e.target.value) || 1;
-    if (newRows < MIN_ROWS) newRows = MIN_ROWS;
-    if (newRows > MAX_ROWS) newRows = MAX_ROWS;
-    setRows(newRows);
-    setGrid(generateInitialGrid(INITIAL_TILES_COUNT, cols, newRows));
-  }
-
-  const isPatternComplete = grid.every((tile) => tile.collapsed);
+  const {
+    grid,
+    columns,
+    rows,
+    status,
+    isRunning,
+    isComplete,
+    collapsedTiles,
+    totalTiles,
+    startTime,
+    endTime,
+    canvasRef,
+    setColumns,
+    setRows,
+    animate,
+    generate,
+    restart,
+    download,
+  } = usePatternGenerator();
 
   return (
-    <main className="p-4 items-center flex flex-col gap-4 max-w-[1200px] w-full mx-auto">
-      <div className="items-end flex gap-4 flex-wrap">
-        <label htmlFor="cols" className="min-w-fit">
-          Number of columns
-          <input
-            type="number"
-            max={MAX_COLS}
-            min={MIN_COLS}
-            id="cols"
-            value={cols}
-            onChange={handleColsChange}
-            className="w-full"
-          />
-        </label>
-        <label htmlFor="rows" className="min-w-fit">
-          Number of rows
-          <input
-            type="number"
-            id="rows"
-            max={MAX_ROWS}
-            min={MIN_ROWS}
-            value={rows}
-            onChange={handleRowsChange}
-            className="w-full"
-          />
-        </label>
-        <button disabled={inProgress} onClick={handleGenerateOnFly} className="min-w-fit">
-          generate on fly
-        </button>
-        <button disabled={inProgress} onClick={handleGenerateAndDisplay} className="min-w-fit">
-          generate and display
-        </button>
-        <button onClick={handleRestart} className="min-w-fit">
-          restart
-        </button>
-        <button
-          disabled={!isPatternComplete || inProgress}
-          onClick={handleDownload}
-          className="min-w-fit"
-        >
-          download pattern
-        </button>
+    <main className="mx-auto grid w-full max-w-7xl flex-1 gap-4 px-4 py-6 sm:px-6 lg:grid-cols-[20rem_minmax(0,1fr)] lg:items-start lg:gap-6">
+      <div className="flex flex-col gap-4">
+        <PatternControls
+          columns={columns}
+          rows={rows}
+          isRunning={isRunning}
+          isComplete={isComplete}
+          onColumnsChange={setColumns}
+          onRowsChange={setRows}
+          onGenerate={generate}
+          onAnimate={animate}
+          onRestart={restart}
+          onDownload={download}
+        />
       </div>
-      <p>Generated in: {getElapsedTime(startTime, endTime)}</p>
-      {inProgress && (
-        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background/50 p-8">
-          Work in progress...
-        </p>
-      )}
-      <CanvasGrid grid={grid} cols={cols} tileSize={TILE_SIZE} ref={canvasRef} />
-      <TilesPreview tiles={tiles} />
+      <div className="flex min-w-0 flex-col gap-4">
+        <Stage
+          status={status}
+          elapsedTime={getElapsedTime(startTime, endTime)}
+          collapsedTiles={collapsedTiles}
+          totalTiles={totalTiles}
+        >
+          <CanvasGrid ref={canvasRef} grid={grid} cols={columns} tileSize={TILE_SIZE} />
+        </Stage>
+        <TilesPreview tiles={tiles} />
+      </div>
     </main>
   );
-}
-
-function getElapsedTime(startTime: number | undefined, endTime: number | undefined): string {
-  if (!startTime || !endTime) return '--';
-  return ((endTime - startTime) / 1000).toFixed(2) + 's';
 }
