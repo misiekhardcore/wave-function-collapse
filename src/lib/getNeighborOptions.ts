@@ -1,4 +1,5 @@
-import { TileObject } from '../types';
+import type { TileObject } from '../types';
+
 import { tiles } from './tiles';
 
 export function getTopOptions(tileIndex: number, grid: TileObject[], cols: number): number[] {

@@ -1,4 +1,4 @@
-import { TileObject } from '@/types';
+import type { TileObject } from '@/types';
 
 import { calculateOptions } from './calculateOptions';
 import { findTilesIndicesWithLeastOptions } from './findTilesIndicesWithLeastOptions';

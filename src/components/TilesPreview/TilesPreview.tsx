@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Panel } from '@/components/Panel';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { Tile } from '@/types';
+import type { Tile } from '@/types';
 
 export function TilesPreview({ tiles }: { tiles: Tile[] }) {
   const [selectedTile, setSelectedTile] = useState(0);

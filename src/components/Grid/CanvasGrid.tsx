@@ -11,7 +11,7 @@ import {
 } from 'react';
 
 import { tiles } from '@/lib';
-import { TileObject } from '@/types';
+import type { TileObject } from '@/types';
 
 type CanvasGridProps = {
   grid: TileObject[];

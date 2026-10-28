@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 
 expect.extend({ toMatchImageSnapshot });
@@ -14,13 +14,13 @@ describe('CanvasGrid', () => {
       { col: 1, row: 1, collapsed: true, options: [5] },
     ];
 
-    const { getByTestId } = render(<CanvasGrid grid={grid} cols={2} tileSize={20} />);
+    render(<CanvasGrid grid={grid} cols={2} tileSize={20} />);
     const canvas = await waitFor(() => {
-      return getByTestId('canvas') as HTMLCanvasElement;
+      return screen.getByTestId('canvas');
     });
     expect(canvas).toBeInTheDocument();
 
-    const img = canvas.toDataURL();
+    const img = (canvas as HTMLCanvasElement).toDataURL();
     const data = img.replace(/^data:image\/\w+;base64,/, '');
     const buf = Buffer.from(data, 'base64');
     // may need to do fuzzy image comparison because, at least for me, on

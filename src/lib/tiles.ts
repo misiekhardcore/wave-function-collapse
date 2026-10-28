@@ -1,4 +1,4 @@
-import { Tile } from '../types';
+import type { Tile } from '../types';
 
 export const tiles: Tile[] = [
   {

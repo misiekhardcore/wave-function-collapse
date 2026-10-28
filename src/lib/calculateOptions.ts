@@ -1,11 +1,11 @@
-import { TileObject } from '@/types';
+import type { TileObject } from '@/types';
 
 import { getCommonOptions } from './getCommonOptions';
 import {
-  getRightOptions,
-  getTopOptions,
   getBottomOptions,
   getLeftOptions,
+  getRightOptions,
+  getTopOptions,
 } from './getNeighborOptions';
 
 export function calculateOptions(grid: TileObject[], cols: number): TileObject[] {

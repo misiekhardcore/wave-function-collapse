@@ -1,4 +1,4 @@
-import { TileObject } from '@/types';
+import type { TileObject } from '@/types';
 
 import { pickRandomArrayElement } from './pickRandomArrayElement';
 import { tiles } from './tiles';

@@ -1,8 +1,8 @@
 import {
-  getRightOptions,
-  getTopOptions,
   getBottomOptions,
   getLeftOptions,
+  getRightOptions,
+  getTopOptions,
 } from './getNeighborOptions';
 import { tiles } from './tiles';
 

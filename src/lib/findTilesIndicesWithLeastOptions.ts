@@ -1,4 +1,4 @@
-import { TileObject } from '@/types';
+import type { TileObject } from '@/types';
 
 export function findTilesIndicesWithLeastOptions(grid: TileObject[]): number[] {
   const lengths: number[] = [];

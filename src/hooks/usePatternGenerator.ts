@@ -8,7 +8,7 @@ import {
   generateDownloadFilename,
   generateInitialGrid,
 } from '@/lib';
-import { TileObject } from '@/types';
+import type { TileObject } from '@/types';
 
 export const SEED_TILES_COUNT = 10;
 export const TILE_SIZE = 10;
