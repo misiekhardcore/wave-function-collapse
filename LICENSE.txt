@@ -36,7 +36,7 @@ The Wave Function Collapse visualizer uses code from WFC
 This project includes third-party dependencies with their own licenses. Full license details for each package are available in:
 
 1. The `node_modules/` directory (standard Node.js behavior)
-2. Run: `yarn why --dev <package-name>` to see licensing info per dependency group
+2. Run: `pnpm why --dev <package-name>` to see licensing info per dependency group
 3. See [npm's License page](https://www.npmjs.com/license) for summary tables of major packages used in this project.
 ---
 ### Fork Attribution (GitHub Standard Practice)

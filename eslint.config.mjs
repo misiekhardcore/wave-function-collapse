@@ -48,7 +48,7 @@ export default defineConfig([
     '**/eslint.config.mjs',
     'postcss.config.mjs',
     '.next',
-    '.yarn',
+    'pnpm-lock.yaml',
     '.swc',
     'node_modules',
   ]),

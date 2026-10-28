@@ -19,9 +19,9 @@ Thank you for your interest in contributing! This document outlines the developm
 
 ```bash
 node@18+    ✅ Required for TypeScript and Next.js 16+
-yarn@4.x    ✅ Pinned in package.json (use `yarn` not npm)
+pnpm@12+    ✅ Pinned in package.json (use `pnpm` not npm)
 canvaskit   ✅ Auto-loaded via CDN, no extra setup needed
-git        ✅ For version control workflow
+git         ✅ For version control workflow
 ```
 
 ### Initial Setup Commands
@@ -31,22 +31,22 @@ git        ✅ For version control workflow
 git clone https://github.com/misiekhardcore/wave-function-collapse.git
 cd wave-function-collapse
 
-# Install dependencies (uses yarn 4 PnP)
-yarn install --immutable
+# Install dependencies (uses pnpm 4 PnP)
+pnpm install --frozen-lockfile
 
 # Verify installation by running tests
-echo "Tests should pass:" && yarn test --passWithNoTests
+echo "Tests should pass:" && pnpm test --passWithNoTests
 ```
 
 ### Development Workflow Tips
 
 | Task                                 | Command                                  |
 | ------------------------------------ | ---------------------------------------- |
-| Start dev server                     | `yarn dev` (opens http://localhost:3000) |
-| Build for production + type checking | `yarn build`                             |
-| Run linter with auto-fix             | `yarn lint --fix`                        |
-| Format code automatically            | `yarn prettier:fix`                      |
-| Watch tests during development       | `yarn test:watch`                        |
+| Start dev server                     | `pnpm dev` (opens http://localhost:3000) |
+| Build for production + type checking | `pnpm build`                             |
+| Run linter with auto-fix             | `pnpm lint --fix`                        |
+| Format code automatically            | `pnpm prettier:fix`                      |
+| Watch tests during development       | `pnpm test:watch`                        |
 
 ---
 
@@ -95,9 +95,9 @@ All pull requests **must include passing tests**. The project uses a dual testin
 ### Unit Tests (Jest)
 
 ```bash
-yarn test                   # Run all unit tests with coverage report
-yarn test --watch           # Watch mode for development iterations
-yarn test <pattern>         # Filter by file, e.g., "lib/collapseGrid"
+pnpm test                   # Run all unit tests with coverage report
+pnpm test --watch           # Watch mode for development iterations
+pnpm test <pattern>         # Filter by file, e.g., "lib/collapseGrid"
 ```
 
 **Coverage Threshold**: Core algorithm files must maintain ≥95% line and branch coverage.
@@ -107,7 +107,7 @@ yarn test <pattern>         # Filter by file, e.g., "lib/collapseGrid"
 The project uses **Jest Image Snapshot** to verify Canvas rendering correctness:
 
 ```bash
-yarn test --update-snapshots    # Update snapshot images after UI changes
+pnpm test --update-snapshots    # Update snapshot images after UI changes
 ```
 
 Snapshot files are stored in `src/components/Grid/__image_snapshots__/` and should never be manually edited.
@@ -144,10 +144,10 @@ git commit -m "fix: correct neighbor calculation when cols < 2"
 
 Before submitting a PR, verify:
 
-- [ ] All tests pass locally (`yarn test`)
-- [ ] No TypeScript errors on build (`yarn build` exits cleanly)
-- [ ] Linting passes with no warnings (`yarn lint`)
-- [ ] Code is formatted (run `yarn prettier:fix` if unsure) ✅
+- [ ] All tests pass locally (`pnpm test`)
+- [ ] No TypeScript errors on build (`pnpm build` exits cleanly)
+- [ ] Linting passes with no warnings (`pnpm lint`)
+- [ ] Code is formatted (run `pnpm prettier:fix` if unsure) ✅
 - [ ] Changes follow existing code style and conventions
 - [ ] New features include corresponding tests or documentation updates
 - [ ] No console.error() calls in production paths; use debugging tools instead.
@@ -186,7 +186,7 @@ The project welcomes contributions across multiple dimensions:
 ```bash
 git clone https://github.com/misiekhardcore/wave-function-collapse.git
 cd wave-function-collapse
-yarn install --immutable  # Install dependencies using yarn PnP mode
+pnpm install --frozen-lockfile  # Install dependencies using pnpm PnP mode
 ```
 
 | Issue                                                | Description                                  |

@@ -273,8 +273,8 @@ describe('collapseGrid', () => {
 Snapshot tests verify rendering correctness:
 
 ```bash
-yarn test --update-snapshots   # Update visual snapshots after layout changes
-yarn test                      # Compare current renders against stored images
+pnpm test --update-snapshots   # Update visual snapshots after layout changes
+pnpm test                      # Compare current renders against stored images
 ```
 
 ---

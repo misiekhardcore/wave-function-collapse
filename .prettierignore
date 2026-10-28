@@ -1,9 +1,8 @@
 .next
 out
 .swc
-.yarn
 node_modules
 next-env.d.ts
-yarn.lock
+pnpm-lock.yaml
 build
 package.json

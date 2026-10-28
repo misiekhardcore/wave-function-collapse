@@ -36,9 +36,9 @@
 
 ### Required:
 
-- [ ] All unit tests pass (`yarn test`)
-- [ ] No TypeScript errors on build (`yarn build`)
-- [ ] Linting passes with no warnings (`yarn lint`)
+- [ ] All unit tests pass (`pnpm test`)
+- [ ] No TypeScript errors on build (`pnpm build`)
+- [ ] Linting passes with no warnings (`pnpm lint`)
 
 ### If this is a feature/bugfix:
 

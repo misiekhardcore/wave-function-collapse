@@ -104,7 +104,7 @@ wfc/
 ### Prerequisites
 
 ```bash
-yarn@4.12+
+pnpm@12+
 npm     or pnpm   or bun
 canvaskit (for canvas rendering in browser)
 ```
@@ -115,20 +115,20 @@ canvaskit (for canvas rendering in browser)
 # Clone and install dependencies
 git clone https://github.com/misiekhardcore/wave-function-collapse.git
 cd wave-function-collapse
-yarn install  # OR: npm install / pnpm install / bun install
+pnpm install  # OR: npm install / pnpm install / bun install
 
 # Start development server
-yarn dev      # Opens http://localhost:3000
+pnpm dev      # Opens http://localhost:3000
 ```
 
 ### Build & Deploy
 
 ```bash
 # Production build (includes type checking)
-yarn build    # Runs lint + TypeScript checks, then builds
+pnpm build    # Runs lint + TypeScript checks, then builds
 
 # Preview production build
-yarn start
+pnpm start
 ```
 
 ## 🧪 Testing Suite
@@ -148,8 +148,8 @@ The project includes comprehensive test coverage for all core algorithms:
 ```bash
 generateInitialGrid test.ts        # Main algorithm logic
 # Generates initial grid with seed tiles  │    collapseGrid.test.ts              ✓ 100%
-yarn lint --fix                   # Auto-fix formatting issues     │    calculateOptions.test.ts           ✓ 98.5%
-yarn prettier:fix                  # Prettier auto-format        │    findTilesIndicesWithLeastOptions.test.ts   ✓
+pnpm lint --fix                   # Auto-fix formatting issues     │    calculateOptions.test.ts           ✓ 98.5%
+pnpm prettier:fix                  # Prettier auto-format        │    findTilesIndicesWithLeastOptions.test.ts   ✓
 ```
 
 ## 📁 Tile Definitions (Sample)

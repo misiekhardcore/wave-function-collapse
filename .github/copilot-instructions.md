@@ -11,20 +11,20 @@ This is a Next.js application that implements the Wave Function Collapse algorit
 - **Styling**: Tailwind CSS
 - **Testing**: Jest with React Testing Library
 - **Linting**: ESLint with TypeScript ESLint and Prettier
-- **Package Manager**: Yarn (see `package.json` for specific versions)
+- **Package Manager**: pnpm (see `package.json` for specific versions)
 
 ## Development Workflow
 
 ### Installation
 
 ```bash
-yarn install
+pnpm install
 ```
 
 ### Running the Development Server
 
 ```bash
-yarn dev
+pnpm dev
 ```
 
 The application will be available at `http://localhost:3000`.
@@ -32,7 +32,7 @@ The application will be available at `http://localhost:3000`.
 ### Building the Project
 
 ```bash
-yarn build
+pnpm build
 ```
 
 This command runs linting before building, so ensure code passes all checks.
@@ -41,10 +41,10 @@ This command runs linting before building, so ensure code passes all checks.
 
 ```bash
 # Run all tests
-yarn test
+pnpm test
 
 # Run tests in watch mode
-yarn test:watch
+pnpm test:watch
 ```
 
 - All tests are located alongside their source files with `.test.ts` or `.test.tsx` extensions
@@ -57,16 +57,16 @@ yarn test:watch
 
 ```bash
 # Check for linting and formatting issues
-yarn lint
+pnpm lint
 
 # Auto-fix linting and formatting issues
-yarn lint:fix
+pnpm lint:fix
 
 # Check ESLint only
-yarn eslint
+pnpm eslint
 
 # Check Prettier only
-yarn prettier
+pnpm prettier
 ```
 
 ## Code Style and Standards
@@ -178,9 +178,9 @@ Work iteratively in small increments:
 2. For each module:
    - Implement the functionality with TypeScript
    - Write comprehensive tests for the new code
-   - Run `yarn lint:fix` to format code
-   - Run `yarn test` to verify tests pass
-   - Run `yarn build` to ensure no build errors
+   - Run `pnpm lint:fix` to format code
+   - Run `pnpm test` to verify tests pass
+   - Run `pnpm build` to ensure no build errors
 3. Repeat until all criteria are met, linting works, and all tests pass
 4. Ensure code follows existing patterns in `lib/` or `components/`
 
@@ -200,7 +200,7 @@ Work iteratively in small increments:
 3. Implement component logic incrementally:
    - Write the basic component structure
    - Add tests in `.test.tsx` file
-   - Run `yarn lint:fix` and `yarn test`
+   - Run `pnpm lint:fix` and `pnpm test`
    - Add more functionality in small steps
    - Test after each change
 4. Repeat until all criteria are met, linting works, and all tests pass
