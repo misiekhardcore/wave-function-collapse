@@ -3,66 +3,110 @@
 import Image from 'next/image';
 import { useState } from 'react';
 
+import { Panel } from '@/components/Panel';
+import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 import { Tile } from '@/types';
 
 export function TilesPreview({ tiles }: { tiles: Tile[] }) {
-  const [selectedTile, setSelectedTile] = useState<number>(0);
+  const [selectedTile, setSelectedTile] = useState(0);
+  const selected = tiles[selectedTile] ?? tiles[0];
 
   return (
-    <div className="flex flex-col gap-2 items-center">
-      <h3>Tiles</h3>
-      <div className="flex gap-4">
+    <Panel
+      title="Tiles"
+      description="Pick a tile to see which tiles can sit on each side of it."
+      contentClassName="gap-5"
+    >
+      <div role="group" aria-label="Tile types" className="flex flex-wrap gap-1.5">
         {tiles.map((tile) => (
-          <Image
+          <TileButton
             key={tile.id}
-            src={`/tiles/${tile.id}.png`}
-            alt={`tile ${tile.id}`}
-            height={40}
-            width={40}
-            onClick={() => setSelectedTile(tile.id)}
-            data-selected={selectedTile === tile.id}
-            className="border border-dashed border-red-500 cursor-pointer data-[selected=true]:border-solid data-[selected=true]:border-green-500"
+            tile={tile}
+            selected={selectedTile === tile.id}
+            onSelect={() => setSelectedTile(tile.id)}
           />
         ))}
       </div>
-      <div className="flex flex-col gap-4 items-center">
-        <Group title="Top neigbors" tiles={tiles[selectedTile].top.map((idx) => tiles[idx])} />
-        <div className="grid gap-4 grid-cols-3 items-center content-center justify-items-center">
-          <Group title="Left neighbors" tiles={tiles[selectedTile].left.map((idx) => tiles[idx])} />
+
+      <Separator />
+
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center justify-items-center gap-x-2 gap-y-4">
+        <span aria-hidden />
+        <NeighborGroup title="Above" tiles={collectTiles(selected.top, tiles)} />
+        <span aria-hidden />
+
+        <NeighborGroup title="Left" tiles={collectTiles(selected.left, tiles)} />
+        <div className="flex flex-col items-center gap-1.5">
           <Image
-            src={`/tiles/${selectedTile}.png`}
-            alt={`tile ${selectedTile}`}
-            height={40}
-            width={40}
-            className="border border-solid border-green-500"
+            src={`/tiles/${selected.id}.png`}
+            alt={`Tile ${selected.id}`}
+            width={48}
+            height={48}
+            className="block rounded-sm ring-2 ring-primary ring-offset-2 ring-offset-card [image-rendering:pixelated]"
           />
-          <Group
-            title="Right neighbors"
-            tiles={tiles[selectedTile].right.map((idx) => tiles[idx])}
-          />
+          <span className="text-xs font-medium">Tile {selected.id}</span>
         </div>
-        <Group
-          title="Bottom neighbors"
-          tiles={tiles[selectedTile].bottom.map((idx) => tiles[idx])}
-        />
+        <NeighborGroup title="Right" tiles={collectTiles(selected.right, tiles)} />
+
+        <span aria-hidden />
+        <NeighborGroup title="Below" tiles={collectTiles(selected.bottom, tiles)} />
+        <span aria-hidden />
       </div>
-    </div>
+    </Panel>
   );
 }
 
-function Group({ tiles, title }: { tiles: Tile[]; title: string }) {
+function collectTiles(ids: number[], tiles: Tile[]): Tile[] {
+  return ids.map((id) => tiles[id]).filter(Boolean);
+}
+
+function TileButton({
+  tile,
+  selected,
+  onSelect,
+}: {
+  tile: Tile;
+  selected: boolean;
+  onSelect: () => void;
+}) {
   return (
-    <div className="flex flex-col items-center">
-      <p>{title}</p>
-      <div className="grid gap-2 grid-cols-3">
+    <button
+      type="button"
+      aria-pressed={selected}
+      aria-label={`Tile ${tile.id}`}
+      onClick={onSelect}
+      className={cn(
+        'rounded-md border p-1 transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none',
+        selected ? 'border-primary bg-primary/10' : 'border-border hover:bg-muted'
+      )}
+    >
+      <Image
+        src={`/tiles/${tile.id}.png`}
+        alt=""
+        width={28}
+        height={28}
+        className="block [image-rendering:pixelated]"
+      />
+    </button>
+  );
+}
+
+function NeighborGroup({ title, tiles }: { title: string; tiles: Tile[] }) {
+  return (
+    <div className="flex w-full max-w-32 flex-col items-center gap-1.5">
+      <span className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+        {title}
+      </span>
+      <div className="flex flex-wrap justify-center gap-1">
         {tiles.map((tile) => (
           <Image
             key={tile.id}
             src={`/tiles/${tile.id}.png`}
-            alt={`tile ${tile.id}`}
-            height={40}
-            width={40}
-            className="border border-dashed border-red-500"
+            alt={`Tile ${tile.id}`}
+            width={22}
+            height={22}
+            className="block rounded-[3px] ring-1 ring-border [image-rendering:pixelated]"
           />
         ))}
       </div>

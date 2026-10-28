@@ -1,9 +1,12 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
+
+import { AppHeader, ThemeProvider } from '@/components';
+import { cn } from '@/lib/utils';
 
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
   title: 'WFC — Wave Function Collapse Visualizer | Generate Procedural Patterns & Tiles',
@@ -55,11 +58,14 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport = {
+export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1.0,
   maximumScale: 5.0,
-  themeColor: '#1a1a2e',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#252525' },
+  ],
 };
 
 export default function RootLayout({
@@ -68,7 +74,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" suppressHydrationWarning className={cn('h-full', inter.variable)}>
       <head>
         {/* Favicon links */}
         <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
@@ -76,7 +82,19 @@ export default function RootLayout({
         <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
       </head>
-      <body className={`${inter.className} h-full`}>{children}</body>
+      <body className="min-h-svh">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="flex min-h-svh flex-col">
+            <AppHeader />
+            {children}
+          </div>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
