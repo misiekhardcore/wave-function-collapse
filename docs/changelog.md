@@ -14,7 +14,7 @@
 
 - Added a sticky header with the project title, a tagline and a light/system/dark theme switch, so the page has a single `h1` and a real document outline.
 - Split the single stacked column into a responsive two-column layout: control panels on the left, the pattern stage and tile explorer on the right. Below `lg` the panels stack and the canvas scales down to the viewport instead of scrolling sideways.
-- Added `shadcn/ui` on top of Radix UI, with `lucide-react` icons and `next-themes`; design tokens now live in `src/app/globals.css` and replace the ad-hoc `label`/`button`/`input` element styling.
+- Components now come from `@konopskidev/ui`, the konopskidev design system, instead of a local copy of the shadcn registry. The package stylesheet is the single source for colours, radii, base layers and control sizing, Playfair Display sets the display face, and the app keeps only its canvas palette plus its own composed panels; the local `ui/` primitives and the shadcn/Radix build dependencies are gone.
 
 #### Rendering
 
