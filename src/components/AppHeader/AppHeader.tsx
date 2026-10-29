@@ -14,7 +14,9 @@ export function AppHeader() {
             <Grid3x3Icon className="size-4.5" />
           </span>
           <div className="flex min-w-0 flex-col">
-            <h1 className="truncate text-sm font-semibold">Wave Function Collapse</h1>
+            {/* The design system styles every h1 as a display heading; the app
+                title is chrome, so it stays in the sans face. */}
+            <h1 className="truncate font-sans text-sm font-semibold">Wave Function Collapse</h1>
             <p className="truncate text-xs text-muted-foreground">
               Procedural tile patterns, solved step by step
             </p>

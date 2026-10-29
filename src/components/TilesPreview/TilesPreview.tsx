@@ -1,11 +1,10 @@
 'use client';
 
+import { Separator, ToggleGroup, ToggleGroupItem } from '@konopskidev/ui';
 import Image from 'next/image';
 import { useState } from 'react';
 
 import { Panel } from '@/components/Panel';
-import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
 import type { Tile } from '@/types';
 
 export function TilesPreview({ tiles }: { tiles: Tile[] }) {
@@ -18,16 +17,33 @@ export function TilesPreview({ tiles }: { tiles: Tile[] }) {
       description="Pick a tile to see which tiles can sit on each side of it."
       contentClassName="gap-5"
     >
-      <div role="group" aria-label="Tile types" className="flex flex-wrap gap-1.5">
+      <ToggleGroup
+        type="single"
+        aria-label="Tile types"
+        variant="outline"
+        size="sm"
+        spacing={2}
+        className="flex-wrap"
+        value={String(selectedTile)}
+        onValueChange={(value) => value && setSelectedTile(Number(value))}
+      >
         {tiles.map((tile) => (
-          <TileButton
+          <ToggleGroupItem
             key={tile.id}
-            tile={tile}
-            selected={selectedTile === tile.id}
-            onSelect={() => setSelectedTile(tile.id)}
-          />
+            value={String(tile.id)}
+            aria-label={`Tile ${tile.id}`}
+            className="h-auto p-1 data-[state=on]:border-primary data-[state=on]:bg-primary/10"
+          >
+            <Image
+              src={`/tiles/${tile.id}.png`}
+              alt=""
+              width={28}
+              height={28}
+              className="block [image-rendering:pixelated]"
+            />
+          </ToggleGroupItem>
         ))}
-      </div>
+      </ToggleGroup>
 
       <Separator />
 
@@ -59,37 +75,6 @@ export function TilesPreview({ tiles }: { tiles: Tile[] }) {
 
 function collectTiles(ids: number[], tiles: Tile[]): Tile[] {
   return ids.map((id) => tiles[id]).filter(Boolean);
-}
-
-function TileButton({
-  tile,
-  selected,
-  onSelect,
-}: {
-  tile: Tile;
-  selected: boolean;
-  onSelect: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      aria-pressed={selected}
-      aria-label={`Tile ${tile.id}`}
-      onClick={onSelect}
-      className={cn(
-        'rounded-md border p-1 transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none',
-        selected ? 'border-primary bg-primary/10' : 'border-border hover:bg-muted'
-      )}
-    >
-      <Image
-        src={`/tiles/${tile.id}.png`}
-        alt=""
-        width={28}
-        height={28}
-        className="block [image-rendering:pixelated]"
-      />
-    </button>
-  );
 }
 
 function NeighborGroup({ title, tiles }: { title: string; tiles: Tile[] }) {

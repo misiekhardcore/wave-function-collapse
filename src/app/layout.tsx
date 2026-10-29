@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Playfair_Display } from 'next/font/google';
 
 import { AppHeader, ThemeProvider } from '@/components';
 import { cn } from '@/lib/utils';
 
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
 
 export const metadata: Metadata = {
   title: 'WFC — Wave Function Collapse Visualizer | Generate Procedural Patterns & Tiles',
@@ -63,8 +64,8 @@ export const viewport: Viewport = {
   initialScale: 1.0,
   maximumScale: 5.0,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#252525' },
+    { media: '(prefers-color-scheme: light)', color: '#fbfbfa' },
+    { media: '(prefers-color-scheme: dark)', color: '#14181c' },
   ],
 };
 
@@ -74,7 +75,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={cn('h-full', inter.variable)}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn('h-full', inter.variable, playfair.variable)}
+    >
       <body className="min-h-svh">
         <ThemeProvider
           attribute="class"

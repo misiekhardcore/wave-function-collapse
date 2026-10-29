@@ -1,10 +1,9 @@
 'use client';
 
+import { ToggleGroup, ToggleGroupItem } from '@konopskidev/ui';
 import { MonitorIcon, MoonIcon, SunIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useSyncExternalStore } from 'react';
-
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 const THEME_OPTIONS = [
   { value: 'light', label: 'Light theme', Icon: SunIcon },

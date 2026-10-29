@@ -80,9 +80,8 @@ wfc/
 │   │   ├── Stage/                # Status badge, progress readout and canvas surface
 │   │   ├── ThemeProvider/        # next-themes provider
 │   │   ├── ThemeToggle/          # Light / system / dark switch
-│   │   ├── TilesPreview/
-│   │   │   └── TilesPreview.tsx  # Tile selector + neighbor compatibility diagram
-│   │   └── ui/                   # shadcn/ui primitives (button, card, slider, …)
+│   │   └── TilesPreview/
+│   │       └── TilesPreview.tsx  # Tile selector + neighbor compatibility diagram
 │   ├── hooks/
 │   │   └── usePatternGenerator.ts # Grid state machine: animate, generate, restart, export
 │   ├── lib/                      # WFC Algorithm Core (100% tested)
@@ -198,14 +197,13 @@ _Measured on modern desktop browsers with CanvasKit optimization enabled._
 
 ### Styling & UI
 
-| Library         | Version | Purpose                                                |
-| --------------- | ------- | ------------------------------------------------------ |
-| Tailwind CSS v4 | 4.x     | Utility-first styling with PostCSS integration         |
-| shadcn/ui       | 4.x     | Accessible component primitives copied into `ui/`      |
-| Radix UI        | 1.8.x   | Underlying primitives (label, slider, toggle group, …) |
-| next-themes     | 0.4.x   | Light / dark / system theme with persistence           |
-| lucide-react    | 1.63.x  | Icon set                                               |
-| classnames      | 2.5.x   | Runtime conditional className composition              |
+| Library         | Version | Purpose                                        |
+| --------------- | ------- | ---------------------------------------------- |
+| Tailwind CSS v4 | 4.x     | Utility-first styling with PostCSS integration |
+| @konopskidev/ui | 0.2.x   | Design system: components, tokens, base styles |
+| next-themes     | 0.4.x   | Light / dark / system theme with persistence   |
+| lucide-react    | 1.63.x  | Icon set                                       |
+| classnames      | 2.5.x   | Runtime conditional className composition      |
 
 ### Development Tools (DevDeps)
 

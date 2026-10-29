@@ -1,13 +1,10 @@
 'use client';
 
+import { Button, Field, FieldDescription, FieldLabel, Input, Slider } from '@konopskidev/ui';
 import { DownloadIcon, PlayIcon, RotateCcwIcon, ZapIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import { Panel } from '@/components/Panel';
-import { Button } from '@/components/ui/button';
-import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { Slider } from '@/components/ui/slider';
 import { MAX_COLUMNS, MAX_ROWS, MIN_COLUMNS, MIN_ROWS } from '@/hooks';
 
 type PatternControlsProps = {
@@ -116,25 +113,28 @@ function SizeField({ id, label, hint, value, min, max, onChange }: SizeFieldProp
     <Field>
       <div className="flex items-center justify-between gap-2">
         <FieldLabel htmlFor={id}>{label}</FieldLabel>
-        <Input
-          id={id}
-          type="number"
-          inputMode="numeric"
-          min={min}
-          max={max}
-          value={draft ?? value}
-          onChange={(event) => setDraft(event.target.value)}
-          onBlur={(event) => commit(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              event.preventDefault();
-              commit(event.currentTarget.value);
-            }
+        {/* The design system's Input renders its own full-width wrapper. */}
+        <div className="w-20 shrink-0">
+          <Input
+            id={id}
+            type="number"
+            inputMode="numeric"
+            min={min}
+            max={max}
+            value={draft ?? value}
+            onChange={(event) => setDraft(event.target.value)}
+            onBlur={(event) => commit(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                commit(event.currentTarget.value);
+              }
 
-            if (event.key === 'Escape') setDraft(null);
-          }}
-          className="h-8 w-16 text-right tabular-nums"
-        />
+              if (event.key === 'Escape') setDraft(null);
+            }}
+            className="text-right tabular-nums"
+          />
+        </div>
       </div>
       <Slider
         key={value}
@@ -142,7 +142,7 @@ function SizeField({ id, label, hint, value, min, max, onChange }: SizeFieldProp
         min={min}
         max={max}
         step={1}
-        aria-label={label}
+        thumbLabels={[label]}
         onValueCommit={([nextValue]) => onChange(nextValue)}
       />
       <FieldDescription>{hint}</FieldDescription>
