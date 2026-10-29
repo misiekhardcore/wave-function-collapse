@@ -36,7 +36,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@tailwindcss/postcss": "4.2.1",
+    "@tailwindcss/postcss": "4.2.4",
     "class-variance-authority": "^0.7.1",
     "classnames": "2.5.1",
     "cn": "^0.5.0",
