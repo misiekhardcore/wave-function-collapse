@@ -168,7 +168,7 @@ importers:
     dependencies:
       '@konopskidev/ui':
         specifier: ^0.2.0
-        version: 0.2.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(lucide-react@1.65.0(@types/react@19.3.0)(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@4.3.3)
+        version: 0.2.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(lucide-react@1.65.0(@types/react@19.3.0)(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@4.3.3)
       '@tailwindcss/postcss':
         specifier: 4.3.3
         version: 4.3.3
@@ -177,13 +177,13 @@ importers:
         version: 2.5.1
       cn:
         specifier: ^0.5.0
-        version: 0.5.0
+        version: 0.5.1
       lucide-react:
         specifier: ^1.63.0
         version: 1.65.0(@types/react@19.3.0)(react@19.3.1)
       next:
         specifier: 16.4.3
-        version: 16.4.3(@babel/core@7.29.7(supports-color@8.1.1))(@types/node@24.19.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.107.0)
+        version: 16.4.3(@babel/core@7.29.7(supports-color@8.1.1))(@types/node@24.19.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.107.1)
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -285,8 +285,8 @@ importers:
         specifier: 3.9.10
         version: 3.9.10
       sass:
-        specifier: 1.107.0
-        version: 1.107.0
+        specifier: 1.107.1
+        version: 1.107.1
       ts-node:
         specifier: 10.9.2
         version: 10.9.2(@types/node@24.19.2)(typescript@5.9.3)
@@ -890,8 +890,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@konopskidev/ui@0.2.0':
-    resolution: {integrity: sha512-nEngPHk/SJlYJydBJDWT7wIgZsFuu0ZSFGrV1vVd+P86FxVX9Bh0XithS8+nKD6qwUBmFh6FZFNGgLLrX5JTfw==}
+  '@konopskidev/ui@0.2.1':
+    resolution: {integrity: sha512-ncM4WdwZDkaTf2IFPomJlLa9eFm939//kGp91ftdy+Ij3uP5etpmDktdxdTnXAK0a2t60mT9IsOeQGRagZp5KA==}
     engines: {node: '>=20'}
     peerDependencies:
       '@base-ui/react': ^1.9.0
@@ -2467,8 +2467,8 @@ packages:
     resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
     engines: {node: '>=6'}
 
-  cn@0.5.0:
-    resolution: {integrity: sha512-JGEixZEpfFXm1P5uXwvEobOFLlHwIWi5v4tjd1ZwfiYmcEilkuD2l+054rvJcYCR1B+uVThHeUbgmNz1FwuxuA==}
+  cn@0.5.1:
+    resolution: {integrity: sha512-SA06SpzSWXRNrt/EQWnRpck9jEVDfVJonw8ZewiNR6pOC4U0SQ81tWaQ9/PKNPh/lWvjuY4CMlxpc8tJViiX6Q==}
     engines: {node: '>=22'}
     hasBin: true
 
@@ -4162,8 +4162,8 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  sass@1.107.0:
-    resolution: {integrity: sha512-+whPilvVNoAD57xvdIPLQT0gXo4RD1lHYw+Uw8zYHlojaeaMDxK14tc0JmEsz/XMns48h3lpypisMP+3E8eHQA==}
+  sass@1.107.1:
+    resolution: {integrity: sha512-aJ1/LvxOOb04YhmiBjzZn3jVwdHKol+OVhoMV6fFl02fF9T3i+5Mg9l/CnzqtM+NX5Jn5o3lAbs/ZJivTCLHfQ==}
     engines: {node: '>=20.19.0'}
     hasBin: true
 
@@ -5361,10 +5361,10 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  '@konopskidev/ui@0.2.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(lucide-react@1.65.0(@types/react@19.3.0)(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@4.3.3)':
+  '@konopskidev/ui@0.2.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(lucide-react@1.65.0(@types/react@19.3.0)(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@4.3.3)':
     dependencies:
       class-variance-authority: 0.7.1
-      cn: 0.5.0
+      cn: 0.5.1
       radix-ui: 1.8.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
@@ -6935,7 +6935,7 @@ snapshots:
 
   clsx@2.1.1: {}
 
-  cn@0.5.0: {}
+  cn@0.5.1: {}
 
   co@4.6.0: {}
 
@@ -8521,7 +8521,7 @@ snapshots:
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
 
-  next@16.4.3(@babel/core@7.29.7(supports-color@8.1.1))(@types/node@24.19.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.107.0):
+  next@16.4.3(@babel/core@7.29.7(supports-color@8.1.1))(@types/node@24.19.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.107.1):
     dependencies:
       '@next/env': 16.4.3
       '@swc/helpers': 0.5.23
@@ -8540,7 +8540,7 @@ snapshots:
       '@next/swc-linux-x64-musl': 16.4.3
       '@next/swc-win32-arm64-msvc': 16.4.3
       '@next/swc-win32-x64-msvc': 16.4.3
-      sass: 1.107.0
+      sass: 1.107.1
       sharp: 0.35.5(@types/node@24.19.2)
     transitivePeerDependencies:
       - '@babel/core'
@@ -8984,7 +8984,7 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  sass@1.107.0:
+  sass@1.107.1:
     dependencies:
       chokidar: 5.0.0
       immutable: 5.1.9
