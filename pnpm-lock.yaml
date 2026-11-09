@@ -167,8 +167,8 @@ importers:
   .:
     dependencies:
       '@konopskidev/ui':
-        specifier: ^0.2.0
-        version: 0.2.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(lucide-react@1.67.0(@types/react@19.3.0)(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@4.3.4)
+        specifier: ^0.5.0
+        version: 0.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(lucide-react@1.67.0(@types/react@19.3.0)(react@19.3.1))(next-themes@0.4.6(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@4.3.4)
       '@tailwindcss/postcss':
         specifier: 4.3.4
         version: 4.3.4
@@ -890,8 +890,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@konopskidev/ui@0.2.1':
-    resolution: {integrity: sha512-ncM4WdwZDkaTf2IFPomJlLa9eFm939//kGp91ftdy+Ij3uP5etpmDktdxdTnXAK0a2t60mT9IsOeQGRagZp5KA==}
+  '@konopskidev/ui@0.5.1':
+    resolution: {integrity: sha512-AN5iBbaMU0aSYkV9AiIciUJnajLjxb+lx4Gg5k3IKy3iZRBJuR7BM9/J99irrY5nOGNbQeuVFvMvsA9XkXRhLA==}
     engines: {node: '>=20'}
     peerDependencies:
       '@base-ui/react': ^1.9.0
@@ -900,6 +900,7 @@ packages:
       embla-carousel-react: ^8.6.0
       input-otp: ^1.5.0
       lucide-react: '>=0.4 <2'
+      next-themes: ^0.4.0
       react: ^19.0.0
       react-day-picker: ^10.0.2
       react-dom: ^19.0.0
@@ -5360,10 +5361,11 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  '@konopskidev/ui@0.2.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(lucide-react@1.67.0(@types/react@19.3.0)(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@4.3.4)':
+  '@konopskidev/ui@0.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(lucide-react@1.67.0(@types/react@19.3.0)(react@19.3.1))(next-themes@0.4.6(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@4.3.4)':
     dependencies:
       class-variance-authority: 0.7.1
       cn: 0.5.2
+      next-themes: 0.4.6(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       radix-ui: 1.8.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
