@@ -22,10 +22,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v6.1.0
 
       - name: Install pnpm and Node.js
-        uses: pnpm/setup@v2.0.2
+        uses: pnpm/setup@v2.1.0
         with:
           runtime: node@24
           cache: true
@@ -44,10 +44,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v6.1.0
 
       - name: Install pnpm and Node.js
-        uses: pnpm/setup@v2.0.2
+        uses: pnpm/setup@v2.1.0
         with:
           runtime: node@24
           cache: true
