@@ -1,4 +1,7 @@
 import { calculateOptions } from './calculateOptions';
+import { getTileSet } from './tileSets';
+
+const tiles = getTileSet('wires').tiles;
 
 describe('calculateOptions', () => {
   it('should return the next grid with updated options', () => {
@@ -9,7 +12,7 @@ describe('calculateOptions', () => {
       { col: 1, row: 1, collapsed: true, options: [2] },
     ];
     const cols1 = 2;
-    const result1 = calculateOptions(grid1, cols1);
+    const result1 = calculateOptions(grid1, cols1, tiles);
     expect(result1).toEqual([
       { col: 0, row: 0, collapsed: true, options: [0] },
       { col: 1, row: 0, collapsed: true, options: [2] },
@@ -24,7 +27,7 @@ describe('calculateOptions', () => {
       { col: 1, row: 1, collapsed: true, options: [2] },
     ];
     const cols2 = 2;
-    const result2 = calculateOptions(grid2, cols2);
+    const result2 = calculateOptions(grid2, cols2, tiles);
     expect(result2).toEqual([
       { col: 0, row: 0, collapsed: false, options: [0, 1, 2, 3] },
       { col: 1, row: 0, collapsed: true, options: [2] },
@@ -39,7 +42,7 @@ describe('calculateOptions', () => {
       { col: 1, row: 1, collapsed: false, options: [0, 1, 2, 3] },
     ];
     const cols3 = 2;
-    const result3 = calculateOptions(grid3, cols3);
+    const result3 = calculateOptions(grid3, cols3, tiles);
     expect(result3).toEqual([
       { col: 0, row: 0, collapsed: false, options: [0, 1, 2, 3] },
       { col: 1, row: 0, collapsed: false, options: [0, 1, 2, 3] },

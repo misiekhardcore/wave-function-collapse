@@ -1,14 +1,16 @@
 'use client';
 
-import { CanvasGrid, PatternControls, Stage, TilesPreview } from '@/components';
+import { CanvasGrid, PatternControls, Stage, TileSetPicker, TilesPreview } from '@/components';
 import { TILE_SIZE, usePatternGenerator } from '@/hooks';
-import { getElapsedTime, tiles } from '@/lib';
+import { getElapsedTime } from '@/lib';
 
 export default function Home() {
   const {
     grid,
     columns,
     rows,
+    tileSet,
+    setTileSet,
     status,
     isRunning,
     isComplete,
@@ -28,6 +30,7 @@ export default function Home() {
   return (
     <main className="mx-auto grid w-full max-w-7xl flex-1 gap-4 px-4 py-6 sm:px-6 lg:grid-cols-[20rem_minmax(0,1fr)] lg:items-start lg:gap-6">
       <div className="flex flex-col gap-4">
+        <TileSetPicker value={tileSet.id} onChange={setTileSet} />
         <PatternControls
           columns={columns}
           rows={rows}
@@ -48,9 +51,15 @@ export default function Home() {
           collapsedTiles={collapsedTiles}
           totalTiles={totalTiles}
         >
-          <CanvasGrid ref={canvasRef} grid={grid} cols={columns} tileSize={TILE_SIZE} />
+          <CanvasGrid
+            ref={canvasRef}
+            grid={grid}
+            cols={columns}
+            tileSize={TILE_SIZE}
+            tileSet={tileSet}
+          />
         </Stage>
-        <TilesPreview tiles={tiles} />
+        <TilesPreview key={tileSet.id} tileSet={tileSet} />
       </div>
     </main>
   );

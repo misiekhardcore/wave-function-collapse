@@ -1,4 +1,7 @@
 import { collapseGrid } from './collapseGrid';
+import { getTileSet } from './tileSets';
+
+const tiles = getTileSet('wires').tiles;
 
 describe('collapseGrid', () => {
   it('should return the next grid with a random tile collapsed', () => {
@@ -9,7 +12,7 @@ describe('collapseGrid', () => {
       { col: 1, row: 1, collapsed: false, options: [0, 1] },
     ];
     const cols = 2;
-    const result = collapseGrid(grid, cols);
+    const result = collapseGrid(grid, cols, tiles);
     expect(result.slice(0, 3)).toEqual([
       { col: 0, row: 0, collapsed: false, options: [0, 1, 2, 3] },
       { col: 0, row: 1, collapsed: false, options: [0, 1, 2, 3] },

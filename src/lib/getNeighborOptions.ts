@@ -1,8 +1,11 @@
-import type { TileObject } from '../types';
+import type { Tile, TileObject } from '../types';
 
-import { tiles } from './tiles';
-
-export function getTopOptions(tileIndex: number, grid: TileObject[], cols: number): number[] {
+export function getTopOptions(
+  tileIndex: number,
+  grid: TileObject[],
+  cols: number,
+  tiles: Tile[]
+): number[] {
   const neighborIndex = tileIndex - cols >= 0 ? tileIndex - cols : undefined;
   if (neighborIndex === undefined) return [];
   const northNeighbor = grid[neighborIndex];
@@ -10,7 +13,12 @@ export function getTopOptions(tileIndex: number, grid: TileObject[], cols: numbe
   return tiles[northNeighbor.options[0]].bottom;
 }
 
-export function getRightOptions(tileIndex: number, grid: TileObject[], cols: number): number[] {
+export function getRightOptions(
+  tileIndex: number,
+  grid: TileObject[],
+  cols: number,
+  tiles: Tile[]
+): number[] {
   const neighborIndex = (tileIndex % cols) + 1 < cols ? tileIndex + 1 : undefined;
   if (neighborIndex === undefined) return [];
   const eastNeighbor = grid[neighborIndex];
@@ -18,7 +26,12 @@ export function getRightOptions(tileIndex: number, grid: TileObject[], cols: num
   return tiles[eastNeighbor.options[0]].left;
 }
 
-export function getBottomOptions(tileIndex: number, grid: TileObject[], cols: number): number[] {
+export function getBottomOptions(
+  tileIndex: number,
+  grid: TileObject[],
+  cols: number,
+  tiles: Tile[]
+): number[] {
   const neighborIndex = tileIndex + cols < grid.length ? tileIndex + cols : undefined;
   if (neighborIndex === undefined) return [];
   const southNeighbor = grid[neighborIndex];
@@ -26,7 +39,12 @@ export function getBottomOptions(tileIndex: number, grid: TileObject[], cols: nu
   return tiles[southNeighbor.options[0]].top;
 }
 
-export function getLeftOptions(tileIndex: number, grid: TileObject[], cols: number): number[] {
+export function getLeftOptions(
+  tileIndex: number,
+  grid: TileObject[],
+  cols: number,
+  tiles: Tile[]
+): number[] {
   const neighborIndex = (tileIndex % cols) - 1 >= 0 ? tileIndex - 1 : undefined;
   if (neighborIndex === undefined) return [];
   const westNeighbor = grid[neighborIndex];

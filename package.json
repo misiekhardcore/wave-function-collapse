@@ -32,6 +32,7 @@
     "lint": "pnpm eslint && pnpm prettier",
     "lint:fix": "pnpm eslint:fix && pnpm prettier:fix",
     "prepare": "husky",
+    "tiles": "jiti scripts/generate-tiles.ts",
     "test": "jest",
     "test:watch": "jest --watch"
   },

@@ -10,13 +10,14 @@ import {
   useSyncExternalStore,
 } from 'react';
 
-import { tiles } from '@/lib';
-import type { TileObject } from '@/types';
+import { getTileArtSrc } from '@/lib';
+import type { TileObject, TileSet } from '@/types';
 
 type CanvasGridProps = {
   grid: TileObject[];
   cols: number;
   tileSize: number;
+  tileSet: TileSet;
 };
 
 type CanvasPalette = {
@@ -76,7 +77,7 @@ function readPalette(): CanvasPalette {
 }
 
 export const CanvasGrid = forwardRef<HTMLCanvasElement, CanvasGridProps>(function CanvasGrid(
-  { grid, cols, tileSize },
+  { grid, cols, tileSize, tileSet },
   forwardedRef
 ) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -88,15 +89,17 @@ export const CanvasGrid = forwardRef<HTMLCanvasElement, CanvasGridProps>(functio
   const [loadedTiles, setLoadedTiles] = useState(0);
   const rows = grid.length / cols;
 
+  // Sprites belong to the selected set, so switching sets discards them and the
+  // draw effect below repaints from the new art (via the load counter).
   const images = useMemo(() => {
     if (typeof window === 'undefined') return [];
 
-    return tiles.map((tile) => {
+    return tileSet.tiles.map((tile) => {
       const image = new window.Image();
-      image.src = `/tiles/${tile.id}.png`;
+      image.src = getTileArtSrc(tileSet.id, tile.id);
       return image;
     });
-  }, []);
+  }, [tileSet]);
 
   // Tiles finish loading after the first paint, so each finished image bumps a
   // counter that re-runs the draw. The previous implementation returned from the

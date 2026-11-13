@@ -49,9 +49,10 @@ An interactive **Wave Function Collapse algorithm** implementation and visualiza
 
 ### Tile System
 
-- ⚙️ **10 unique tile types** with complex neighbor compatibility rules
-- 🔗 Each tile defines which tiles can connect on all 4 sides (top, right, bottom, left)
-- 👁️ Interactive preview panel showing selected tile and compatible neighbors
+- ⚙️ **Five tile sets** the user can switch between: **Wires** (11 tiles), **PCB** (45, green traces with 45° variants and terminal pads, plus microcontrollers in 3 × 3 and 5 × 3 footprints), **Maze** (16), **Quilt** (27) and **Terrain** (35 land / beach / water)
+- 🔗 Each tile is described by the label on its four sides; the solver derives every compatible neighbor from those labels
+- 👁️ Interactive preview panel showing the selected tile and the tiles allowed on each side
+- 🖼️ Tile art is generated from the same edge data with `pnpm tiles`
 
 ### Developer Experience
 
@@ -80,6 +81,7 @@ wfc/
 │   │   ├── Stage/                # Status badge, progress readout and canvas surface
 │   │   ├── ThemeProvider/        # next-themes provider
 │   │   ├── ThemeToggle/          # Light / system / dark switch
+│   │   ├── TileSetPicker/        # Preset dropdown (Wires, PCB, Maze, Quilt, Terrain)
 │   │   └── TilesPreview/
 │   │       └── TilesPreview.tsx  # Tile selector + neighbor compatibility diagram
 │   ├── hooks/
@@ -90,10 +92,13 @@ wfc/
 │   │   ├── calculateOptions.ts    ← Constraint propagation solver
 │   │   ├── findTilesIndicesWithLeastOptions.ts  ← MRV heuristic implementation
 │   │   ├── getNeighborOptions.ts  ← Tile compatibility checker
+│   │   ├── tileSets.ts            ← Tile set definitions + adjacency builder
 │   │   └── ...utils               ← Helper functions (random pick, etc.)
-│   ├── types.ts                  # TypeScript interfaces: Tile, TileObject
-│   └── tiles.ts                  ← 10 tile definitions with connectivity rules
-├── docs/                          # API documentation (TODO)
+│   └── types.ts                  # TypeScript interfaces: Tile, TileSet, TileObject
+├── scripts/
+│   └── generate-tiles.ts         # Writes the PNGs for every set (`pnpm tiles`)
+├── public/tiles/                  # Per-set tile art: <set>/<id>.png
+├── docs/                          # API documentation
 └── tests/
     ├── __image_snapshots__/       ✅ Visual regression test images
 ```
@@ -153,17 +158,19 @@ pnpm prettier:fix                  # Prettier auto-format        │    findTile
 
 ## 📁 Tile Definitions (Sample)
 
-Each tile defines compatible neighbors for all four sides:
+Every tile is declared as the label on each of its four sides. `createTiles` turns those labels into the adjacency lists the solver reads: two tiles may sit side by side when the labels that meet are equal, so a label used on one side is always available for a neighbor to match on the other side.
 
 ```typescript
-// Example: Tile ID 0 compatibility rules
-top: [0, 1, 6, 7, 8]; // Can connect to these tiles above
-right: [0, 2, 5, 8, 9];
-bottom: [0, 3, 6, 9, 10];
-left: [0, 4, 5, 7, 10]; // Can connect to these tiles on left
+// A tile from the wire set: the trace leaves on every side but the right one
+{ top: 'wire', right: 'open', bottom: 'wire', left: 'wire' }
+
+// Derived compatibility: only tiles with `wire` on their bottom fit above it
+top: [2, 3, 4, 5, 9, 10];
 ```
 
 The algorithm ensures that when placing a tile at position `(row, col)`, its edges must be compatible with already-placed neighboring tiles.
+
+A label carried by exactly two tiles on opposite sides acts as a **seam**: it glues a multi-tile structure together. The PCB microcontrollers are packages of 3 × 3 or 5 × 3 parts joined by one seam per interior edge, and `canPlaceTile` only accepts one when all of its cells fit, so a package is always placed whole.
 
 ## 🎨 UI Controls Explained
 
@@ -175,6 +182,7 @@ The algorithm ensures that when placing a tile at position `(row, col)`, its edg
 | **Restart**                    | Reset to the current size with fresh seed tiles (also cancels a run in flight)  |
 | **PNG**                        | Save the completed grid as an image; disabled until the pattern is solved       |
 | **Theme switch**               | Pin light or dark, or follow the operating system                               |
+| **Tile set**                   | Switch between the Wires, Maze, Quilt and Terrain rule sets                     |
 | **Tile picker**                | Inspect a tile and the tiles allowed on each of its four sides                  |
 
 ## 📊 Performance Benchmarks
@@ -212,29 +220,31 @@ _Measured on modern desktop browsers with CanvasKit optimization enabled._
 - **Husky + lint-staged** — Git hooks that validate before committing
 - **ts-node + jiti** — Fast TypeScript execution in development
 
-## 🧩 Extending the Tile Set
+## 🧩 Extending the Tile Sets
 
-Want to add custom tiles? Extend `src/lib/tiles.ts`:
-
-```typescript
-// src/lib/customTiles.ts
-import { Tile } from '@/types';
-
-export const myCustomTile: Tile = {
-  id: 10,
-  top: [0, 2], // Only compatible with tiles 0 and 2 above
-  right: [4, 5, 8],
-  bottom: [3, 7],
-  left: [6, 9],
-};
-```
-
-Then use in the main tile array:
+Add a preset by describing its tiles' edges in `src/lib/tileSets.ts` and letting `createTiles` derive the rules:
 
 ```typescript
-import { myCustomTile } from './customTiles'; // ...
-tiles.push(myCustomTile);
+const CUSTOM_SPECS = [
+  { top: 'wire', right: 'open', bottom: 'wire', left: 'open' },
+  { top: 'open', right: 'wire', bottom: 'open', left: 'wire' },
+  // optional: art variant and weight
+  { top: 'wire', right: 'wire', bottom: 'open', left: 'open', art: 'diagonal', weight: 0.5 },
+];
+
+// src/lib/tileSets.ts
+{ id: 'custom', name: 'Custom', description: '…', tiles: createTiles(CUSTOM_SPECS) },
 ```
+
+`art` only affects drawing; `weight` lowers how often a tile is collapsed into (default 1), which is how the PCB's multi-tile microcontrollers stay sparse.
+
+Then:
+
+1. add the id to `TileSetId` in `src/types.ts`,
+2. add a painter for it to `scripts/generate-tiles.ts`,
+3. run `pnpm tiles` to write `public/tiles/custom/<id>.png`, and bump `TILE_ART_VERSION` in `src/lib/tileArt.ts` so browsers and image caches pick up the new art.
+
+The preset shows up in the **Tile set** dropdown automatically.
 
 ## 📚 Algorithm Reference Implementation Notes
 
@@ -246,7 +256,7 @@ tiles.push(myCustomTile);
 
 ### Planned Improvements
 
-- [ ] Multiple tile set presets (pixel art styles, organic patterns)
+- [x] Multiple tile set presets (pixel art styles, organic patterns)
 - [ ] Seed-based reproducibility for sharing specific results
 - [ ] Custom pattern constraints and user-defined rules
 - [ ] Animation playback controls in real-time mode
@@ -278,9 +288,11 @@ GitHub: [@misiekhardcore](https://github.com/misiekhardcore)
 ### `src/lib/index.ts` Exports
 
 ```typescript
-collapseGrid(grid, cols): TileObject[]  // Collapse one step of the algorithm
-generateInitialGrid(seedCount, cols, rows): TileObject[]  // Initialize grid with seed tiles
-tiles: ReadonlyArray<Tile>              // All available tile definitions (10 total)
+collapseGrid(grid, cols, tiles): TileObject[]  // Collapse one step of the algorithm
+generateInitialGrid(seedCount, cols, rows, tiles): TileObject[]  // Initialize grid with seed tiles
+tileSets: ReadonlyArray<TileSet>       // Five presets, 11–35 tiles each
+getTileSet(id): TileSet                 // Look a preset up by id
+DEFAULT_TILE_SET_ID: TileSetId          // 'wires'
 getElapsedTime(startTime?: number, endTime?: number): string
 ```
 
