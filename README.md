@@ -4,7 +4,7 @@ An interactive **Wave Function Collapse algorithm** implementation and visualiza
 
 ![WFC Algorithm Visualization](https://img.shields.io/badge/WF-Algorithm-blue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9+-blueviolet?logo=typescript)]()
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9+-blueviolet?logo=typescript)](<>)
 
 ## 🎯 What is Wave Function Collapse?
 
@@ -179,11 +179,11 @@ The algorithm ensures that when placing a tile at position `(row, col)`, its edg
 
 ## 📊 Performance Benchmarks
 
-| Grid Size      | Avg Completion Time | Memory Usage |
+| Grid Size | Avg Completion Time | Memory Usage |
 | -------------- | ------------------- | ------------ | --- | -------------------- | ---------------- | ---------- |
-| 10×8 (small)   | ~45ms               | <2MB heap    |
-| 30×20 (medium) | ~1.2s               | ~8MB heap    |     | **100×70** (default) | **~2–3 seconds** | ~15MB heap |
-| 90×70 (large)  | ~8–12s              | ~25MB heap   |
+| 10×8 (small) | ~45ms | <2MB heap |
+| 30×20 (medium) | ~1.2s | ~8MB heap | | **100×70** (default) | **~2–3 seconds** | ~15MB heap |
+| 90×70 (large) | ~8–12s | ~25MB heap |
 
 _Measured on modern desktop browsers with CanvasKit optimization enabled._
 

@@ -25,6 +25,7 @@
 - [ ] Tests only (
       e.g., adding missing tests, refining existing test cases).
 - [ ] Documentation update.
+
 </details>
 
 ---
@@ -43,6 +44,7 @@
 ### If this is a feature/bugfix:
 
 - [ ] I've added or updated appropriate unit tests for new functionality.
+
 </details>
 
 ---
