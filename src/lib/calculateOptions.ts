@@ -1,4 +1,4 @@
-import type { TileObject } from '@/types';
+import type { Tile, TileObject } from '@/types';
 
 import { getCommonOptions } from './getCommonOptions';
 import {
@@ -8,7 +8,7 @@ import {
   getTopOptions,
 } from './getNeighborOptions';
 
-export function calculateOptions(grid: TileObject[], cols: number): TileObject[] {
+export function calculateOptions(grid: TileObject[], cols: number, tiles: Tile[]): TileObject[] {
   for (let i = 0; i < grid.length; i++) {
     if (grid[i].collapsed) {
       continue;
@@ -19,10 +19,10 @@ export function calculateOptions(grid: TileObject[], cols: number): TileObject[]
       continue;
     }
 
-    const topOptions = getTopOptions(i, grid, cols);
-    const rightOptions = getRightOptions(i, grid, cols);
-    const bottomOptions = getBottomOptions(i, grid, cols);
-    const leftOptions = getLeftOptions(i, grid, cols);
+    const topOptions = getTopOptions(i, grid, cols, tiles);
+    const rightOptions = getRightOptions(i, grid, cols, tiles);
+    const bottomOptions = getBottomOptions(i, grid, cols, tiles);
+    const leftOptions = getLeftOptions(i, grid, cols, tiles);
     const commonOptions = getCommonOptions(
       grid[i].options,
       topOptions,
