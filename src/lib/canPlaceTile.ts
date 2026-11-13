@@ -64,12 +64,47 @@ function neighbourIndex(index: number, side: Side, count: number, cols: number):
 }
 
 /**
+ * True when the neighbours outside a package accept the package's bare-board
+ * sides. A cell beside the package may already be decided, in which case it must
+ * carry the same label on the side they share; an undecided cell only needs one
+ * option that does.
+ */
+function ringAccepts(
+  expected: Map<number, number>,
+  grid: TileObject[],
+  cols: number,
+  tiles: Tile[]
+): boolean {
+  for (const [cellIndex, partId] of expected) {
+    const part = tiles[partId];
+
+    for (const side of SIDES) {
+      const neighbour = neighbourIndex(cellIndex, side, grid.length, cols);
+      if (neighbour === -1 || expected.has(neighbour)) continue;
+
+      const label = part.edges[side];
+      const opposite = OPPOSITE_SIDE[side];
+      const cell = grid[neighbour];
+
+      if (cell.collapsed) {
+        if (tiles[cell.options[0]].edges[opposite] !== label) return false;
+      } else if (!cell.options.some((option) => tiles[option].edges[opposite] === label)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+/**
  * True when the tile can be placed at the index without splitting a package.
  *
  * Every cell the package would occupy must still be open and must still accept
- * its part, and the package must sit inside the board. A structure either fits
- * whole or is not chosen at all, which keeps chip packages from turning into
- * half-built blocks.
+ * its part, the board around the package must share its bare-board labels, and
+ * the package must sit inside the board. A structure either fits whole or is not
+ * chosen at all, which keeps chip packages from turning into half-built blocks
+ * or stranding the tiles around them.
  */
 export function canPlaceTile(
   tileId: number,
@@ -99,13 +134,21 @@ export function canPlaceTile(
         continue;
       }
 
-      if (grid[neighbour].collapsed) return false;
-      if (!grid[neighbour].options.includes(partnerId)) return false;
+      const cell = grid[neighbour];
+
+      // A partner that is already decided must be the right part; one that is
+      // still open only needs to offer it. This is what lets a package collapse
+      // one part at a time once it has been started.
+      if (cell.collapsed) {
+        if (cell.options[0] !== partnerId) return false;
+      } else if (!cell.options.includes(partnerId)) {
+        return false;
+      }
 
       expected.set(neighbour, partnerId);
       pending.push(neighbour);
     }
   }
 
-  return true;
+  return ringAccepts(expected, grid, cols, tiles);
 }
