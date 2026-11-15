@@ -33,18 +33,14 @@ export type Tile = {
    */
   edges: TileEdges;
   /**
-   * Relative chance of being picked when collapsing, default 1. Weighed tiles
-   * keep rare structures (such as chip packages) sparse.
+   * Frequency of every neighbour pair, keyed by the side the neighbour is on and
+   * then by that neighbour's tile id. A tile at a cell is weighed by the mean of
+   * the pairs already settled around it, so the number on a pair is that pair's
+   * share — write the same number on every pair of a tile that should be equally
+   * likely everywhere, and one that should be rare everywhere is rare beside
+   * every neighbour it allows.
    */
-  weight?: number;
-  /**
-   * Weight of a single neighbour pair, default 1, keyed by the side the
-   * neighbour is on and then by that neighbour's tile id. It multiplies the
-   * prior once the neighbour is decided, so the same tile can be common beside
-   * one neighbour and rare beside another even when both carry the label of the
-   * side that meets them.
-   */
-  pairWeights?: Partial<Record<keyof TileEdges, Record<number, number>>>;
+  pairWeights: Record<keyof TileEdges, Record<number, number>>;
 };
 
 export type TileSetId = 'wires' | 'pcb' | 'maze' | 'quilt' | 'terrain';

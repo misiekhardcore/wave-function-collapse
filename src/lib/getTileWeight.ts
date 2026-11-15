@@ -12,30 +12,50 @@ function neighbourIndex(index: number, side: Side, count: number, cols: number):
   return index % cols < cols - 1 ? index + 1 : -1;
 }
 
+/** Mean of every pair a tile declares, cached on the tile itself. */
+const averages = new WeakMap<Tile, number>();
+
 /**
- * The weight the tile carries at one cell, given which tiles are already
- * settled around it.
+ * What a tile weighs where nothing around it is settled yet: the mean of every
+ * pair it allows. A tile that is equally likely beside every neighbour it
+ * accepts therefore carries that one number everywhere.
+ */
+export function getAverageWeight(tile: Tile): number {
+  const cached = averages.get(tile);
+  if (cached !== undefined) return cached;
+
+  const weights = SIDES.flatMap((side) => Object.values(tile.pairWeights[side]));
+  const mean =
+    weights.length > 0 ? weights.reduce((sum, weight) => sum + weight, 0) / weights.length : 1;
+
+  averages.set(tile, mean);
+
+  return mean;
+}
+
+/**
+ * The weight the tile carries at one cell: the mean of the pairs already settled
+ * around it. A side whose neighbour is still open, or a side at the edge of the
+ * board, says nothing — and a cell with nothing settled around it falls back to
+ * the tile's overall mean.
  *
- * A tile's `weight` is its prior, and every neighbour pair it declares a weight
- * for multiplies that prior once that neighbour is decided — so the same tile
- * can be common beside one neighbour and rare beside another, even when both
- * carry the label that meets it. Pairs the tile says nothing about, and sides
- * whose neighbour is still open, leave the weight alone; a set that declares no
- * pair weights is weighed by its priors alone.
+ * Weighting by the mean rather than the product keeps a pair's number meaningful
+ * on its own: four neighbours do not make a tile four times rarer than one.
  */
 export function getTileWeight(tile: Tile, index: number, grid: TileObject[], cols: number): number {
-  const prior = Math.max(0, tile.weight ?? 1);
-  const pairs = tile.pairWeights;
+  let total = 0;
+  let settled = 0;
 
-  if (!pairs) return prior;
-
-  return SIDES.reduce((weight, side) => {
+  for (const side of SIDES) {
     const neighbour = neighbourIndex(index, side, grid.length, cols);
-    if (neighbour === -1) return weight;
+    if (neighbour === -1) continue;
 
     const cell = grid[neighbour];
-    if (!cell.collapsed) return weight;
+    if (!cell.collapsed) continue;
 
-    return weight * Math.max(0, pairs[side]?.[cell.options[0]] ?? 1);
-  }, prior);
+    total += tile.pairWeights[side][cell.options[0]] ?? 1;
+    settled++;
+  }
+
+  return settled === 0 ? getAverageWeight(tile) : total / settled;
 }

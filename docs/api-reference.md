@@ -20,7 +20,7 @@ The heart of the WFC algorithm — performs one iteration step.
  *
  * @param grid - Current state of all tiles with their options and collapsed status
  * @param cols - Number of columns in the grid (used for neighbor calculations)
- * @param tiles - Tile definitions of the active set (side labels + weights)
+ * @param tiles - Tile definitions of the active set (side labels + neighbour lists)
  * @returns Updated tile states after one collapse step, or early termination if stuck
  */
 export function collapseGrid(grid: TileObject[], cols: number, tiles: Tile[]): TileObject[];
@@ -93,8 +93,7 @@ interface Tile {
   bottom: ReadonlyArray<number>;
   left: ReadonlyArray<number>;
   edges: TileEdges; // Labels the artwork is drawn from
-  weight?: number; // Prior chance of being picked, default 1
-  pairWeights?: Partial<Record<keyof TileEdges, Record<number, number>>>; // Per pair
+  pairWeights: Record<keyof TileEdges, Record<number, number>>; // Weight of every pair
 }
 ```
 
@@ -135,11 +134,10 @@ The five bundled sets — `wires` (11 tiles), `pcb` (45), `maze` (16), `quilt` (
     }
   ]
 }
-```A tile is its four labels, its four neighbour lists and two optional weights. A side is either a list of ids — every pair weighed alike — or a map from id to that pair's weight:
+```A tile is its four labels and its four neighbour lists. A side is either a list of ids — every pair weighed alike — or a map from id to that pair's weight, which is the only place frequency lives:
 
 ```json
 { "top": "land", "right": "beach", "bottom": "land", "left": "land",
-  "weight": 1.5,
   "neighbours": {
     "top": [7, 9],
     "right": { "12": 0.25, "31": 3 },
@@ -148,11 +146,13 @@ The five bundled sets — `wires` (11 tiles), `pcb` (45), `maze` (16), `quilt` (
   } }
 ````
 
-That right side makes the tile a quarter as likely when tile 12 is on its right and three times as likely when tile 31 is, even if those two carry the same right-hand label; the lists all weigh one. `weight` is the prior — how common the tile is anywhere — and a pair weight multiplies it once that neighbour is decided. A pair left at 1, a side whose neighbour is still open, or a tile with no pair weights at all leaves the prior alone.
+That right side makes the tile a quarter as likely when tile 12 is on its right and three times as likely when tile 31 is, even if those two carry the same right-hand label; the lists all weigh one. Frequency is entirely in those numbers: a tile that should be equally likely beside every neighbour it accepts carries the same number on every pair, which is how the PCB's microcontrollers stay sparse (0.2 and 0.3 everywhere) while solid land weighs 140.
+
+At a cell, a tile is weighed by the **mean** of the pairs already settled around it, and by the mean of all its pairs where nothing is. Averaging rather than multiplying keeps a number meaningful on its own: four decided neighbours weigh a tile what one of its pairs says, not that number to the fourth power.
 
 The labels are what the artwork is drawn from, so a set cannot describe a picture its rules contradict: the loader rejects a pair whose labels disagree. It also rejects a side that is missing or names a tile outside the set, an id listed twice, a weight that is not positive, and a pair only one of the two tiles names. The tile's array position is its id. `src/lib/tileSets.ts` loads the files, validates them, and exposes `tileSets`, `getTileSet(id)` and `DEFAULT_TILE_SET_ID` (`'wires'`).
 
-`pcb` draws green copper traces on soldermask. A corner bends through the centre, a straight holds its line, three or more traces meet at a via, and a tile with a single trace ends in a silver pad — silver appears only in those round pads. Every one of those looks is read from the labels: one trace side makes a terminal, so no flag is needed. Most of the remaining tiles build microcontrollers: a 3 × 3 square and a 5 × 3 rectangle, one part per cell, joined by unique `chip:<package>:<cell>|<cell>` seam labels so a package can only come out assembled, with pin legs drawn in the clearance around every board-facing edge and a die on the part standing on the middle cell of its package. Those parts are **weighted down** (`weight`), because a package costs nine or fifteen cells and would otherwise carpet the board.
+`pcb` draws green copper traces on soldermask. A corner bends through the centre, a straight holds its line, three or more traces meet at a via, and a tile with a single trace ends in a silver pad — silver appears only in those round pads. Every one of those looks is read from the labels: one trace side makes a terminal, so no flag is needed. Most of the remaining tiles build microcontrollers: a 3 × 3 square and a 5 × 3 rectangle, one part per cell, joined by unique `chip:<package>:<cell>|<cell>` seam labels so a package can only come out assembled, with pin legs drawn in the clearance around every board-facing edge and a die on the part standing on the middle cell of its package. Those parts are **weighed down** on every pair (0.2 or 0.3), because a package costs nine or fifteen cells and would otherwise carpet the board.
 
 `terrain` describes **68** assignments of `land`, `beach` and `water` to its four sides: all 81 layouts except the 13 that paint as a single thin band of one ground through the middle of the tile (sand with water on both sides, a grass strip between sand, and so on), which read as seams rather than terrain. Weighting decides the look, not the rules: solid land (140) and water (100) outrank sand, so land and sea grow into regions instead of scattering one-cell ponds; a tile that is mostly sand on three sides (3) is the shore band, and a coast with no sand at all — land and water only (1), or all three grounds in one tile (0.2) — is rare, so sand reads as a beach rather than as filler. Each tile is painted as a block: the ground most of its sides carry, with a band of another ground along every side that disagrees, so a coastline runs along the tile edges and turns at right angles rather than cutting across a tile diagonally.
 
@@ -204,8 +204,8 @@ function pickRandomArrayElement<T>(array: T[]): {
 
 ```typescript
 /**
- * Picks one of the given tile ids, honouring each tile's weight (default 1)
- * and, when the cell is known, its per-neighbour-pair weights.
+ * Picks one of the given tile ids, honouring the weight of the pair it would
+ * make with each neighbour already settled at the cell.
  */
 function pickWeightedTile(
   options: number[],
@@ -215,9 +215,8 @@ function pickWeightedTile(
 ```
 
 Used both for the seed tiles in `generateInitialGrid` and for every collapse in
-`collapseGrid`, which pass the cell so a tile's pair weights apply against the
-neighbours already decided there. Without a context only the priors count, so a
-set without weights behaves exactly as before.
+`collapseGrid`, which pass the cell so a tile is weighed by its settled
+neighbours. Without a context the tile's average pair decides.
 
 ---
 
@@ -225,11 +224,12 @@ set without weights behaves exactly as before.
 
 ```typescript
 /**
- * The weight a tile carries at one cell: its prior, multiplied by the weight of
- * every neighbour pair already decided around it. A pair the tile says nothing
- * about, or a side whose neighbour is still open, leaves the prior alone.
+ * The weight a tile carries at one cell: the mean of the pairs settled around
+ * it, or its overall mean when nothing is. An open side, or a side at the edge
+ * of the board, does not count.
  */
 function getTileWeight(tile: Tile, index: number, grid: TileObject[], cols: number): number;
+function getAverageWeight(tile: Tile): number;
 ```
 
 ---
@@ -277,17 +277,14 @@ export interface Tile {
   left: ReadonlyArray<number>;
   /** Label on each side; what the art is drawn from */
   edges: TileEdges;
-  /** Relative chance of being collapsed into, default 1 */
-  weight?: number;
-  /** Weight of one neighbour pair: side, then the id of the tile on that side */
-  pairWeights?: Partial<Record<keyof TileEdges, Record<number, number>>>;
+  /** Weight of every neighbour pair: side, then the id of the tile on that side */
+  pairWeights: Record<keyof TileEdges, Record<number, number>>;
 }
 
 /** A written set, as loaded from `src/tileSets/<id>.json` before it is built. */
 export type TileSpec = TileEdges & {
   /** Per side: neighbour ids, or the weight of each of them */
   neighbours: Record<keyof TileEdges, number[] | Record<number, number>>;
-  weight?: number;
 };
 
 /**

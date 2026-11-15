@@ -1,11 +1,10 @@
 import type { Tile, TileObject } from '@/types';
 
-import { getTileWeight } from './getTileWeight';
+import { getAverageWeight, getTileWeight } from './getTileWeight';
 
 /**
  * The cell a tile is being weighed for. Without it every tile is weighed by its
- * own weight; with it, the tiles' pair weights apply against the neighbours
- * already decided there.
+ * average pair; with it, by the pairs settled around that cell.
  */
 export type WeightContext = {
   index: number;
@@ -14,11 +13,12 @@ export type WeightContext = {
 };
 
 /**
- * Picks one of the given tile ids, honouring each tile's weight.
+ * Picks one of the given tile ids, honouring the weight of the pair it would
+ * make with each neighbour already settled at the cell.
  *
- * Sets that never set a weight stay uniform, exactly as before. Weighting lets a
- * set keep a rare structure — such as a chip package that needs a whole block of
- * tiles — to a chosen share of the board without changing any of its rules.
+ * The weight lives on the pair, so a set can make one tile common beside one
+ * neighbour and rare beside another without anything being inferred. Without a
+ * context the tile's average pair decides, which is what seeds use.
  */
 export function pickWeightedTile(
   options: number[],
@@ -28,7 +28,7 @@ export function pickWeightedTile(
   const weights = options.map((id) =>
     context
       ? getTileWeight(tiles[id], context.index, context.grid, context.cols)
-      : Math.max(0, tiles[id].weight ?? 1)
+      : getAverageWeight(tiles[id])
   );
   const total = weights.reduce((sum, weight) => sum + weight, 0);
 

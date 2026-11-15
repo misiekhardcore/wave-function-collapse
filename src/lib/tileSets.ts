@@ -14,7 +14,6 @@ export type TileNeighbours = number[] | Record<number, number>;
 /** One tile of a set as it is written down in `src/tileSets/<id>.json`. */
 export type TileSpec = TileEdges & {
   neighbours: Record<Side, TileNeighbours>;
-  weight?: number;
 };
 
 export type TileSetData = {
@@ -44,11 +43,10 @@ export function neighboursOf(side: TileNeighbours): [number, number][] {
 /**
  * Turns a written set into tiles with adjacency lists.
  *
- * What may meet what is written down in `neighbours`, so the rules are the data
- * and nothing is inferred from the labels the artwork is drawn from. A side
- * written as a list weighs every pair alike; a side written as an object gives
- * each pair its own weight, which multiplies the tile's own weight once that
- * neighbour is decided.
+ * What may meet what, and how often, is written down in `neighbours`, so the
+ * rules and their frequencies are the data and nothing is inferred from the
+ * labels the artwork is drawn from. A side written as a list weighs every pair
+ * alike; a side written as an object gives each pair its own weight.
  */
 export function createTiles(specs: TileSpec[]): Tile[] {
   return specs.map((spec, id) => {
@@ -57,16 +55,6 @@ export function createTiles(specs: TileSpec[]): Tile[] {
     ) as Record<Side, [number, number][]>;
 
     const ids = (side: Side) => pairs[side].map(([neighbour]) => neighbour);
-    const pairWeights: Partial<Record<Side, Record<number, number>>> = {};
-    let weighed = false;
-
-    for (const side of SIDES) {
-      const otherThanOne = pairs[side].filter(([, weight]) => weight !== 1);
-      if (otherThanOne.length === 0) continue;
-
-      pairWeights[side] = Object.fromEntries(otherThanOne);
-      weighed = true;
-    }
 
     return {
       id,
@@ -75,8 +63,9 @@ export function createTiles(specs: TileSpec[]): Tile[] {
       bottom: ids('bottom'),
       left: ids('left'),
       edges: { top: spec.top, right: spec.right, bottom: spec.bottom, left: spec.left },
-      weight: spec.weight,
-      pairWeights: weighed ? pairWeights : undefined,
+      pairWeights: Object.fromEntries(
+        SIDES.map((side) => [side, Object.fromEntries(pairs[side])])
+      ) as Record<Side, Record<number, number>>,
     };
   });
 }
@@ -94,10 +83,6 @@ export function parseTileSetData(data: unknown): TileSetData {
       if (typeof tile[side] !== 'string' || tile[side].length === 0) {
         throw new Error(`Tile ${index} of "${set.id}" has no "${side}" label.`);
       }
-    }
-
-    if (tile.weight !== undefined && !(tile.weight > 0)) {
-      throw new Error(`Tile ${index} of "${set.id}" has a weight that is not positive.`);
     }
 
     const written = tile.neighbours as Record<string, TileNeighbours> | undefined;

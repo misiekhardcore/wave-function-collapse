@@ -3,6 +3,7 @@ import { join } from 'node:path';
 
 import type { Tile } from '@/types';
 
+import { getAverageWeight } from './getTileWeight';
 import {
   createTiles,
   getTileSet,
@@ -18,6 +19,11 @@ type Side = 'top' | 'right' | 'bottom' | 'left';
 
 function artPath(setId: string, tileId: number): string {
   return join(process.cwd(), 'public', 'tiles', setId, `${tileId}.png`);
+}
+
+/** Every pair weight a tile declares. */
+function pairs(tile: Tile): number[] {
+  return SIDES.flatMap((side) => Object.values(tile.pairWeights[side]));
 }
 
 describe('tile sets', () => {
@@ -94,7 +100,7 @@ describe('tile sets', () => {
   it('assembles each PCB microcontroller from parts that only fit each other', () => {
     const parts = chipParts();
 
-    expect(parts.every((tile) => (tile.weight ?? 1) < 1)).toBe(true);
+    expect(parts.every((tile) => pairs(tile).every((weight) => weight < 1))).toBe(true);
 
     const seams = new Set(
       parts.flatMap((tile) =>
@@ -169,22 +175,26 @@ describe('tile sets', () => {
 
   it('weighs solid ground above sand so land and sea grow into regions', () => {
     const tiles = getTileSet('terrain').tiles;
-    const weight = (tile: Tile) => tile.weight ?? 1;
+    const weight = (tile: Tile) => getAverageWeight(tile);
     const kinds = (tile: Tile) => new Set(SIDES.map((side) => tile.edges[side]));
     const sandSides = (tile: Tile) => SIDES.filter((side) => tile.edges[side] === 'beach').length;
+
+    // A tile that is equally likely beside every neighbour carries one number on
+    // every pair, so its average pair is the single weight it used to declare.
+    expect(
+      tiles.every((tile) => pairs(tile).every((pair) => Math.abs(pair - weight(tile)) < 1e-9))
+    ).toBe(true);
 
     const solid = tiles.filter((tile) => kinds(tile).size === 1);
     const ground = solid.filter((tile) => tile.edges.top !== 'beach');
     const carryingSand = tiles.filter((tile) => sandSides(tile) > 0);
 
     expect(solid.map((tile) => tile.edges.top).sort()).toEqual(['beach', 'land', 'water']);
-    expect(ground.every((tile) => (tile.weight ?? 1) > 5)).toBe(true);
+    expect(ground.every((tile) => weight(tile) > 5)).toBe(true);
 
     // Sand belongs on the shore: a tile carrying it must never outrank open
     // ground, or the map fills with sand instead of land and water.
-    expect(carryingSand.every((tile) => (tile.weight ?? 1) < Math.min(...ground.map(weight)))).toBe(
-      true
-    );
+    expect(carryingSand.every((tile) => weight(tile) < Math.min(...ground.map(weight)))).toBe(true);
 
     // A shore is mostly sand, so it is far likelier than a sand-free cliff coast
     // or a tile where all three grounds meet. Solid sand is not a shore: it is a
@@ -323,8 +333,15 @@ describe('tile sets', () => {
   it('carries the weight written for a pair onto the tile', () => {
     const tiles = createTiles([tileWith({ right: { 1: 0.5 } }), tileWith()]);
 
-    expect(tiles[0].pairWeights).toEqual({ right: { 1: 0.5 } });
-    expect(tiles[1].pairWeights).toBeUndefined();
+    expect(tiles[0].pairWeights.right).toEqual({ 1: 0.5 });
+    // A side written as a list weighs every pair on it alike.
+    expect(tiles[0].pairWeights.top).toEqual({ 1: 1 });
+    expect(tiles[1].pairWeights).toEqual({
+      top: { 1: 1 },
+      right: { 1: 1 },
+      bottom: { 1: 1 },
+      left: { 1: 1 },
+    });
   });
 
   it('rejects a tile that does not say which tiles sit beside it', () => {

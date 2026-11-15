@@ -50,9 +50,9 @@ An interactive **Wave Function Collapse algorithm** implementation and visualiza
 ### Tile System
 
 - ⚙️ **Five tile sets** the user can switch between: **Wires** (11 tiles), **PCB** (45, green traces with 45° variants and terminal pads, plus microcontrollers in 3 × 3 and 5 × 3 footprints), **Maze** (16), **Quilt** (27) and **Terrain** (68 land / sand / water layouts)
-- 🗂️ Each set is a JSON file in `src/tileSets/` — four side labels for the art, four neighbour lists with optional weights, and an optional weight per tile — so a set can be edited without touching the solver
+- 🗂️ Each set is a JSON file in `src/tileSets/` — four side labels for the art and four neighbour lists, each pair carrying its own weight — so a set can be edited without touching the solver
 - 🔗 Each tile lists its allowed neighbours per side, with a weight per pair where frequency should differ; the solver reads those lists and nothing else
-- 🏝️ Terrain covers land, sand and water, weighted so ground grows into continents and seas and sand stays on the shore; every tile is painted as a block, so coastlines run along the tile edges and turn at right angles, and no layout is a single stripe of one ground down the middle
+- 🏝️ Terrain covers land, sand and water, weighed pair by pair so ground grows into continents and seas and sand stays on the shore; every tile is painted as a block, so coastlines run along the tile edges and turn at right angles, and no layout is a single stripe of one ground down the middle
 - 👁️ Interactive preview panel showing the selected tile and the tiles allowed on each side
 - 🖼️ Tile art is generated from the same edge data with `pnpm tiles`
 
@@ -254,7 +254,6 @@ Add a preset by dropping a JSON file into `src/tileSets/` and describing its til
       "right": "land",
       "bottom": "land",
       "left": "land",
-      "weight": 0.5,
       "neighbours": {
         "top": [0, 1],
         "right": [0, 1],
@@ -266,7 +265,9 @@ Add a preset by dropping a JSON file into `src/tileSets/` and describing its til
 }
 ```
 
-A tile is four labels, four neighbour lists, and two weights. A side is either a list of ids — every pair weighted alike — or a map from id to that pair's weight. `weight` is the tile's relative chance of being collapsed into anywhere, default 1, which is how the PCB's multi-tile microcontrollers stay sparse. A pair weight multiplies that prior once that neighbour is decided: the tile above is four times as likely when tile 0 is on its left and a quarter as likely when tile 1 is — even though both carry its left label. The labels are what the art is drawn from, and the loader rejects a pair whose labels disagree, or one only half of the two tiles names, so a set cannot drift into pictures its rules contradict.
+A tile is four labels and four neighbour lists. A side is either a list of ids — every pair weighed alike — or a map from id to that pair's weight, which is the only place frequency lives. `{ "0": 4, "1": 0.25 }` makes the tile four times as likely when tile 0 is on its left and a quarter as likely when tile 1 is, even though both carry its left label; write the same number on every pair of a tile that should be equally likely everywhere, which is how the PCB's multi-tile microcontrollers stay sparse (their pairs all weigh 0.2 or 0.3) while solid land weighs 140 beside everything it accepts.
+
+A tile at a cell is weighed by the mean of the pairs already settled around it, and by the mean of all its pairs where nothing is. Averaging rather than multiplying keeps a number meaningful on its own: a tile beside four neighbours weighs what one of its pairs says, instead of that number to the fourth power. The labels are what the art is drawn from, and the loader rejects a pair whose labels disagree, or one only half of the two tiles names, so a set cannot drift into pictures its rules contradict.
 
 Then:
 
