@@ -88,6 +88,8 @@ interface Tile {
   bottom: ReadonlyArray<number>;
   left: ReadonlyArray<number>;
   edges: TileEdges; // Source labels the lists were derived from
+  weight?: number; // Prior chance of being picked, default 1
+  pairWeights?: Partial<Record<keyof TileEdges, Record<number, number>>>; // Per neighbour pair
 }
 ```
 
@@ -108,7 +110,7 @@ interface Tile {
 
 The five bundled sets — `wires` (11 tiles), `pcb` (45), `maze` (16), `quilt` (27) and `terrain` (68) — are data, not code. Each one is a JSON file in `src/tileSets/`:
 
-```json
+````json
 {
   "id": "terrain",
   "name": "Terrain",
@@ -119,9 +121,17 @@ The five bundled sets — `wires` (11 tiles), `pcb` (45), `maze` (16), `quilt` (
     { "top": "beach", "right": "beach", "bottom": "beach", "left": "land", "weight": 9 }
   ]
 }
-```
+```A tile is its four side labels plus two optional weights. `weight` is its relative chance of being picked anywhere, default 1. `pairWeights` puts a weight on an individual neighbour pair — the side it happens on, then the id of the tile that sits there:
 
-A tile is its four side labels plus an optional `weight` (its relative chance of being picked, default 1). Nothing else is stored per tile: the artwork is derived from the same labels, so a tile cannot describe a picture its rules do not already imply. The tile's array position is its id, and its neighbours are **derived** from the labels — a tile accepts every tile whose opposite side carries the same label — so adding a tile never means maintaining a neighbour list. `src/lib/tileSets.ts` loads the files, validates them, and exposes `tileSets`, `getTileSet(id)` and `DEFAULT_TILE_SET_ID` (`'wires'`).
+```json
+{ "top": "land", "right": "beach", "bottom": "land", "left": "land",
+  "weight": 1.5,
+  "pairWeights": { "right": { "12": 0.25, "31": 3 } } }
+````
+
+This tile is a quarter as likely when tile 12 is on its right, and three times as likely when tile 31 is, even if those two carry the same right-hand label. The multipliers apply only to neighbours that are already decided; a pair the tile does not mention, or a side whose neighbour is still open, leaves the weight alone. Everything about frequency is therefore data: the prior covers how common a tile is anywhere, and pair weights cover how common it is beside each specific neighbour.
+
+The artwork is derived from the same labels, so a tile cannot describe a picture its rules do not already imply. The tile's array position is its id, and which pairs are _possible_ is **derived** from the labels — a tile accepts every tile whose opposite side carries the same label — so adding a tile never means maintaining a neighbour list; pair weights only rank pairs that are possible already. `src/lib/tileSets.ts` loads the files and validates them, including that every pair weight names one of the tile's four sides, an id that is in the set, a pair that can actually meet, and a positive factor. It exposes `tileSets`, `getTileSet(id)` and `DEFAULT_TILE_SET_ID` (`'wires'`).
 
 `pcb` draws green copper traces on soldermask. A corner bends through the centre, a straight holds its line, three or more traces meet at a via, and a tile with a single trace ends in a silver pad — silver appears only in those round pads. Every one of those looks is read from the labels: one trace side makes a terminal, so no flag is needed. Most of the remaining tiles build microcontrollers: a 3 × 3 square and a 5 × 3 rectangle, one part per cell, joined by unique `chip:<package>:<cell>|<cell>` seam labels so a package can only come out assembled, with pin legs drawn in the clearance around every board-facing edge and a die on the part standing on the middle cell of its package. Those parts are **weighted down** (`weight`), because a package costs nine or fifteen cells and would otherwise carpet the board.
 
@@ -175,15 +185,33 @@ function pickRandomArrayElement<T>(array: T[]): {
 
 ```typescript
 /**
- * Picks one of the given tile ids, honouring each tile's weight (default 1).
- * Keeps rare structures — such as a multi-tile chip package — sparse without
- * touching any of the rules.
+ * Picks one of the given tile ids, honouring each tile's weight (default 1)
+ * and, when the cell is known, its per-neighbour-pair weights.
  */
-function pickWeightedTile(options: number[], tiles: Tile[]): number;
+function pickWeightedTile(
+  options: number[],
+  tiles: Tile[],
+  context?: { index: number; grid: TileObject[]; cols: number }
+): number;
 ```
 
 Used both for the seed tiles in `generateInitialGrid` and for every collapse in
-`collapseGrid`, so a set without weights behaves exactly as before.
+`collapseGrid`, which pass the cell so a tile's pair weights apply against the
+neighbours already decided there. Without a context only the priors count, so a
+set without weights behaves exactly as before.
+
+---
+
+### `getTileWeight` (internal)
+
+```typescript
+/**
+ * The weight a tile carries at one cell: its prior, multiplied by the weight of
+ * every neighbour pair already decided around it. A pair the tile says nothing
+ * about, or a side whose neighbour is still open, leaves the prior alone.
+ */
+function getTileWeight(tile: Tile, index: number, grid: TileObject[], cols: number): number;
+```
 
 ---
 
@@ -232,32 +260,21 @@ export interface Tile {
   edges: TileEdges;
   /** Relative chance of being collapsed into, default 1 */
   weight?: number;
+  /** Weight of one neighbour pair: side, then the id of the tile on that side */
+  pairWeights?: Partial<Record<keyof TileEdges, Record<number, number>>>;
 }
 
-export type TileEdge =
-  | 'open'
-  | 'wire'
-  | 'green'
-  | 'wall'
-  | 'color-a'
-  | 'color-b'
-  | 'color-c'
-  | 'land'
-  | 'water'
-  | ChipSeam;
-
 /**
- * Seams inside a multi-tile chip package, named after the package and the two
- * cells they join (e.g. `chip:wide:1x1|2x1`). Exactly two parts can meet across
- * one, which is what keeps a package from assembling half-built.
+ * A side label. Two sides may meet only when their labels are identical, so a
+ * label names a whole class of neighbour pairs; seams inside a multi-tile chip
+ * package are labels too (`chip:<package>:<cell>|<cell>`), carried by exactly
+ * two parts on opposite sides.
  */
-export type ChipSeam = `chip:${string}`;
-
 export type TileEdges = {
-  top: TileEdge;
-  right: TileEdge;
-  bottom: TileEdge;
-  left: TileEdge;
+  top: string;
+  right: string;
+  bottom: string;
+  left: string;
 };
 ```
 

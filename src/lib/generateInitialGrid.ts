@@ -46,7 +46,7 @@ export function generateInitialGrid(
 
     grid[index] = {
       ...grid[index],
-      options: [pickWeightedTile(placeable, tiles)],
+      options: [pickWeightedTile(placeable, tiles, { index, grid, cols })],
       collapsed: true,
     };
     seeded.push(index);

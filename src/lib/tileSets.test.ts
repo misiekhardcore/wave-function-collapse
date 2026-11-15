@@ -3,7 +3,14 @@ import { join } from 'node:path';
 
 import type { Tile } from '@/types';
 
-import { getTileSet, OPPOSITE_SIDE, SIDES, tileSets } from './tileSets';
+import {
+  createTiles,
+  getTileSet,
+  OPPOSITE_SIDE,
+  parseTileSetData,
+  SIDES,
+  tileSets,
+} from './tileSets';
 
 function artPath(setId: string, tileId: number): string {
   return join(process.cwd(), 'public', 'tiles', setId, `${tileId}.png`);
@@ -260,6 +267,49 @@ describe('tile sets', () => {
         [1, 2, 3, 6, 8, 9],
       ],
     ]);
+  });
+
+  const definition = (tiles: unknown[]) => ({
+    id: 'custom',
+    name: 'Custom',
+    description: '',
+    tiles,
+  });
+
+  const plain = { top: 'a', right: 'a', bottom: 'a', left: 'a' };
+
+  it('carries pair weights from the definition onto the tile', () => {
+    const tiles = createTiles([plain, { ...plain, pairWeights: { right: { 0: 0.5 } } }]);
+
+    expect(tiles[1].pairWeights).toEqual({ right: { 0: 0.5 } });
+  });
+
+  it('rejects a pair weight on something that is not a side', () => {
+    const tiles = [{ ...plain, pairWeights: { middle: { 0: 0.5 } } }];
+
+    expect(() => parseTileSetData(definition(tiles))).toThrow(/not one of its sides/);
+  });
+
+  it('rejects a pair weight naming a tile that is not in the set', () => {
+    const tiles = [{ ...plain, pairWeights: { right: { 9: 0.5 } } }];
+
+    expect(() => parseTileSetData(definition(tiles))).toThrow(/not in the set/);
+  });
+
+  it('rejects a pair weight on two tiles that cannot meet', () => {
+    const tiles = [
+      { ...plain, pairWeights: { right: { 1: 0.5 } } },
+      { ...plain, left: 'b' },
+    ];
+
+    expect(() => parseTileSetData(definition(tiles))).toThrow(/cannot sit on its right/);
+  });
+
+  it('rejects a pair weight that is not positive', () => {
+    const tiles = (factor: number) => [plain, { ...plain, pairWeights: { right: { 1: factor } } }];
+
+    expect(() => parseTileSetData(definition(tiles(0)))).toThrow(/not positive/);
+    expect(() => parseTileSetData(definition(tiles(-1)))).toThrow(/not positive/);
   });
 
   it('ships the expected number of tiles per set', () => {

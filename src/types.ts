@@ -11,27 +11,9 @@ export type TileObject = Position & {
 /**
  * The label of one tile edge. Two tiles may sit side by side only when the
  * labels that meet are identical, which is what the adjacency lists below
- * encode.
+ * encode. Every pair of sides that can meet is therefore identified by the
+ * label on either of them.
  */
-// /**
-//  * A seam inside a multi-tile chip package. The label names the package and the
-//  * two cells it joins, so exactly two parts can ever meet across it.
-//  */
-// export type ChipSeam = `chip:${string}`;
-
-// export type TileEdge =
-//   | 'open'
-//   | 'wire'
-//   | 'green'
-//   | 'wall'
-//   | 'color-a'
-//   | 'color-b'
-//   | 'color-c'
-//   | 'land'
-//   | 'beach'
-//   | 'water'
-//   | ChipSeam;
-
 export type TileEdges = {
   top: string;
   right: string;
@@ -55,6 +37,14 @@ export type Tile = {
    * keep rare structures (such as chip packages) sparse.
    */
   weight?: number;
+  /**
+   * Weight of a single neighbour pair, default 1, keyed by the side the
+   * neighbour is on and then by that neighbour's tile id. It multiplies the
+   * prior once the neighbour is decided, so the same tile can be common beside
+   * one neighbour and rare beside another even when both carry the label of the
+   * side that meets them.
+   */
+  pairWeights?: Partial<Record<keyof TileEdges, Record<number, number>>>;
 };
 
 export type TileSetId = 'wires' | 'pcb' | 'maze' | 'quilt' | 'terrain';

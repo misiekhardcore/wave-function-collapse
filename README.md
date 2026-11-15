@@ -50,7 +50,7 @@ An interactive **Wave Function Collapse algorithm** implementation and visualiza
 ### Tile System
 
 - ⚙️ **Five tile sets** the user can switch between: **Wires** (11 tiles), **PCB** (45, green traces with 45° variants and terminal pads, plus microcontrollers in 3 × 3 and 5 × 3 footprints), **Maze** (16), **Quilt** (27) and **Terrain** (68 land / sand / water layouts)
-- 🗂️ Each set is a JSON file in `src/tileSets/` — four side labels and an optional weight per tile — so a set can be edited without touching the solver
+- 🗂️ Each set is a JSON file in `src/tileSets/` — four side labels, an optional weight per tile and optional weights per neighbour pair — so a set can be edited without touching the solver
 - 🔗 Each tile is described by the label on its four sides; the solver derives every compatible neighbor from those labels
 - 🏝️ Terrain covers land, sand and water, weighted so ground grows into continents and seas and sand stays on the shore; every tile is painted as a block, so coastlines run along the tile edges and turn at right angles, and no layout is a single stripe of one ground down the middle
 - 👁️ Interactive preview panel showing the selected tile and the tiles allowed on each side
@@ -233,12 +233,19 @@ Add a preset by dropping a JSON file into `src/tileSets/` and describing its til
   "description": "…",
   "tiles": [
     { "top": "wire", "right": "open", "bottom": "wire", "left": "open" },
-    { "top": "wire", "right": "wire", "bottom": "open", "left": "open", "weight": 0.5 }
+    { "top": "wire", "right": "wire", "bottom": "open", "left": "open", "weight": 0.5 },
+    {
+      "top": "wire",
+      "right": "open",
+      "bottom": "wire",
+      "left": "wire",
+      "pairWeights": { "left": { "0": 4, "1": 0.25 } }
+    }
   ]
 }
 ```
 
-A tile is nothing but its labels and its `weight` — its relative chance of being collapsed into, default 1, which is how the PCB's multi-tile microcontrollers stay sparse. Its art is drawn from the same labels, so the picture can never disagree with the rules.
+A tile is its four labels plus two weights. `weight` is its relative chance of being collapsed into anywhere, default 1, which is how the PCB's multi-tile microcontrollers stay sparse. `pairWeights` puts a weight on an individual neighbour pair: the side, then the id of the tile sitting there. The tile above is four times as likely when tile 0 is on its left and a quarter as likely when tile 1 is — even though both carry its left label. Pair weights apply only once that neighbour is decided; anything unmentioned leaves the prior alone. Its art is drawn from the same labels, so the picture can never disagree with the rules.
 
 Then:
 

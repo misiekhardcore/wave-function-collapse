@@ -61,7 +61,11 @@ export function collapseGrid(grid: TileObject[], cols: number, tiles: Tile[]): T
     canPlaceTile(candidate, randomTileIndex, tilesWithNewOptions, cols, tiles)
   );
   const pool = fitting.length > 0 ? fitting : fallback.length > 0 ? fallback : candidates;
-  const tileId = pickWeightedTile(pool, tiles);
+  const tileId = pickWeightedTile(pool, tiles, {
+    index: randomTileIndex,
+    grid: tilesWithNewOptions,
+    cols,
+  });
 
   tilesWithNewOptions[randomTileIndex].collapsed = true;
   tilesWithNewOptions[randomTileIndex].options = [tileId];

@@ -9,7 +9,10 @@ import wiresData from '../tileSets/wires.json';
 type Side = keyof TileEdges;
 
 /** One tile of a set as it is written down in `src/tileSets/<id>.json`. */
-export type TileSpec = TileEdges & { weight?: number };
+export type TileSpec = TileEdges & {
+  weight?: number;
+  pairWeights?: Partial<Record<Side, Record<number, number>>>;
+};
 
 export type TileSetData = {
   id: string;
@@ -41,7 +44,7 @@ export function createTiles(specs: TileSpec[]): Tile[] {
   const idsWithLabel = (label: string, side: Side) =>
     specs.reduce<number[]>((ids, spec, id) => (spec[side] === label ? [...ids, id] : ids), []);
 
-  return specs.map(({ top, right, bottom, left, weight }, id) => ({
+  return specs.map(({ top, right, bottom, left, weight, pairWeights }, id) => ({
     id,
     top: idsWithLabel(top, 'bottom'),
     right: idsWithLabel(right, 'left'),
@@ -49,11 +52,12 @@ export function createTiles(specs: TileSpec[]): Tile[] {
     left: idsWithLabel(left, 'right'),
     edges: { top, right, bottom, left },
     weight,
+    pairWeights,
   }));
 }
 
 /** A definition is data, so a typo in it has to fail loudly and early. */
-function toTileSetData(data: unknown): TileSetData {
+export function parseTileSetData(data: unknown): TileSetData {
   const set = data as TileSetData;
 
   if (!set?.id || !set.name || !Array.isArray(set.tiles) || set.tiles.length === 0) {
@@ -70,6 +74,38 @@ function toTileSetData(data: unknown): TileSetData {
     if (tile.weight !== undefined && !(tile.weight > 0)) {
       throw new Error(`Tile ${index} of "${set.id}" has a weight that is not positive.`);
     }
+
+    for (const [side, pairs] of Object.entries(tile.pairWeights ?? {})) {
+      if (!SIDES.includes(side as Side)) {
+        throw new Error(
+          `Tile ${index} of "${set.id}" weighs a "${side}" side, which is not one of its sides.`
+        );
+      }
+
+      for (const [neighbourId, factor] of Object.entries(pairs ?? {})) {
+        const neighbour = set.tiles[Number(neighbourId)];
+        const shared = side as Side;
+
+        if (neighbour === undefined) {
+          throw new Error(
+            `Tile ${index} of "${set.id}" weighs a pair with tile ${neighbourId}, which is not in the set.`
+          );
+        }
+
+        // A pair weight on two tiles that cannot meet would be silently dead.
+        if (neighbour[OPPOSITE_SIDE[shared]] !== tile[shared]) {
+          throw new Error(
+            `Tile ${index} of "${set.id}" weighs a pair with tile ${neighbourId}, which cannot sit on its ${shared}.`
+          );
+        }
+
+        if (typeof factor !== 'number' || !(factor > 0)) {
+          throw new Error(
+            `Tile ${index} of "${set.id}" has a weight for tile ${neighbourId} on its ${shared} that is not positive.`
+          );
+        }
+      }
+    }
   }
 
   return set;
@@ -77,7 +113,7 @@ function toTileSetData(data: unknown): TileSetData {
 
 /** The order the sets are offered in. Every set is plain data in its own file. */
 const TILE_SET_DATA: TileSetData[] = [wiresData, pcbData, mazeData, quiltData, terrainData].map(
-  toTileSetData
+  parseTileSetData
 );
 
 export const DEFAULT_TILE_SET_ID: TileSetId = TILE_SET_DATA[0].id as TileSetId;

@@ -3,7 +3,7 @@ import type { Tile } from '@/types';
 import { pickWeightedTile } from './pickWeightedTile';
 
 /** Tile ids double as indexes into the array, exactly as in a tile set. */
-function tile(id: number, weight?: number): Tile {
+function tile(id: number, weight?: number, pairWeights?: Tile['pairWeights']): Tile {
   return {
     id,
     top: [],
@@ -12,6 +12,19 @@ function tile(id: number, weight?: number): Tile {
     left: [],
     edges: { top: 'open', right: 'open', bottom: 'open', left: 'open' },
     weight,
+    pairWeights,
+  };
+}
+
+/** Two cells side by side, the left one already decided as `neighbourTileId`. */
+function context(neighbourTileId: number) {
+  return {
+    index: 1,
+    cols: 2,
+    grid: [
+      { col: 0, row: 0, options: [neighbourTileId], collapsed: true },
+      { col: 1, row: 0, options: [0, 1], collapsed: false },
+    ],
   };
 }
 
@@ -49,5 +62,35 @@ describe('pickWeightedTile', () => {
     for (let draw = 0; draw < 50; draw++) {
       expect([0, 1]).toContain(pickWeightedTile([0, 1], tiles));
     }
+  });
+
+  it('should weigh a pair once that neighbour is decided', () => {
+    const tiles = [tile(0, 1, { left: { 0: 0.001 } }), tile(1, 1)];
+
+    for (let draw = 0; draw < 200; draw++) {
+      expect(pickWeightedTile([0, 1], tiles, context(0))).toBe(1);
+    }
+  });
+
+  it('should weigh the same side differently for a different neighbour', () => {
+    const tiles = [tile(0, 1, { left: { 0: 0.001 } }), tile(1, 1)];
+    const picked = new Set<number>();
+
+    for (let draw = 0; draw < 200; draw++) {
+      picked.add(pickWeightedTile([0, 1], tiles, context(1)));
+    }
+
+    expect([...picked].sort()).toEqual([0, 1]);
+  });
+
+  it('should ignore pair weights when the cell is not known', () => {
+    const tiles = [tile(0, 1, { left: { 0: 0.001 } }), tile(1, 1)];
+    const picked = new Set<number>();
+
+    for (let draw = 0; draw < 200; draw++) {
+      picked.add(pickWeightedTile([0, 1], tiles));
+    }
+
+    expect([...picked].sort()).toEqual([0, 1]);
   });
 });
