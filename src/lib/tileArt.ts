@@ -8,7 +8,7 @@ import type { TileSetId } from '@/types';
  * — which mixes old and new tile art in one pattern. Bumping this version gives
  * the new art new URLs.
  */
-export const TILE_ART_VERSION = 2;
+export const TILE_ART_VERSION = 3;
 
 export function getTileArtSrc(tileSetId: TileSetId, tileId: number): string {
   return `/tiles/${tileSetId}/${tileId}.png?v=${TILE_ART_VERSION}`;

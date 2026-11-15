@@ -236,6 +236,40 @@ function createQuiltSpecs(): TileSpec[] {
 
 const TERRAINS: TileEdge[] = ['land', 'beach', 'water'];
 
+/** Land and water are the body of a map, so a solid cell of either grows it. */
+const TERRAIN_SOLID_WEIGHT = 20;
+
+/** A solid beach cell would flood the board: beach is a shoreline, not a plain. */
+const TERRAIN_SOLID_BEACH_WEIGHT = 0.02;
+
+/**
+ * Every beach side divides a tile's weight again. A genuine coast is forced
+ * where land and water meet, so only the transitions the solver makes on its own
+ * get rarer — those are the ones that strand a pond or a sand ridge inland.
+ */
+const TERRAIN_BEACH_SIDE_WEIGHT = 0.02;
+
+/**
+ * Terrain is the one set whose labels form a chain — land may only meet beach,
+ * and beach may only meet water — so a flat pick over the coastal mixes paints a
+ * salt-and-pepper board of one-cell islands: the solver grows each region from
+ * its edge, and a shoreline is all a frontier cell can ever become. Weighing
+ * solid land and water far above the coastal mixes lets a region keep growing
+ * while it is on the frontier, which produces continents and seas joined by a
+ * narrow coast instead of scattered ponds.
+ *
+ * A tile without a beach side is solid land or water: land next to water is two
+ * steps apart, so it never occurs.
+ */
+function terrainWeight(sides: TileEdge[]): number {
+  const beachSides = sides.filter((side) => side === 'beach').length;
+
+  if (beachSides === 0) return TERRAIN_SOLID_WEIGHT;
+  if (beachSides === sides.length) return TERRAIN_SOLID_BEACH_WEIGHT;
+
+  return TERRAIN_BEACH_SIDE_WEIGHT ** beachSides;
+}
+
 function terrainStep(a: TileEdge, b: TileEdge): number {
   return Math.abs(TERRAINS.indexOf(a) - TERRAINS.indexOf(b));
 }
@@ -243,7 +277,8 @@ function terrainStep(a: TileEdge, b: TileEdge): number {
 /**
  * Every assignment of terrains to sides that could occur on a coastline: land
  * may only touch beach, and beach may only touch water, so a side that changes
- * from one terrain to the next around the tile moves at most one step.
+ * from one terrain to the next around the tile moves at most one step. Each
+ * layout is weighted by `terrainWeight`.
  */
 function createTerrainSpecs(): TileSpec[] {
   const specs: TileSpec[] = [];
@@ -257,7 +292,9 @@ function createTerrainSpecs(): TileSpec[] {
             (edge, index) => terrainStep(edge, sides[(index + 1) % sides.length]) <= 1
           );
 
-          if (isCoastal) specs.push({ top, right, bottom, left });
+          if (isCoastal) {
+            specs.push({ top, right, bottom, left, weight: terrainWeight(sides) });
+          }
         }
       }
     }

@@ -51,6 +51,7 @@ An interactive **Wave Function Collapse algorithm** implementation and visualiza
 
 - ⚙️ **Five tile sets** the user can switch between: **Wires** (11 tiles), **PCB** (45, green traces with 45° variants and terminal pads, plus microcontrollers in 3 × 3 and 5 × 3 footprints), **Maze** (16), **Quilt** (27) and **Terrain** (35 land / beach / water)
 - 🔗 Each tile is described by the label on its four sides; the solver derives every compatible neighbor from those labels
+- 🏝️ Terrain weighs its tiles so land and water grow into continents and seas, with sand along the coast instead of one-cell patches
 - 👁️ Interactive preview panel showing the selected tile and the tiles allowed on each side
 - 🖼️ Tile art is generated from the same edge data with `pnpm tiles`
 
@@ -182,7 +183,7 @@ A label carried by exactly two tiles on opposite sides acts as a **seam**: it gl
 | **Restart**                    | Reset to the current size with fresh seed tiles (also cancels a run in flight)  |
 | **PNG**                        | Save the completed grid as an image; disabled until the pattern is solved       |
 | **Theme switch**               | Pin light or dark, or follow the operating system                               |
-| **Tile set**                   | Switch between the Wires, Maze, Quilt and Terrain rule sets                     |
+| **Tile set**                   | Switch between the Wires, PCB, Maze, Quilt and Terrain rule sets                |
 | **Tile picker**                | Inspect a tile and the tiles allowed on each of its four sides                  |
 
 ## 📊 Performance Benchmarks

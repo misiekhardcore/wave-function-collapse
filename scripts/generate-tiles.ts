@@ -308,13 +308,25 @@ function paintQuilt(context: CanvasContext, tile: Tile) {
 }
 
 /**
- * The interior takes the average terrain of the four sides, and every side
+ * The interior takes the ground the tile borders: the terrain most of its sides
+ * carry, ignoring beach. Beach is only ever the seam between land and water, so
+ * it is painted as the band along the sides that carry it. A tile made of beach
+ * alone has no ground to show and stays sand.
+ */
+function terrainBase(tile: Tile): TileEdge {
+  const count = (terrain: TileEdge) => SIDES.filter((side) => tile.edges[side] === terrain).length;
+  const ground = TERRAINS.filter((terrain) => terrain !== 'beach');
+  const base = ground.reduce((best, terrain) => (count(terrain) > count(best) ? terrain : best));
+
+  return count(base) > 0 ? base : 'beach';
+}
+
+/**
+ * The interior takes the majority terrain of the four sides, and every side
  * keeps a band of its own terrain so neighbouring tiles line up.
  */
 function paintTerrain(context: CanvasContext, tile: Tile) {
-  const average =
-    SIDES.reduce((total, side) => total + TERRAINS.indexOf(tile.edges[side]), 0) / SIDES.length;
-  const base = TERRAINS[Math.round(average)];
+  const base = terrainBase(tile);
   const band = SIZE * 0.3;
 
   context.fillStyle = TERRAIN_COLORS[base];

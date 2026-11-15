@@ -105,6 +105,25 @@ describe('tile sets', () => {
     ]);
   });
 
+  it('weighs the terrain set towards land and water rather than sand', () => {
+    const tiles = getTileSet('terrain').tiles;
+    const beachSides = (tile: (typeof tiles)[number]) =>
+      SIDES.filter((side) => tile.edges[side] === 'beach').length;
+    const solid = tiles.filter((tile) => beachSides(tile) === 0);
+    const solidBeach = tiles.filter((tile) => beachSides(tile) === SIDES.length);
+    const shoreline = tiles.filter(
+      (tile) => beachSides(tile) > 0 && beachSides(tile) < SIDES.length
+    );
+
+    // Solid land and water carry the map, a solid beach cell is not a plain, and
+    // every shoreline layout costs less than open ground.
+    expect(solid.length).toBeGreaterThan(0);
+    expect(solid.every((tile) => (tile.weight ?? 1) > 5)).toBe(true);
+    expect(solidBeach.every((tile) => (tile.weight ?? 1) < 0.1)).toBe(true);
+    expect(shoreline.every((tile) => (tile.weight ?? 1) < 1)).toBe(true);
+    expect(shoreline.length).toBeGreaterThan(solid.length);
+  });
+
   it('keeps the wire set rules unchanged', () => {
     const wires = getTileSet('wires').tiles.map(({ top, right, bottom, left }) => [
       top,
