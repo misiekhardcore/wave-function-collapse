@@ -70,39 +70,44 @@ export function generateInitialGrid(
 
 ### Tile Compatibility Rules
 
-A tile is declared as the edge label on each of its four sides. `createTiles` derives the compatibility lists from those labels, so the rules are always symmetric and closed:
+A tile declares, on each of its four sides, the tiles that may sit there. Nothing is inferred from anything else: `createTiles` copies those lists onto the tile, and the solver reads only them.
 
 ```typescript
-// The declared tile: what is on each edge
-{ top: 'wire', right: 'open', bottom: 'wire', left: 'wire' }
-
-// Derived: tiles that may sit above are those with `wire` on their bottom
-top: [2, 3, 4, 5, 9, 10];
+// The written tile: what may sit on each side, and the labels the art uses
+{
+  top: 'wire', right: 'wire', bottom: 'open', left: 'wire',
+  neighbours: {
+    top:    [2, 3, 4, 5, 9, 10], // tiles carrying `wire` along their bottom
+    right:  [1, 3, 4, 6, 7, 10],
+    bottom: [0, 3, 6, 9, 10],
+    left:   [1, 2, 3, 6, 8, 9]
+  }
+}
 ```
 
 ```typescript
 interface Tile {
   id: number;
-  top: ReadonlyArray<number>; // Compatible tiles above this one
+  top: ReadonlyArray<number>; // Neighbours written for this side
   right: ReadonlyArray<number>;
   bottom: ReadonlyArray<number>;
   left: ReadonlyArray<number>;
-  edges: TileEdges; // Source labels the lists were derived from
+  edges: TileEdges; // Labels the artwork is drawn from
   weight?: number; // Prior chance of being picked, default 1
-  pairWeights?: Partial<Record<keyof TileEdges, Record<number, number>>>; // Per neighbour pair
+  pairWeights?: Partial<Record<keyof TileEdges, Record<number, number>>>; // Per pair
 }
 ```
 
-**Example tile (wire set, ID = 0):**
+**Example tile (wire set, ID = 1):**
 
 ```typescript
 {
-  id: 0,
-  top:     [0, 1, 6, 7, 8],    // Can connect to tiles {0,1,6,7,8} above
-  right:   [0, 2, 5, 8, 9],
+  id: 1,
+  top:     [2, 3, 4, 5, 9, 10], // Can connect to tiles {2,3,4,5,9,10} above
+  right:   [1, 3, 4, 6, 7, 10],
   bottom:  [0, 3, 6, 9, 10],
-  left:    [0, 4, 5, 7, 10],   // Can connect to tiles {0,4,5,7,10} on the left
-  edges:   { top: 'open', right: 'open', bottom: 'open', left: 'open' }
+  left:    [1, 2, 3, 6, 8, 9],  // Can connect to tiles {1,2,3,6,8,9} on the left
+  edges:   { top: 'wire', right: 'wire', bottom: 'open', left: 'wire' }
 }
 ```
 
@@ -112,26 +117,40 @@ The five bundled sets — `wires` (11 tiles), `pcb` (45), `maze` (16), `quilt` (
 
 ````json
 {
-  "id": "terrain",
-  "name": "Terrain",
-  "description": "Land, sand and water: every side carries the ground along it…",
+  "id": "wires",
+  "name": "Wires",
+  "description": "Circuit traces in ink that branch, bend and cross.",
   "tiles": [
-    { "top": "land", "right": "land", "bottom": "land", "left": "land", "weight": 140 },
-    { "top": "land", "right": "beach", "bottom": "water", "left": "beach", "weight": 0.2 },
-    { "top": "beach", "right": "beach", "bottom": "beach", "left": "land", "weight": 9 }
+    {
+      "top": "open",
+      "right": "open",
+      "bottom": "open",
+      "left": "open",
+      "neighbours": {
+        "top": [0, 1, 6, 7, 8],
+        "right": [0, 2, 5, 8, 9],
+        "bottom": [0, 3, 6, 9, 10],
+        "left": [0, 4, 5, 7, 10]
+      }
+    }
   ]
 }
-```A tile is its four side labels plus two optional weights. `weight` is its relative chance of being picked anywhere, default 1. `pairWeights` puts a weight on an individual neighbour pair — the side it happens on, then the id of the tile that sits there:
+```A tile is its four labels, its four neighbour lists and two optional weights. A side is either a list of ids — every pair weighed alike — or a map from id to that pair's weight:
 
 ```json
 { "top": "land", "right": "beach", "bottom": "land", "left": "land",
   "weight": 1.5,
-  "pairWeights": { "right": { "12": 0.25, "31": 3 } } }
+  "neighbours": {
+    "top": [7, 9],
+    "right": { "12": 0.25, "31": 3 },
+    "bottom": [3, 5],
+    "left": [0, 4]
+  } }
 ````
 
-This tile is a quarter as likely when tile 12 is on its right, and three times as likely when tile 31 is, even if those two carry the same right-hand label. The multipliers apply only to neighbours that are already decided; a pair the tile does not mention, or a side whose neighbour is still open, leaves the weight alone. Everything about frequency is therefore data: the prior covers how common a tile is anywhere, and pair weights cover how common it is beside each specific neighbour.
+That right side makes the tile a quarter as likely when tile 12 is on its right and three times as likely when tile 31 is, even if those two carry the same right-hand label; the lists all weigh one. `weight` is the prior — how common the tile is anywhere — and a pair weight multiplies it once that neighbour is decided. A pair left at 1, a side whose neighbour is still open, or a tile with no pair weights at all leaves the prior alone.
 
-The artwork is derived from the same labels, so a tile cannot describe a picture its rules do not already imply. The tile's array position is its id, and which pairs are _possible_ is **derived** from the labels — a tile accepts every tile whose opposite side carries the same label — so adding a tile never means maintaining a neighbour list; pair weights only rank pairs that are possible already. `src/lib/tileSets.ts` loads the files and validates them, including that every pair weight names one of the tile's four sides, an id that is in the set, a pair that can actually meet, and a positive factor. It exposes `tileSets`, `getTileSet(id)` and `DEFAULT_TILE_SET_ID` (`'wires'`).
+The labels are what the artwork is drawn from, so a set cannot describe a picture its rules contradict: the loader rejects a pair whose labels disagree. It also rejects a side that is missing or names a tile outside the set, an id listed twice, a weight that is not positive, and a pair only one of the two tiles names. The tile's array position is its id. `src/lib/tileSets.ts` loads the files, validates them, and exposes `tileSets`, `getTileSet(id)` and `DEFAULT_TILE_SET_ID` (`'wires'`).
 
 `pcb` draws green copper traces on soldermask. A corner bends through the centre, a straight holds its line, three or more traces meet at a via, and a tile with a single trace ends in a silver pad — silver appears only in those round pads. Every one of those looks is read from the labels: one trace side makes a terminal, so no flag is needed. Most of the remaining tiles build microcontrollers: a 3 × 3 square and a 5 × 3 rectangle, one part per cell, joined by unique `chip:<package>:<cell>|<cell>` seam labels so a package can only come out assembled, with pin legs drawn in the clearance around every board-facing edge and a die on the part standing on the middle cell of its package. Those parts are **weighted down** (`weight`), because a package costs nine or fifteen cells and would otherwise carpet the board.
 
@@ -256,13 +275,20 @@ export interface Tile {
   bottom: ReadonlyArray<number>;
   /** Indices of tiles that can be placed to the left (west) of this one */
   left: ReadonlyArray<number>;
-  /** Label on each side; the adjacency lists and the art are derived from these */
+  /** Label on each side; what the art is drawn from */
   edges: TileEdges;
   /** Relative chance of being collapsed into, default 1 */
   weight?: number;
   /** Weight of one neighbour pair: side, then the id of the tile on that side */
   pairWeights?: Partial<Record<keyof TileEdges, Record<number, number>>>;
 }
+
+/** A written set, as loaded from `src/tileSets/<id>.json` before it is built. */
+export type TileSpec = TileEdges & {
+  /** Per side: neighbour ids, or the weight of each of them */
+  neighbours: Record<keyof TileEdges, number[] | Record<number, number>>;
+  weight?: number;
+};
 
 /**
  * A side label. Two sides may meet only when their labels are identical, so a

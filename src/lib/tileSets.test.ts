@@ -9,8 +9,12 @@ import {
   OPPOSITE_SIDE,
   parseTileSetData,
   SIDES,
+  type TileNeighbours,
   tileSets,
+  type TileSpec,
 } from './tileSets';
+
+type Side = 'top' | 'right' | 'bottom' | 'left';
 
 function artPath(setId: string, tileId: number): string {
   return join(process.cwd(), 'public', 'tiles', setId, `${tileId}.png`);
@@ -276,37 +280,124 @@ describe('tile sets', () => {
     tiles,
   });
 
-  const plain = { top: 'a', right: 'a', bottom: 'a', left: 'a' };
-
-  it('carries pair weights from the definition onto the tile', () => {
-    const tiles = createTiles([plain, { ...plain, pairWeights: { right: { 0: 0.5 } } }]);
-
-    expect(tiles[1].pairWeights).toEqual({ right: { 0: 0.5 } });
+  /** Tiles whose four sides all carry `a`; `sides` replaces one tile's lists. */
+  const tileWith = (sides: Partial<Record<Side, TileNeighbours>> = {}): TileSpec => ({
+    top: 'a',
+    right: 'a',
+    bottom: 'a',
+    left: 'a',
+    neighbours: {
+      top: [1],
+      right: [1],
+      bottom: [1],
+      left: [1],
+      ...sides,
+    },
   });
 
-  it('rejects a pair weight on something that is not a side', () => {
-    const tiles = [{ ...plain, pairWeights: { middle: { 0: 0.5 } } }];
+  /** Two tiles that only accept each other on every side. */
+  const pair = () => [
+    tileWith(),
+    {
+      top: 'a',
+      right: 'a',
+      bottom: 'a',
+      left: 'a',
+      neighbours: { top: [0], right: [0], bottom: [0], left: [0] },
+    },
+  ];
+
+  it('reads the rules from the neighbour lists, not the labels', () => {
+    // Every tile carries `a` on every side, so the labels alone would allow any
+    // of the three anywhere; the lists are what says otherwise.
+    const [first] = createTiles([
+      tileWith({ top: [2], right: [2], bottom: [], left: [] }),
+      tileWith(),
+      tileWith(),
+    ]);
+
+    expect(first.top).toEqual([2]);
+    expect(first.bottom).toEqual([]);
+  });
+
+  it('carries the weight written for a pair onto the tile', () => {
+    const tiles = createTiles([tileWith({ right: { 1: 0.5 } }), tileWith()]);
+
+    expect(tiles[0].pairWeights).toEqual({ right: { 1: 0.5 } });
+    expect(tiles[1].pairWeights).toBeUndefined();
+  });
+
+  it('rejects a tile that does not say which tiles sit beside it', () => {
+    const tiles = [{ top: 'a', right: 'a', bottom: 'a', left: 'a' }];
+
+    expect(() => parseTileSetData(definition(tiles))).toThrow(
+      /does not say which tiles sit beside/
+    );
+  });
+
+  it('rejects a side with no list', () => {
+    const tiles = [
+      {
+        top: 'a',
+        right: 'a',
+        bottom: 'a',
+        left: 'a',
+        neighbours: { top: [1], right: [1], bottom: [1] },
+      },
+      ...pair().slice(1),
+    ];
+
+    expect(() => parseTileSetData(definition(tiles))).toThrow(/sit on its left/);
+  });
+
+  it('rejects a neighbour list on something that is not a side', () => {
+    const tiles = [
+      { ...tileWith(), neighbours: { ...tileWith().neighbours, middle: [1] } },
+      pair()[1],
+    ];
 
     expect(() => parseTileSetData(definition(tiles))).toThrow(/not one of its sides/);
   });
 
-  it('rejects a pair weight naming a tile that is not in the set', () => {
-    const tiles = [{ ...plain, pairWeights: { right: { 9: 0.5 } } }];
+  it('rejects a side with no neighbour at all', () => {
+    const tiles = [tileWith({ right: [] }), ...pair().slice(1)];
+
+    expect(() => parseTileSetData(definition(tiles))).toThrow(/has no neighbour on its right/);
+  });
+
+  it('rejects a neighbour named twice on one side', () => {
+    const tiles = [tileWith({ right: [1, 1] }), ...pair().slice(1)];
+
+    expect(() => parseTileSetData(definition(tiles))).toThrow(/lists a neighbour twice/);
+  });
+
+  it('rejects a neighbour that is not in the set', () => {
+    const tiles = [tileWith({ right: [9] }), ...pair().slice(1)];
 
     expect(() => parseTileSetData(definition(tiles))).toThrow(/not in the set/);
   });
 
-  it('rejects a pair weight on two tiles that cannot meet', () => {
-    const tiles = [
-      { ...plain, pairWeights: { right: { 1: 0.5 } } },
-      { ...plain, left: 'b' },
-    ];
+  it('rejects a pair whose labels disagree', () => {
+    const tiles = pair();
+    tiles[1].left = 'b';
 
-    expect(() => parseTileSetData(definition(tiles))).toThrow(/cannot sit on its right/);
+    expect(() => parseTileSetData(definition(tiles))).toThrow(/labels disagree/);
+  });
+
+  it('rejects a pair only one of the two tiles names', () => {
+    const tiles = pair();
+    tiles[1].neighbours.left = [1];
+
+    expect(() => parseTileSetData(definition(tiles))).toThrow(/does not list it back/);
   });
 
   it('rejects a pair weight that is not positive', () => {
-    const tiles = (factor: number) => [plain, { ...plain, pairWeights: { right: { 1: factor } } }];
+    const tiles = (weight: number) => {
+      const [first, second] = pair();
+      second.neighbours.left = { 0: weight };
+
+      return [first, second];
+    };
 
     expect(() => parseTileSetData(definition(tiles(0)))).toThrow(/not positive/);
     expect(() => parseTileSetData(definition(tiles(-1)))).toThrow(/not positive/);

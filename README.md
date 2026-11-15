@@ -50,8 +50,8 @@ An interactive **Wave Function Collapse algorithm** implementation and visualiza
 ### Tile System
 
 - ⚙️ **Five tile sets** the user can switch between: **Wires** (11 tiles), **PCB** (45, green traces with 45° variants and terminal pads, plus microcontrollers in 3 × 3 and 5 × 3 footprints), **Maze** (16), **Quilt** (27) and **Terrain** (68 land / sand / water layouts)
-- 🗂️ Each set is a JSON file in `src/tileSets/` — four side labels, an optional weight per tile and optional weights per neighbour pair — so a set can be edited without touching the solver
-- 🔗 Each tile is described by the label on its four sides; the solver derives every compatible neighbor from those labels
+- 🗂️ Each set is a JSON file in `src/tileSets/` — four side labels for the art, four neighbour lists with optional weights, and an optional weight per tile — so a set can be edited without touching the solver
+- 🔗 Each tile lists its allowed neighbours per side, with a weight per pair where frequency should differ; the solver reads those lists and nothing else
 - 🏝️ Terrain covers land, sand and water, weighted so ground grows into continents and seas and sand stays on the shore; every tile is painted as a block, so coastlines run along the tile edges and turn at right angles, and no layout is a single stripe of one ground down the middle
 - 👁️ Interactive preview panel showing the selected tile and the tiles allowed on each side
 - 🖼️ Tile art is generated from the same edge data with `pnpm tiles`
@@ -160,14 +160,19 @@ pnpm prettier:fix                  # Prettier auto-format        │    findTile
 
 ## 📁 Tile Definitions (Sample)
 
-Every tile is declared as the label on each of its four sides. `createTiles` turns those labels into the adjacency lists the solver reads: two tiles may sit side by side when the labels that meet are equal, so a label used on one side is always available for a neighbor to match on the other side.
+Every tile lists, on each of its four sides, the tiles that may sit there. The solver reads nothing else: no rule is inferred from the labels, which exist so the artwork knows what to draw. A pair may carry a weight of its own, and the four lists are checked against each other at load.
 
 ```typescript
-// A tile from the wire set: the trace leaves on every side but the right one
-{ top: 'wire', right: 'open', bottom: 'wire', left: 'wire' }
-
-// Derived compatibility: only tiles with `wire` on their bottom fit above it
-top: [2, 3, 4, 5, 9, 10];
+// Tile 1 of the wire set: the trace leaves on every side but the bottom one
+{
+  top: 'wire', right: 'wire', bottom: 'open', left: 'wire',
+  neighbours: {
+    top:    [2, 3, 4, 5, 9, 10], // tiles carrying `wire` along their bottom
+    right:  [1, 3, 4, 6, 7, 10],
+    bottom: [0, 3, 6, 9, 10],
+    left:   [1, 2, 3, 6, 8, 9]
+  }
+}
 ```
 
 The algorithm ensures that when placing a tile at position `(row, col)`, its edges must be compatible with already-placed neighboring tiles.
@@ -232,20 +237,36 @@ Add a preset by dropping a JSON file into `src/tileSets/` and describing its til
   "name": "Custom",
   "description": "…",
   "tiles": [
-    { "top": "wire", "right": "open", "bottom": "wire", "left": "open" },
-    { "top": "wire", "right": "wire", "bottom": "open", "left": "open", "weight": 0.5 },
     {
-      "top": "wire",
-      "right": "open",
-      "bottom": "wire",
-      "left": "wire",
-      "pairWeights": { "left": { "0": 4, "1": 0.25 } }
+      "top": "land",
+      "right": "land",
+      "bottom": "land",
+      "left": "land",
+      "neighbours": {
+        "top": [0, 1],
+        "right": [0, 1],
+        "bottom": [0, 1],
+        "left": [0, 1]
+      }
+    },
+    {
+      "top": "land",
+      "right": "land",
+      "bottom": "land",
+      "left": "land",
+      "weight": 0.5,
+      "neighbours": {
+        "top": [0, 1],
+        "right": [0, 1],
+        "bottom": [0, 1],
+        "left": { "0": 4, "1": 0.25 }
+      }
     }
   ]
 }
 ```
 
-A tile is its four labels plus two weights. `weight` is its relative chance of being collapsed into anywhere, default 1, which is how the PCB's multi-tile microcontrollers stay sparse. `pairWeights` puts a weight on an individual neighbour pair: the side, then the id of the tile sitting there. The tile above is four times as likely when tile 0 is on its left and a quarter as likely when tile 1 is — even though both carry its left label. Pair weights apply only once that neighbour is decided; anything unmentioned leaves the prior alone. Its art is drawn from the same labels, so the picture can never disagree with the rules.
+A tile is four labels, four neighbour lists, and two weights. A side is either a list of ids — every pair weighted alike — or a map from id to that pair's weight. `weight` is the tile's relative chance of being collapsed into anywhere, default 1, which is how the PCB's multi-tile microcontrollers stay sparse. A pair weight multiplies that prior once that neighbour is decided: the tile above is four times as likely when tile 0 is on its left and a quarter as likely when tile 1 is — even though both carry its left label. The labels are what the art is drawn from, and the loader rejects a pair whose labels disagree, or one only half of the two tiles names, so a set cannot drift into pictures its rules contradict.
 
 Then:
 

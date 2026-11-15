@@ -8,10 +8,13 @@ import wiresData from '../tileSets/wires.json';
 
 type Side = keyof TileEdges;
 
+/** One side as written down: neighbour ids, or a weight for each of them. */
+export type TileNeighbours = number[] | Record<number, number>;
+
 /** One tile of a set as it is written down in `src/tileSets/<id>.json`. */
 export type TileSpec = TileEdges & {
+  neighbours: Record<Side, TileNeighbours>;
   weight?: number;
-  pairWeights?: Partial<Record<Side, Record<number, number>>>;
 };
 
 export type TileSetData = {
@@ -31,29 +34,51 @@ export const OPPOSITE_SIDE: Record<Side, Side> = {
   left: 'right',
 };
 
+/** The neighbours on one side as (id, weight) pairs, in the order written. */
+export function neighboursOf(side: TileNeighbours): [number, number][] {
+  return Array.isArray(side)
+    ? side.map((id) => [id, 1])
+    : Object.entries(side).map(([id, weight]) => [Number(id), weight]);
+}
+
 /**
- * Turns per-side edge labels into tiles with adjacency lists.
+ * Turns a written set into tiles with adjacency lists.
  *
- * A tile can sit above this one when its bottom label matches this tile's top
- * label, so every list is "the ids of the tiles whose opposite side carries the
- * same label". Deriving the lists from the labels keeps the rules symmetric and
- * closed: a label used on one side is always available for a neighbour to match
- * on the other. A set only has to describe its tiles, never its neighbours.
+ * What may meet what is written down in `neighbours`, so the rules are the data
+ * and nothing is inferred from the labels the artwork is drawn from. A side
+ * written as a list weighs every pair alike; a side written as an object gives
+ * each pair its own weight, which multiplies the tile's own weight once that
+ * neighbour is decided.
  */
 export function createTiles(specs: TileSpec[]): Tile[] {
-  const idsWithLabel = (label: string, side: Side) =>
-    specs.reduce<number[]>((ids, spec, id) => (spec[side] === label ? [...ids, id] : ids), []);
+  return specs.map((spec, id) => {
+    const pairs = Object.fromEntries(
+      SIDES.map((side) => [side, neighboursOf(spec.neighbours[side])])
+    ) as Record<Side, [number, number][]>;
 
-  return specs.map(({ top, right, bottom, left, weight, pairWeights }, id) => ({
-    id,
-    top: idsWithLabel(top, 'bottom'),
-    right: idsWithLabel(right, 'left'),
-    bottom: idsWithLabel(bottom, 'top'),
-    left: idsWithLabel(left, 'right'),
-    edges: { top, right, bottom, left },
-    weight,
-    pairWeights,
-  }));
+    const ids = (side: Side) => pairs[side].map(([neighbour]) => neighbour);
+    const pairWeights: Partial<Record<Side, Record<number, number>>> = {};
+    let weighed = false;
+
+    for (const side of SIDES) {
+      const otherThanOne = pairs[side].filter(([, weight]) => weight !== 1);
+      if (otherThanOne.length === 0) continue;
+
+      pairWeights[side] = Object.fromEntries(otherThanOne);
+      weighed = true;
+    }
+
+    return {
+      id,
+      top: ids('top'),
+      right: ids('right'),
+      bottom: ids('bottom'),
+      left: ids('left'),
+      edges: { top: spec.top, right: spec.right, bottom: spec.bottom, left: spec.left },
+      weight: spec.weight,
+      pairWeights: weighed ? pairWeights : undefined,
+    };
+  });
 }
 
 /** A definition is data, so a typo in it has to fail loudly and early. */
@@ -75,33 +100,67 @@ export function parseTileSetData(data: unknown): TileSetData {
       throw new Error(`Tile ${index} of "${set.id}" has a weight that is not positive.`);
     }
 
-    for (const [side, pairs] of Object.entries(tile.pairWeights ?? {})) {
+    const written = tile.neighbours as Record<string, TileNeighbours> | undefined;
+
+    if (written === undefined || typeof written !== 'object') {
+      throw new Error(`Tile ${index} of "${set.id}" does not say which tiles sit beside it.`);
+    }
+
+    for (const side of Object.keys(written)) {
       if (!SIDES.includes(side as Side)) {
         throw new Error(
-          `Tile ${index} of "${set.id}" weighs a "${side}" side, which is not one of its sides.`
+          `Tile ${index} of "${set.id}" lists neighbours on "${side}", which is not one of its sides.`
+        );
+      }
+    }
+
+    for (const side of SIDES) {
+      const sideNeighbours = written[side];
+
+      if (sideNeighbours === undefined) {
+        throw new Error(
+          `Tile ${index} of "${set.id}" does not say which tiles sit on its ${side}.`
         );
       }
 
-      for (const [neighbourId, factor] of Object.entries(pairs ?? {})) {
-        const neighbour = set.tiles[Number(neighbourId)];
-        const shared = side as Side;
+      const pairs = neighboursOf(sideNeighbours);
+
+      if (pairs.length === 0) {
+        throw new Error(`Tile ${index} of "${set.id}" has no neighbour on its ${side}.`);
+      }
+
+      if (new Set(pairs.map(([neighbourId]) => neighbourId)).size !== pairs.length) {
+        throw new Error(`Tile ${index} of "${set.id}" lists a neighbour twice on its ${side}.`);
+      }
+
+      for (const [neighbourId, weight] of pairs) {
+        const neighbour = set.tiles[neighbourId];
 
         if (neighbour === undefined) {
           throw new Error(
-            `Tile ${index} of "${set.id}" weighs a pair with tile ${neighbourId}, which is not in the set.`
+            `Tile ${index} of "${set.id}" lists tile ${neighbourId} on its ${side}, which is not in the set.`
           );
         }
 
-        // A pair weight on two tiles that cannot meet would be silently dead.
-        if (neighbour[OPPOSITE_SIDE[shared]] !== tile[shared]) {
+        if (typeof weight !== 'number' || !(weight > 0)) {
           throw new Error(
-            `Tile ${index} of "${set.id}" weighs a pair with tile ${neighbourId}, which cannot sit on its ${shared}.`
+            `Tile ${index} of "${set.id}" gives tile ${neighbourId} on its ${side} a weight that is not positive.`
           );
         }
 
-        if (typeof factor !== 'number' || !(factor > 0)) {
+        // The artwork is drawn from the labels, so a pair whose labels disagree
+        // would draw a picture the rules contradict.
+        if (neighbour[OPPOSITE_SIDE[side]] !== tile[side]) {
           throw new Error(
-            `Tile ${index} of "${set.id}" has a weight for tile ${neighbourId} on its ${shared} that is not positive.`
+            `Tile ${index} of "${set.id}" lists tile ${neighbourId} on its ${side}, but their labels disagree.`
+          );
+        }
+
+        // One side has to name the other, or the rule is only half written.
+        const back = neighboursOf(neighbour.neighbours?.[OPPOSITE_SIDE[side]] ?? []);
+        if (!back.some(([id]) => id === index)) {
+          throw new Error(
+            `Tile ${index} of "${set.id}" lists tile ${neighbourId} on its ${side}, but tile ${neighbourId} does not list it back.`
           );
         }
       }
