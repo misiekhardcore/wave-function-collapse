@@ -1,0 +1,73 @@
+{
+  "id": "wires",
+  "name": "Wires",
+  "description": "Circuit traces in ink that branch, bend and cross.",
+  "tiles": [
+    {
+      "top": "open",
+      "right": "open",
+      "bottom": "open",
+      "left": "open"
+    },
+    {
+      "top": "wire",
+      "right": "wire",
+      "bottom": "open",
+      "left": "wire"
+    },
+    {
+      "top": "wire",
+      "right": "wire",
+      "bottom": "wire",
+      "left": "open"
+    },
+    {
+      "top": "open",
+      "right": "wire",
+      "bottom": "wire",
+      "left": "wire"
+    },
+    {
+      "top": "wire",
+      "right": "open",
+      "bottom": "wire",
+      "left": "wire"
+    },
+    {
+      "top": "wire",
+      "right": "open",
+      "bottom": "wire",
+      "left": "open"
+    },
+    {
+      "top": "open",
+      "right": "wire",
+      "bottom": "open",
+      "left": "wire"
+    },
+    {
+      "top": "wire",
+      "right": "open",
+      "bottom": "open",
+      "left": "wire"
+    },
+    {
+      "top": "wire",
+      "right": "wire",
+      "bottom": "open",
+      "left": "open"
+    },
+    {
+      "top": "open",
+      "right": "wire",
+      "bottom": "wire",
+      "left": "open"
+    },
+    {
+      "top": "open",
+      "right": "open",
+      "bottom": "wire",
+      "left": "wire"
+    }
+  ]
+}

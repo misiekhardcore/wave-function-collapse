@@ -1,0 +1,103 @@
+{
+  "id": "maze",
+  "name": "Maze",
+  "description": "Walled corridors that link up into rooms and passages.",
+  "tiles": [
+    {
+      "top": "open",
+      "right": "open",
+      "bottom": "open",
+      "left": "open"
+    },
+    {
+      "top": "wall",
+      "right": "open",
+      "bottom": "open",
+      "left": "open"
+    },
+    {
+      "top": "open",
+      "right": "wall",
+      "bottom": "open",
+      "left": "open"
+    },
+    {
+      "top": "wall",
+      "right": "wall",
+      "bottom": "open",
+      "left": "open"
+    },
+    {
+      "top": "open",
+      "right": "open",
+      "bottom": "wall",
+      "left": "open"
+    },
+    {
+      "top": "wall",
+      "right": "open",
+      "bottom": "wall",
+      "left": "open"
+    },
+    {
+      "top": "open",
+      "right": "wall",
+      "bottom": "wall",
+      "left": "open"
+    },
+    {
+      "top": "wall",
+      "right": "wall",
+      "bottom": "wall",
+      "left": "open"
+    },
+    {
+      "top": "open",
+      "right": "open",
+      "bottom": "open",
+      "left": "wall"
+    },
+    {
+      "top": "wall",
+      "right": "open",
+      "bottom": "open",
+      "left": "wall"
+    },
+    {
+      "top": "open",
+      "right": "wall",
+      "bottom": "open",
+      "left": "wall"
+    },
+    {
+      "top": "wall",
+      "right": "wall",
+      "bottom": "open",
+      "left": "wall"
+    },
+    {
+      "top": "open",
+      "right": "open",
+      "bottom": "wall",
+      "left": "wall"
+    },
+    {
+      "top": "wall",
+      "right": "open",
+      "bottom": "wall",
+      "left": "wall"
+    },
+    {
+      "top": "open",
+      "right": "wall",
+      "bottom": "wall",
+      "left": "wall"
+    },
+    {
+      "top": "wall",
+      "right": "wall",
+      "bottom": "wall",
+      "left": "wall"
+    }
+  ]
+}

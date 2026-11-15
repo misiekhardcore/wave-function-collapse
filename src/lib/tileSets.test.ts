@@ -1,7 +1,9 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { getTileSet, OPPOSITE_SIDE, PCB_CHIP_SHAPES, SIDES, tileSets } from './tileSets';
+import type { Tile } from '@/types';
+
+import { getTileSet, OPPOSITE_SIDE, SIDES, tileSets } from './tileSets';
 
 function artPath(setId: string, tileId: number): string {
   return join(process.cwd(), 'public', 'tiles', setId, `${tileId}.png`);
@@ -45,14 +47,38 @@ describe('tile sets', () => {
     }
   });
 
-  it('assembles each PCB microcontroller from parts that only fit each other', () => {
-    const parts = getTileSet('pcb').tiles.filter(
-      (tile) => tile.art === 'chip' || tile.art === 'chip-body'
-    );
+  const chipParts = () => getTileSet('pcb').tiles.filter((tile) => tile.art?.startsWith('chip'));
 
-    expect(parts).toHaveLength(
-      PCB_CHIP_SHAPES.reduce((count, shape) => count + shape.cols * shape.rows, 0)
+  /** Package ids are written into the seam labels: `chip:<id>:<cell>|<cell>`. */
+  const packageIds = (parts: Tile[]) => [
+    ...new Set(
+      parts
+        .flatMap((tile) => SIDES.map((side) => tile.edges[side]))
+        .filter((edge) => edge.startsWith('chip:'))
+        .map((edge) => edge.split(':')[1])
+    ),
+  ];
+
+  /** Footprint of a package, read back from the cells named in its seams. */
+  const extent = (packageId: string, parts: Tile[]) => {
+    const cells = parts.flatMap((tile) =>
+      SIDES.map((side) => tile.edges[side])
+        .filter((edge) => edge.startsWith(`chip:${packageId}:`))
+        .flatMap((edge) => edge.split(':')[2].split('|'))
+        .map((cell) => cell.split('x').map(Number))
     );
+    const cols = cells.map(([col]) => col);
+    const rows = cells.map(([, row]) => row);
+
+    return {
+      cols: Math.max(...cols) - Math.min(...cols) + 1,
+      rows: Math.max(...rows) - Math.min(...rows) + 1,
+    };
+  };
+
+  it('assembles each PCB microcontroller from parts that only fit each other', () => {
+    const parts = chipParts();
+
     expect(parts.every((tile) => (tile.weight ?? 1) < 1)).toBe(true);
 
     const seams = new Set(
@@ -63,12 +89,13 @@ describe('tile sets', () => {
 
     // One seam per interior edge, so a package of cols x rows has
     // cols * (rows - 1) + rows * (cols - 1) of them.
-    expect(seams.size).toBe(
-      PCB_CHIP_SHAPES.reduce(
-        (count, { cols, rows }) => count + cols * (rows - 1) + rows * (cols - 1),
-        0
-      )
-    );
+    const interiorEdges = packageIds(parts).reduce((count, packageId) => {
+      const { cols, rows } = extent(packageId, parts);
+
+      return count + cols * (rows - 1) + rows * (cols - 1);
+    }, 0);
+
+    expect(seams.size).toBe(interiorEdges);
 
     for (const seam of seams) {
       const touching = parts.flatMap((tile) =>
@@ -82,46 +109,75 @@ describe('tile sets', () => {
   });
 
   it('offers both a square and a rectangular PCB microcontroller footprint', () => {
-    const parts = getTileSet('pcb').tiles.filter((tile) => tile.art?.startsWith('chip'));
-    const extent = (packageId: string) => {
-      const cells = parts.flatMap((tile) =>
-        SIDES.map((side) => tile.edges[side])
-          .filter((edge) => edge.startsWith(`chip:${packageId}:`))
-          .flatMap((edge) => edge.split(':')[2].split('|'))
-          .map((cell) => cell.split('x').map(Number))
-      );
-      const cols = cells.map(([col]) => col);
-      const rows = cells.map(([, row]) => row);
+    const parts = chipParts();
 
-      return {
-        cols: Math.max(...cols) - Math.min(...cols) + 1,
-        rows: Math.max(...rows) - Math.min(...rows) + 1,
-      };
-    };
-
-    expect(PCB_CHIP_SHAPES.map((shape) => extent(shape.id))).toEqual([
+    expect(packageIds(parts).map((packageId) => extent(packageId, parts))).toEqual([
       { cols: 3, rows: 3 },
       { cols: 5, rows: 3 },
     ]);
   });
 
-  it('weighs the terrain set towards land and water rather than sand', () => {
+  it('describes every terrain tile once', () => {
     const tiles = getTileSet('terrain').tiles;
-    const beachSides = (tile: (typeof tiles)[number]) =>
-      SIDES.filter((side) => tile.edges[side] === 'beach').length;
-    const solid = tiles.filter((tile) => beachSides(tile) === 0);
-    const solidBeach = tiles.filter((tile) => beachSides(tile) === SIDES.length);
-    const shoreline = tiles.filter(
-      (tile) => beachSides(tile) > 0 && beachSides(tile) < SIDES.length
+    const layouts = tiles.map((tile) => SIDES.map((side) => tile.edges[side]).join('|'));
+
+    expect(tiles).toHaveLength(68);
+    expect(new Set(layouts).size).toBe(68);
+  });
+
+  it('offers no layout that paints one ground as a stripe down the middle', () => {
+    const tiles = getTileSet('terrain').tiles;
+    const layouts = new Set(tiles.map((tile) => SIDES.map((side) => tile.edges[side]).join('|')));
+
+    // These are the layouts whose art came out as a single thin band of one
+    // ground through the middle of the tile — sand with water on both sides, a
+    // grass strip between sand, and so on. They read as seams rather than
+    // terrain, so the set leaves them out.
+    const stripes = [
+      'land|beach|land|beach',
+      'land|beach|land|water',
+      'land|water|land|beach',
+      'land|water|land|water',
+      'land|water|beach|water',
+      'beach|land|beach|land',
+      'beach|land|water|land',
+      'beach|water|land|water',
+      'beach|water|beach|water',
+      'water|land|beach|land',
+      'water|land|water|land',
+      'water|beach|water|land',
+      'water|beach|water|beach',
+    ];
+
+    expect(stripes.filter((layout) => layouts.has(layout))).toEqual([]);
+  });
+
+  it('weighs solid ground above sand so land and sea grow into regions', () => {
+    const tiles = getTileSet('terrain').tiles;
+    const weight = (tile: Tile) => tile.weight ?? 1;
+    const kinds = (tile: Tile) => new Set(SIDES.map((side) => tile.edges[side]));
+    const sandSides = (tile: Tile) => SIDES.filter((side) => tile.edges[side] === 'beach').length;
+
+    const solid = tiles.filter((tile) => kinds(tile).size === 1);
+    const ground = solid.filter((tile) => tile.edges.top !== 'beach');
+    const carryingSand = tiles.filter((tile) => sandSides(tile) > 0);
+
+    expect(solid.map((tile) => tile.edges.top).sort()).toEqual(['beach', 'land', 'water']);
+    expect(ground.every((tile) => (tile.weight ?? 1) > 5)).toBe(true);
+
+    // Sand belongs on the shore: a tile carrying it must never outrank open
+    // ground, or the map fills with sand instead of land and water.
+    expect(carryingSand.every((tile) => (tile.weight ?? 1) < Math.min(...ground.map(weight)))).toBe(
+      true
     );
 
-    // Solid land and water carry the map, a solid beach cell is not a plain, and
-    // every shoreline layout costs less than open ground.
-    expect(solid.length).toBeGreaterThan(0);
-    expect(solid.every((tile) => (tile.weight ?? 1) > 5)).toBe(true);
-    expect(solidBeach.every((tile) => (tile.weight ?? 1) < 0.1)).toBe(true);
-    expect(shoreline.every((tile) => (tile.weight ?? 1) < 1)).toBe(true);
-    expect(shoreline.length).toBeGreaterThan(solid.length);
+    // A shore is mostly sand, so it is far likelier than a sand-free cliff coast
+    // or a tile where all three grounds meet. Solid sand is not a shore: it is a
+    // sand flat, and it stays as rare as the sand-free coast.
+    const shore = tiles.filter((tile) => sandSides(tile) >= 3 && kinds(tile).size > 1);
+    const sandless = tiles.filter((tile) => !kinds(tile).has('beach') && kinds(tile).size === 2);
+
+    expect(shore.every((tile) => weight(tile) > Math.max(...sandless.map(weight)))).toBe(true);
   });
 
   it('keeps the wire set rules unchanged', () => {
@@ -208,7 +264,7 @@ describe('tile sets', () => {
       ['pcb', 45],
       ['maze', 16],
       ['quilt', 27],
-      ['terrain', 35],
+      ['terrain', 68],
     ]);
   });
 });

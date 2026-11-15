@@ -38,16 +38,36 @@ describe('collapseGrid', () => {
 });
 
 describe('collapseGrid with the terrain set', () => {
-  it('paints continents and seas instead of a field of one-cell patches', () => {
-    const { grid, tiles: terrainTiles } = solve('terrain', 40, 30);
-    const isSolid = (tileId: number) =>
-      SIDES.every((side) => terrainTiles[tileId].edges[side] !== 'beach');
+  const COLS = 30;
 
-    // A beach side only ever occurs where two terrains meet, so a board made of
-    // large regions is mostly solid: otherwise the shoreline would be most of
-    // the map, which is the salt-and-pepper pattern the weights exist to avoid.
-    const solid = grid.filter((cell) => isSolid(cell.options[0])).length;
+  it('never leaves two neighbouring tiles whose labels disagree', () => {
+    for (let run = 0; run < 3; run++) {
+      const { grid, tiles } = solve('terrain', COLS, 20);
 
-    expect(solid).toBeGreaterThan(grid.length * 0.6);
+      expect(grid.every((cell) => cell.collapsed)).toBe(true);
+
+      const seams: [string, string][] = [];
+
+      for (let index = 0; index < grid.length; index++) {
+        const tile = tiles[grid[index].options[0]];
+        const east = index % COLS === COLS - 1 ? undefined : grid[index + 1];
+        const south = index + COLS < grid.length ? grid[index + COLS] : undefined;
+
+        if (east) seams.push([tile.edges.right, tiles[east.options[0]].edges.left]);
+        if (south) seams.push([tile.edges.bottom, tiles[south.options[0]].edges.top]);
+      }
+
+      expect(seams.filter(([here, there]) => here !== there)).toEqual([]);
+    }
+  });
+
+  it('fills the whole board, so no cell is left without a tile', () => {
+    const { grid, tiles } = solve('terrain', COLS, 20);
+    const terrains = new Set(
+      grid.flatMap((cell) => SIDES.map((side) => tiles[cell.options[0]].edges[side]))
+    );
+
+    expect(grid.every((cell) => cell.collapsed)).toBe(true);
+    expect([...terrains].sort()).toEqual(['beach', 'land', 'water']);
   });
 });

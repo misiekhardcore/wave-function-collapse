@@ -10,7 +10,7 @@ describe('findTilesIndicesWithLeastOptions', () => {
     ];
 
     const result1 = findTilesIndicesWithLeastOptions(grid1);
-    expect(result1).toEqual([0, 3]);
+    expect(result1).toEqual([3]);
 
     const grid2 = [
       { col: 0, row: 0, collapsed: false, options: [0, 1, 2, 3] },

@@ -104,11 +104,28 @@ interface Tile {
 }
 ```
 
-The five bundled sets — `wires` (11 tiles), `pcb` (45), `maze` (16), `quilt` (27) and `terrain` (35) — live in `src/lib/tileSets.ts` as `tileSets`, with `getTileSet(id)` and `DEFAULT_TILE_SET_ID` (`'wires'`) alongside them.
+### Tile set definitions
 
-`pcb` draws green copper traces on soldermask. Corners come in a rounded bend and a straight 45° run, straights in a true line and a 45° jog, tees meet at a via, and terminals end in a silver pad — silver appears only in those round pads. Most of its remaining tiles build microcontrollers: each of `PCB_CHIP_SHAPES` (a 3 × 3 square and a 5 × 3 rectangle) is generated as one part per cell, joined by unique `chip:<package>:<cell>|<cell>` seam labels so a package can only come out assembled, with pin legs drawn in the clearance around every board-facing edge and a die on the centre part. Those parts are **weighted down** (`weight`), because a package costs nine or fifteen cells and would otherwise carpet the board.
+The five bundled sets — `wires` (11 tiles), `pcb` (45), `maze` (16), `quilt` (27) and `terrain` (68) — are data, not code. Each one is a JSON file in `src/tileSets/`:
 
-`terrain` is the one set whose labels form a chain — `land` meets only `beach`, `beach` meets only `water` — so a uniform pick scatters one-cell islands and ponds across the board. Its tiles are weighted (solid land and water 20, a solid beach cell 0.02, and each beach side on a tile divides its weight again) so a region keeps growing while it sits on the frontier and coasts form only where land and water actually meet. In the art, the interior of a terrain tile takes the ground it borders and beach is painted as the band along the sides that carry it, so a lone shoreline never reads as a sand blotch in a meadow.
+```json
+{
+  "id": "terrain",
+  "name": "Terrain",
+  "description": "Land, sand and water: every side carries the ground along it…",
+  "tiles": [
+    { "top": "land", "right": "land", "bottom": "land", "left": "land", "weight": 140 },
+    { "top": "land", "right": "beach", "bottom": "water", "left": "beach", "weight": 0.2 },
+    { "top": "beach", "right": "beach", "bottom": "beach", "left": "land", "weight": 9 }
+  ]
+}
+```
+
+A tile is its four side labels plus two optional fields: `weight` (its relative chance of being picked, default 1) and `art` (which painter draws it). The tile's array position is its id, and its neighbours are **derived** from the labels — a tile accepts every tile whose opposite side carries the same label — so adding a tile never means maintaining a neighbour list. `src/lib/tileSets.ts` loads the files, validates them, and exposes `tileSets`, `getTileSet(id)` and `DEFAULT_TILE_SET_ID` (`'wires'`).
+
+`pcb` draws green copper traces on soldermask. Corners come in a rounded bend and a straight 45° run, straights in a true line and a 45° jog, tees meet at a via, and terminals end in a silver pad — silver appears only in those round pads. Most of its remaining tiles build microcontrollers: a 3 × 3 square and a 5 × 3 rectangle, one part per cell, joined by unique `chip:<package>:<cell>|<cell>` seam labels so a package can only come out assembled, with pin legs drawn in the clearance around every board-facing edge and a die on the centre part. Those parts are **weighted down** (`weight`), because a package costs nine or fifteen cells and would otherwise carpet the board.
+
+`terrain` describes **68** assignments of `land`, `beach` and `water` to its four sides: all 81 layouts except the 13 whose art is a single thin band of one ground through the middle of the tile (sand with water on both sides, a grass strip between sand, and so on), which read as seams rather than terrain. Weighting decides the look, not the rules: solid land (140) and water (100) outrank sand, so land and sea grow into regions instead of scattering one-cell ponds; a tile that is mostly sand on three sides (3) is the shore band, and a coast with no sand at all — land and water only (1), or all three grounds in one tile (0.2) — is rare, so sand reads as a beach rather than as filler. Each tile is painted as a block: the ground most of its sides carry, with a band of another ground along every side that disagrees, so a coastline runs along the tile edges and turns at right angles rather than cutting across a tile diagonally.
 
 Tile art is addressed through `getTileArtSrc(setId, tileId)` in `src/lib/tileArt.ts`, which appends `?v=TILE_ART_VERSION` to the PNG path. The file names are stable across regenerations, so after `pnpm tiles` changes the art, bump that constant: otherwise browsers, the Next image optimiser and any CDN keep serving the previous bitmaps, and one pattern ends up mixing old and new tiles.
 
@@ -228,7 +245,6 @@ export type TileEdge =
   | 'color-b'
   | 'color-c'
   | 'land'
-  | 'beach'
   | 'water'
   | ChipSeam;
 

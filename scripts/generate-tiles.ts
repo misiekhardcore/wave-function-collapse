@@ -48,13 +48,13 @@ const QUILT_COLORS: Record<string, string> = {
   'color-c': '#7aa874',
 };
 
-const TERRAINS: TileEdge[] = ['land', 'beach', 'water'];
-
 const TERRAIN_COLORS: Record<string, string> = {
   land: '#78a86b',
   beach: '#e6d3a3',
   water: '#5a8fc4',
 };
+
+const TERRAINS = Object.keys(TERRAIN_COLORS) as TileEdge[];
 
 type Painter = (context: CanvasContext, tile: Tile) => void;
 
@@ -307,38 +307,38 @@ function paintQuilt(context: CanvasContext, tile: Tile) {
   }
 }
 
-/**
- * The interior takes the ground the tile borders: the terrain most of its sides
- * carry, ignoring beach. Beach is only ever the seam between land and water, so
- * it is painted as the band along the sides that carry it. A tile made of beach
- * alone has no ground to show and stays sand.
- */
-function terrainBase(tile: Tile): TileEdge {
-  const count = (terrain: TileEdge) => SIDES.filter((side) => tile.edges[side] === terrain).length;
-  const ground = TERRAINS.filter((terrain) => terrain !== 'beach');
-  const base = ground.reduce((best, terrain) => (count(terrain) > count(best) ? terrain : best));
-
-  return count(base) > 0 ? base : 'beach';
-}
+/** How much of the tile a side's band covers, measured in from that side. */
+const TERRAIN_BAND = Math.round(SIZE * 0.4);
 
 /**
- * The interior takes the majority terrain of the four sides, and every side
- * keeps a band of its own terrain so neighbouring tiles line up.
+ * Every tile is a block of ground: the terrain most of its sides carry, with a
+ * band of the other terrain hugging each side that disagrees. Coastlines come out
+ * of the bands, so they run along the tile edges and turn at right angles — the
+ * tile never splits on a diagonal.
+ *
+ * A coast tile is land on one side and water on the other, with sand on the sides
+ * that run along the shore: the bands leave a strip of sand between the two, and
+ * because the next tile along the coast carries the same sand edge, the beach is
+ * continuous.
  */
 function paintTerrain(context: CanvasContext, tile: Tile) {
-  const base = terrainBase(tile);
-  const band = SIZE * 0.3;
+  const sidesWith = (terrain: TileEdge) => SIDES.filter((side) => tile.edges[side] === terrain);
+  const base = TERRAINS.reduce((best, terrain) =>
+    sidesWith(terrain).length > sidesWith(best).length ? terrain : best
+  );
 
   context.fillStyle = TERRAIN_COLORS[base];
   context.fillRect(0, 0, SIZE, SIZE);
 
   for (const side of SIDES) {
+    if (tile.edges[side] === base) continue;
+
     context.fillStyle = TERRAIN_COLORS[tile.edges[side]];
 
-    if (side === 'top') context.fillRect(0, 0, SIZE, band);
-    if (side === 'right') context.fillRect(SIZE - band, 0, band, SIZE);
-    if (side === 'bottom') context.fillRect(0, SIZE - band, SIZE, band);
-    if (side === 'left') context.fillRect(0, 0, band, SIZE);
+    if (side === 'top') context.fillRect(0, 0, SIZE, TERRAIN_BAND);
+    if (side === 'right') context.fillRect(SIZE - TERRAIN_BAND, 0, TERRAIN_BAND, SIZE);
+    if (side === 'bottom') context.fillRect(0, SIZE - TERRAIN_BAND, SIZE, TERRAIN_BAND);
+    if (side === 'left') context.fillRect(0, 0, TERRAIN_BAND, SIZE);
   }
 }
 

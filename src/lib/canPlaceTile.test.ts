@@ -3,17 +3,16 @@ import type { TileObject } from '@/types';
 import { canPlaceTile } from './canPlaceTile';
 import { collapseGrid } from './collapseGrid';
 import { generateInitialGrid } from './generateInitialGrid';
-import { getTileSet, OPPOSITE_SIDE, PCB_CHIP_SHAPES, SIDES } from './tileSets';
+import { getTileSet, OPPOSITE_SIDE, SIDES } from './tileSets';
 
 const { tiles } = getTileSet('pcb');
 const chipParts = tiles.filter((tile) => tile.art === 'chip' || tile.art === 'chip-body');
 const northWest = chipParts[0];
 const body = chipParts.find((tile) => tile.art === 'chip-body') as (typeof chipParts)[number];
-const wide = PCB_CHIP_SHAPES.find(
-  (shape) => shape.id === 'wide'
-) as (typeof PCB_CHIP_SHAPES)[number];
+
+// Package ids live in the seam labels of the parts that belong to them.
 const widePart = chipParts.find((tile) =>
-  SIDES.some((side) => tile.edges[side].startsWith(`chip:${wide.id}:`))
+  SIDES.some((side) => tile.edges[side].startsWith('chip:wide:'))
 ) as (typeof chipParts)[number];
 
 function emptyGrid(cols: number, rows: number): TileObject[] {

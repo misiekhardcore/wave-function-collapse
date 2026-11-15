@@ -49,9 +49,10 @@ An interactive **Wave Function Collapse algorithm** implementation and visualiza
 
 ### Tile System
 
-- ⚙️ **Five tile sets** the user can switch between: **Wires** (11 tiles), **PCB** (45, green traces with 45° variants and terminal pads, plus microcontrollers in 3 × 3 and 5 × 3 footprints), **Maze** (16), **Quilt** (27) and **Terrain** (35 land / beach / water)
+- ⚙️ **Five tile sets** the user can switch between: **Wires** (11 tiles), **PCB** (45, green traces with 45° variants and terminal pads, plus microcontrollers in 3 × 3 and 5 × 3 footprints), **Maze** (16), **Quilt** (27) and **Terrain** (68 land / sand / water layouts)
+- 🗂️ Each set is a JSON file in `src/tileSets/` — four side labels, an optional weight and art variant per tile — so a set can be edited without touching the solver
 - 🔗 Each tile is described by the label on its four sides; the solver derives every compatible neighbor from those labels
-- 🏝️ Terrain weighs its tiles so land and water grow into continents and seas, with sand along the coast instead of one-cell patches
+- 🏝️ Terrain covers land, sand and water, weighted so ground grows into continents and seas and sand stays on the shore; every tile is painted as a block, so coastlines run along the tile edges and turn at right angles, and no layout is a single stripe of one ground down the middle
 - 👁️ Interactive preview panel showing the selected tile and the tiles allowed on each side
 - 🖼️ Tile art is generated from the same edge data with `pnpm tiles`
 

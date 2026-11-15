@@ -1,6 +1,7 @@
 import type { Tile, TileObject } from '@/types';
 
 import { canPlaceTile } from './canPlaceTile';
+import { isCompatibleWithNeighbours } from './isCompatibleWithNeighbours';
 import { pickWeightedTile } from './pickWeightedTile';
 
 export function generateInitialGrid(
@@ -16,22 +17,39 @@ export function generateInitialGrid(
     collapsed: false,
   }));
 
-  const seedIndices: number[] = [];
   const allTileIds = tiles.map((tile) => tile.id);
+  const seeded: number[] = [];
+  let attempts = 0;
 
-  while (seedIndices.length < countOfInitialTiles && seedIndices.length < grid.length) {
+  // A seed that disagrees with a seed beside it breaks the board from the very
+  // start: every cell around the pair is then asked for two labels at once, and
+  // the run has to give up a seam somewhere. So a cell is only seeded with a
+  // tile its already-decided neighbours accept, and a cell with no such tile is
+  // left for the solver.
+  while (
+    seeded.length < countOfInitialTiles &&
+    seeded.length < grid.length &&
+    attempts < grid.length * 4
+  ) {
+    attempts++;
+
     const index = Math.floor(Math.random() * grid.length);
-    if (!seedIndices.includes(index)) seedIndices.push(index);
-  }
+    if (seeded.includes(index)) continue;
 
-  for (const index of seedIndices) {
-    const placeable = allTileIds.filter((tileId) => canPlaceTile(tileId, index, grid, cols, tiles));
+    const placeable = allTileIds.filter(
+      (tileId) =>
+        canPlaceTile(tileId, index, grid, cols, tiles) &&
+        isCompatibleWithNeighbours(tileId, index, grid, cols, tiles)
+    );
+
+    if (placeable.length === 0) continue;
 
     grid[index] = {
       ...grid[index],
-      options: [pickWeightedTile(placeable.length > 0 ? placeable : allTileIds, tiles)],
+      options: [pickWeightedTile(placeable, tiles)],
       collapsed: true,
     };
+    seeded.push(index);
   }
 
   return grid;
