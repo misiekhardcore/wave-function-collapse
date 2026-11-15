@@ -3,6 +3,8 @@ import { toMatchImageSnapshot } from 'jest-image-snapshot';
 
 expect.extend({ toMatchImageSnapshot });
 
+import { getTileSet } from '@/lib';
+
 import { CanvasGrid } from './CanvasGrid';
 
 describe('CanvasGrid', () => {
@@ -14,7 +16,7 @@ describe('CanvasGrid', () => {
       { col: 1, row: 1, collapsed: true, options: [5] },
     ];
 
-    render(<CanvasGrid grid={grid} cols={2} tileSize={20} />);
+    render(<CanvasGrid grid={grid} cols={2} tileSize={20} tileSet={getTileSet('wires')} />);
     const canvas = await waitFor(() => {
       return screen.getByTestId('canvas');
     });

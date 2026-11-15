@@ -1,0 +1,169 @@
+{
+  "id": "quilt",
+  "name": "Quilt",
+  "description": "Colour-blocked corners sewn into a patchwork.",
+  "tiles": [
+    {
+      "top": "color-a",
+      "right": "color-a",
+      "bottom": "color-a",
+      "left": "color-a"
+    },
+    {
+      "top": "color-b",
+      "right": "color-b",
+      "bottom": "color-b",
+      "left": "color-b"
+    },
+    {
+      "top": "color-c",
+      "right": "color-c",
+      "bottom": "color-c",
+      "left": "color-c"
+    },
+    {
+      "top": "color-a",
+      "right": "color-a",
+      "bottom": "color-b",
+      "left": "color-b"
+    },
+    {
+      "top": "color-a",
+      "right": "color-b",
+      "bottom": "color-a",
+      "left": "color-b"
+    },
+    {
+      "top": "color-a",
+      "right": "color-b",
+      "bottom": "color-b",
+      "left": "color-a"
+    },
+    {
+      "top": "color-a",
+      "right": "color-a",
+      "bottom": "color-a",
+      "left": "color-b"
+    },
+    {
+      "top": "color-a",
+      "right": "color-a",
+      "bottom": "color-c",
+      "left": "color-c"
+    },
+    {
+      "top": "color-a",
+      "right": "color-c",
+      "bottom": "color-a",
+      "left": "color-c"
+    },
+    {
+      "top": "color-a",
+      "right": "color-c",
+      "bottom": "color-c",
+      "left": "color-a"
+    },
+    {
+      "top": "color-a",
+      "right": "color-a",
+      "bottom": "color-a",
+      "left": "color-c"
+    },
+    {
+      "top": "color-b",
+      "right": "color-b",
+      "bottom": "color-a",
+      "left": "color-a"
+    },
+    {
+      "top": "color-b",
+      "right": "color-a",
+      "bottom": "color-b",
+      "left": "color-a"
+    },
+    {
+      "top": "color-b",
+      "right": "color-a",
+      "bottom": "color-a",
+      "left": "color-b"
+    },
+    {
+      "top": "color-b",
+      "right": "color-b",
+      "bottom": "color-b",
+      "left": "color-a"
+    },
+    {
+      "top": "color-b",
+      "right": "color-b",
+      "bottom": "color-c",
+      "left": "color-c"
+    },
+    {
+      "top": "color-b",
+      "right": "color-c",
+      "bottom": "color-b",
+      "left": "color-c"
+    },
+    {
+      "top": "color-b",
+      "right": "color-c",
+      "bottom": "color-c",
+      "left": "color-b"
+    },
+    {
+      "top": "color-b",
+      "right": "color-b",
+      "bottom": "color-b",
+      "left": "color-c"
+    },
+    {
+      "top": "color-c",
+      "right": "color-c",
+      "bottom": "color-a",
+      "left": "color-a"
+    },
+    {
+      "top": "color-c",
+      "right": "color-a",
+      "bottom": "color-c",
+      "left": "color-a"
+    },
+    {
+      "top": "color-c",
+      "right": "color-a",
+      "bottom": "color-a",
+      "left": "color-c"
+    },
+    {
+      "top": "color-c",
+      "right": "color-c",
+      "bottom": "color-c",
+      "left": "color-a"
+    },
+    {
+      "top": "color-c",
+      "right": "color-c",
+      "bottom": "color-b",
+      "left": "color-b"
+    },
+    {
+      "top": "color-c",
+      "right": "color-b",
+      "bottom": "color-c",
+      "left": "color-b"
+    },
+    {
+      "top": "color-c",
+      "right": "color-b",
+      "bottom": "color-b",
+      "left": "color-c"
+    },
+    {
+      "top": "color-c",
+      "right": "color-c",
+      "bottom": "color-c",
+      "left": "color-b"
+    }
+  ]
+}

@@ -1,0 +1,307 @@
+{
+  "id": "pcb",
+  "name": "PCB",
+  "description": "Green board: copper traces, terminal pads and microcontroller packages.",
+  "tiles": [
+    {
+      "top": "open",
+      "right": "open",
+      "bottom": "open",
+      "left": "open"
+    },
+    {
+      "top": "green",
+      "right": "open",
+      "bottom": "open",
+      "left": "green"
+    },
+    {
+      "top": "green",
+      "right": "open",
+      "bottom": "open",
+      "left": "green"
+    },
+    {
+      "top": "green",
+      "right": "green",
+      "bottom": "open",
+      "left": "open"
+    },
+    {
+      "top": "green",
+      "right": "green",
+      "bottom": "open",
+      "left": "open"
+    },
+    {
+      "top": "open",
+      "right": "open",
+      "bottom": "green",
+      "left": "green"
+    },
+    {
+      "top": "open",
+      "right": "open",
+      "bottom": "green",
+      "left": "green"
+    },
+    {
+      "top": "open",
+      "right": "green",
+      "bottom": "green",
+      "left": "open"
+    },
+    {
+      "top": "open",
+      "right": "green",
+      "bottom": "green",
+      "left": "open"
+    },
+    {
+      "top": "green",
+      "right": "open",
+      "bottom": "green",
+      "left": "open"
+    },
+    {
+      "top": "green",
+      "right": "open",
+      "bottom": "green",
+      "left": "open",
+      "weight": 0.5
+    },
+    {
+      "top": "open",
+      "right": "green",
+      "bottom": "open",
+      "left": "green"
+    },
+    {
+      "top": "open",
+      "right": "green",
+      "bottom": "open",
+      "left": "green",
+      "weight": 0.5
+    },
+    {
+      "top": "green",
+      "right": "green",
+      "bottom": "open",
+      "left": "green"
+    },
+    {
+      "top": "green",
+      "right": "green",
+      "bottom": "green",
+      "left": "open"
+    },
+    {
+      "top": "open",
+      "right": "green",
+      "bottom": "green",
+      "left": "green"
+    },
+    {
+      "top": "green",
+      "right": "open",
+      "bottom": "green",
+      "left": "green"
+    },
+    {
+      "top": "green",
+      "right": "open",
+      "bottom": "open",
+      "left": "open",
+      "weight": 0.3
+    },
+    {
+      "top": "open",
+      "right": "green",
+      "bottom": "open",
+      "left": "open",
+      "weight": 0.3
+    },
+    {
+      "top": "open",
+      "right": "open",
+      "bottom": "green",
+      "left": "open",
+      "weight": 0.3
+    },
+    {
+      "top": "open",
+      "right": "open",
+      "bottom": "open",
+      "left": "green",
+      "weight": 0.3
+    },
+    {
+      "top": "open",
+      "right": "chip:square:0x0|1x0",
+      "bottom": "chip:square:0x0|0x1",
+      "left": "open",
+      "weight": 0.3
+    },
+    {
+      "top": "open",
+      "right": "chip:square:1x0|2x0",
+      "bottom": "chip:square:1x0|1x1",
+      "left": "chip:square:0x0|1x0",
+      "weight": 0.3
+    },
+    {
+      "top": "open",
+      "right": "open",
+      "bottom": "chip:square:2x0|2x1",
+      "left": "chip:square:1x0|2x0",
+      "weight": 0.3
+    },
+    {
+      "top": "chip:square:0x0|0x1",
+      "right": "chip:square:0x1|1x1",
+      "bottom": "chip:square:0x1|0x2",
+      "left": "open",
+      "weight": 0.3
+    },
+    {
+      "top": "chip:square:1x0|1x1",
+      "right": "chip:square:1x1|2x1",
+      "bottom": "chip:square:1x1|1x2",
+      "left": "chip:square:0x1|1x1",
+      "weight": 0.3
+    },
+    {
+      "top": "chip:square:2x0|2x1",
+      "right": "open",
+      "bottom": "chip:square:2x1|2x2",
+      "left": "chip:square:1x1|2x1",
+      "weight": 0.3
+    },
+    {
+      "top": "chip:square:0x1|0x2",
+      "right": "chip:square:0x2|1x2",
+      "bottom": "open",
+      "left": "open",
+      "weight": 0.3
+    },
+    {
+      "top": "chip:square:1x1|1x2",
+      "right": "chip:square:1x2|2x2",
+      "bottom": "open",
+      "left": "chip:square:0x2|1x2",
+      "weight": 0.3
+    },
+    {
+      "top": "chip:square:2x1|2x2",
+      "right": "open",
+      "bottom": "open",
+      "left": "chip:square:1x2|2x2",
+      "weight": 0.3
+    },
+    {
+      "top": "open",
+      "right": "chip:wide:0x0|1x0",
+      "bottom": "chip:wide:0x0|0x1",
+      "left": "open",
+      "weight": 0.2
+    },
+    {
+      "top": "open",
+      "right": "chip:wide:1x0|2x0",
+      "bottom": "chip:wide:1x0|1x1",
+      "left": "chip:wide:0x0|1x0",
+      "weight": 0.2
+    },
+    {
+      "top": "open",
+      "right": "chip:wide:2x0|3x0",
+      "bottom": "chip:wide:2x0|2x1",
+      "left": "chip:wide:1x0|2x0",
+      "weight": 0.2
+    },
+    {
+      "top": "open",
+      "right": "chip:wide:3x0|4x0",
+      "bottom": "chip:wide:3x0|3x1",
+      "left": "chip:wide:2x0|3x0",
+      "weight": 0.2
+    },
+    {
+      "top": "open",
+      "right": "open",
+      "bottom": "chip:wide:4x0|4x1",
+      "left": "chip:wide:3x0|4x0",
+      "weight": 0.2
+    },
+    {
+      "top": "chip:wide:0x0|0x1",
+      "right": "chip:wide:0x1|1x1",
+      "bottom": "chip:wide:0x1|0x2",
+      "left": "open",
+      "weight": 0.2
+    },
+    {
+      "top": "chip:wide:1x0|1x1",
+      "right": "chip:wide:1x1|2x1",
+      "bottom": "chip:wide:1x1|1x2",
+      "left": "chip:wide:0x1|1x1",
+      "weight": 0.2
+    },
+    {
+      "top": "chip:wide:2x0|2x1",
+      "right": "chip:wide:2x1|3x1",
+      "bottom": "chip:wide:2x1|2x2",
+      "left": "chip:wide:1x1|2x1",
+      "weight": 0.2
+    },
+    {
+      "top": "chip:wide:3x0|3x1",
+      "right": "chip:wide:3x1|4x1",
+      "bottom": "chip:wide:3x1|3x2",
+      "left": "chip:wide:2x1|3x1",
+      "weight": 0.2
+    },
+    {
+      "top": "chip:wide:4x0|4x1",
+      "right": "open",
+      "bottom": "chip:wide:4x1|4x2",
+      "left": "chip:wide:3x1|4x1",
+      "weight": 0.2
+    },
+    {
+      "top": "chip:wide:0x1|0x2",
+      "right": "chip:wide:0x2|1x2",
+      "bottom": "open",
+      "left": "open",
+      "weight": 0.2
+    },
+    {
+      "top": "chip:wide:1x1|1x2",
+      "right": "chip:wide:1x2|2x2",
+      "bottom": "open",
+      "left": "chip:wide:0x2|1x2",
+      "weight": 0.2
+    },
+    {
+      "top": "chip:wide:2x1|2x2",
+      "right": "chip:wide:2x2|3x2",
+      "bottom": "open",
+      "left": "chip:wide:1x2|2x2",
+      "weight": 0.2
+    },
+    {
+      "top": "chip:wide:3x1|3x2",
+      "right": "chip:wide:3x2|4x2",
+      "bottom": "open",
+      "left": "chip:wide:2x2|3x2",
+      "weight": 0.2
+    },
+    {
+      "top": "chip:wide:4x1|4x2",
+      "right": "open",
+      "bottom": "open",
+      "left": "chip:wide:3x2|4x2",
+      "weight": 0.2
+    }
+  ]
+}

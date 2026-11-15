@@ -1,12 +1,14 @@
-import type { TileObject } from '@/types';
+import type { Tile, TileObject } from '@/types';
 
-import { pickRandomArrayElement } from './pickRandomArrayElement';
-import { tiles } from './tiles';
+import { canPlaceTile } from './canPlaceTile';
+import { isCompatibleWithNeighbours } from './isCompatibleWithNeighbours';
+import { pickWeightedTile } from './pickWeightedTile';
 
 export function generateInitialGrid(
   countOfInitialTiles: number,
   cols: number,
-  rows: number
+  rows: number,
+  tiles: Tile[]
 ): TileObject[] {
   const grid: TileObject[] = Array.from({ length: cols * rows }).map((_, idx) => ({
     col: idx % cols,
@@ -15,21 +17,40 @@ export function generateInitialGrid(
     collapsed: false,
   }));
 
-  const randomTiles: TileObject[] = [];
-  Array.from({ length: countOfInitialTiles }).forEach(() => {
-    let randomTile = pickRandomArrayElement(grid);
-    while (randomTiles.includes(randomTile)) {
-      randomTile = pickRandomArrayElement(grid);
-    }
-    randomTiles.push(randomTile);
-  });
-  randomTiles.forEach((tile) => {
-    grid[grid.indexOf(tile)] = {
-      ...tile,
-      options: [pickRandomArrayElement(tiles).id],
+  const allTileIds = tiles.map((tile) => tile.id);
+  const seeded: number[] = [];
+  let attempts = 0;
+
+  // A seed that disagrees with a seed beside it breaks the board from the very
+  // start: every cell around the pair is then asked for two labels at once, and
+  // the run has to give up a seam somewhere. So a cell is only seeded with a
+  // tile its already-decided neighbours accept, and a cell with no such tile is
+  // left for the solver.
+  while (
+    seeded.length < countOfInitialTiles &&
+    seeded.length < grid.length &&
+    attempts < grid.length * 4
+  ) {
+    attempts++;
+
+    const index = Math.floor(Math.random() * grid.length);
+    if (seeded.includes(index)) continue;
+
+    const placeable = allTileIds.filter(
+      (tileId) =>
+        canPlaceTile(tileId, index, grid, cols, tiles) &&
+        isCompatibleWithNeighbours(tileId, index, grid, cols, tiles)
+    );
+
+    if (placeable.length === 0) continue;
+
+    grid[index] = {
+      ...grid[index],
+      options: [pickWeightedTile(placeable, tiles)],
       collapsed: true,
     };
-  });
+    seeded.push(index);
+  }
 
   return grid;
 }

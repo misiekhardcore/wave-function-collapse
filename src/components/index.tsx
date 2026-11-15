@@ -5,4 +5,5 @@ export { PatternControls } from './PatternControls';
 export { Stage } from './Stage';
 export { ThemeProvider } from './ThemeProvider';
 export { ThemeToggle } from './ThemeToggle';
+export { TileSetPicker } from './TileSetPicker';
 export { TilesPreview } from './TilesPreview';

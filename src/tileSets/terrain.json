@@ -1,0 +1,483 @@
+{
+  "id": "terrain",
+  "name": "Terrain",
+  "description": "Land, sand and water: every side carries the ground along it and every combination of the three is a tile, so a shore never runs out of shapes to follow a coast.",
+  "tiles": [
+    {
+      "top": "land",
+      "right": "land",
+      "bottom": "land",
+      "left": "land",
+      "weight": 140
+    },
+    {
+      "top": "land",
+      "right": "land",
+      "bottom": "land",
+      "left": "beach",
+      "weight": 1.5
+    },
+    {
+      "top": "land",
+      "right": "land",
+      "bottom": "land",
+      "left": "water",
+      "weight": 1
+    },
+    {
+      "top": "land",
+      "right": "land",
+      "bottom": "beach",
+      "left": "land",
+      "weight": 1.5
+    },
+    {
+      "top": "land",
+      "right": "land",
+      "bottom": "beach",
+      "left": "beach",
+      "weight": 2
+    },
+    {
+      "top": "land",
+      "right": "land",
+      "bottom": "beach",
+      "left": "water",
+      "weight": 0.2
+    },
+    {
+      "top": "land",
+      "right": "land",
+      "bottom": "water",
+      "left": "land",
+      "weight": 1
+    },
+    {
+      "top": "land",
+      "right": "land",
+      "bottom": "water",
+      "left": "beach",
+      "weight": 0.2
+    },
+    {
+      "top": "land",
+      "right": "land",
+      "bottom": "water",
+      "left": "water",
+      "weight": 1
+    },
+    {
+      "top": "land",
+      "right": "beach",
+      "bottom": "land",
+      "left": "land",
+      "weight": 1.5
+    },
+    {
+      "top": "land",
+      "right": "beach",
+      "bottom": "beach",
+      "left": "land",
+      "weight": 2
+    },
+    {
+      "top": "land",
+      "right": "beach",
+      "bottom": "beach",
+      "left": "beach",
+      "weight": 3
+    },
+    {
+      "top": "land",
+      "right": "beach",
+      "bottom": "beach",
+      "left": "water",
+      "weight": 0.2
+    },
+    {
+      "top": "land",
+      "right": "beach",
+      "bottom": "water",
+      "left": "land",
+      "weight": 0.2
+    },
+    {
+      "top": "land",
+      "right": "beach",
+      "bottom": "water",
+      "left": "beach",
+      "weight": 0.2
+    },
+    {
+      "top": "land",
+      "right": "beach",
+      "bottom": "water",
+      "left": "water",
+      "weight": 0.2
+    },
+    {
+      "top": "land",
+      "right": "water",
+      "bottom": "land",
+      "left": "land",
+      "weight": 1
+    },
+    {
+      "top": "land",
+      "right": "water",
+      "bottom": "beach",
+      "left": "land",
+      "weight": 0.2
+    },
+    {
+      "top": "land",
+      "right": "water",
+      "bottom": "beach",
+      "left": "beach",
+      "weight": 0.2
+    },
+    {
+      "top": "land",
+      "right": "water",
+      "bottom": "water",
+      "left": "land",
+      "weight": 1
+    },
+    {
+      "top": "land",
+      "right": "water",
+      "bottom": "water",
+      "left": "beach",
+      "weight": 0.2
+    },
+    {
+      "top": "land",
+      "right": "water",
+      "bottom": "water",
+      "left": "water",
+      "weight": 1
+    },
+    {
+      "top": "beach",
+      "right": "land",
+      "bottom": "land",
+      "left": "land",
+      "weight": 1.5
+    },
+    {
+      "top": "beach",
+      "right": "land",
+      "bottom": "land",
+      "left": "beach",
+      "weight": 2
+    },
+    {
+      "top": "beach",
+      "right": "land",
+      "bottom": "land",
+      "left": "water",
+      "weight": 0.2
+    },
+    {
+      "top": "beach",
+      "right": "land",
+      "bottom": "beach",
+      "left": "beach",
+      "weight": 3
+    },
+    {
+      "top": "beach",
+      "right": "land",
+      "bottom": "beach",
+      "left": "water",
+      "weight": 0.2
+    },
+    {
+      "top": "beach",
+      "right": "land",
+      "bottom": "water",
+      "left": "beach",
+      "weight": 0.2
+    },
+    {
+      "top": "beach",
+      "right": "land",
+      "bottom": "water",
+      "left": "water",
+      "weight": 0.2
+    },
+    {
+      "top": "beach",
+      "right": "beach",
+      "bottom": "land",
+      "left": "land",
+      "weight": 2
+    },
+    {
+      "top": "beach",
+      "right": "beach",
+      "bottom": "land",
+      "left": "beach",
+      "weight": 3
+    },
+    {
+      "top": "beach",
+      "right": "beach",
+      "bottom": "land",
+      "left": "water",
+      "weight": 0.2
+    },
+    {
+      "top": "beach",
+      "right": "beach",
+      "bottom": "beach",
+      "left": "land",
+      "weight": 3
+    },
+    {
+      "top": "beach",
+      "right": "beach",
+      "bottom": "beach",
+      "left": "beach",
+      "weight": 0.2
+    },
+    {
+      "top": "beach",
+      "right": "beach",
+      "bottom": "beach",
+      "left": "water",
+      "weight": 3
+    },
+    {
+      "top": "beach",
+      "right": "beach",
+      "bottom": "water",
+      "left": "land",
+      "weight": 0.2
+    },
+    {
+      "top": "beach",
+      "right": "beach",
+      "bottom": "water",
+      "left": "beach",
+      "weight": 3
+    },
+    {
+      "top": "beach",
+      "right": "beach",
+      "bottom": "water",
+      "left": "water",
+      "weight": 2
+    },
+    {
+      "top": "beach",
+      "right": "water",
+      "bottom": "land",
+      "left": "land",
+      "weight": 0.2
+    },
+    {
+      "top": "beach",
+      "right": "water",
+      "bottom": "land",
+      "left": "beach",
+      "weight": 0.2
+    },
+    {
+      "top": "beach",
+      "right": "water",
+      "bottom": "beach",
+      "left": "land",
+      "weight": 0.2
+    },
+    {
+      "top": "beach",
+      "right": "water",
+      "bottom": "beach",
+      "left": "beach",
+      "weight": 3
+    },
+    {
+      "top": "beach",
+      "right": "water",
+      "bottom": "water",
+      "left": "land",
+      "weight": 0.2
+    },
+    {
+      "top": "beach",
+      "right": "water",
+      "bottom": "water",
+      "left": "beach",
+      "weight": 2
+    },
+    {
+      "top": "beach",
+      "right": "water",
+      "bottom": "water",
+      "left": "water",
+      "weight": 1.5
+    },
+    {
+      "top": "water",
+      "right": "land",
+      "bottom": "land",
+      "left": "land",
+      "weight": 1
+    },
+    {
+      "top": "water",
+      "right": "land",
+      "bottom": "land",
+      "left": "beach",
+      "weight": 0.2
+    },
+    {
+      "top": "water",
+      "right": "land",
+      "bottom": "land",
+      "left": "water",
+      "weight": 1
+    },
+    {
+      "top": "water",
+      "right": "land",
+      "bottom": "beach",
+      "left": "beach",
+      "weight": 0.2
+    },
+    {
+      "top": "water",
+      "right": "land",
+      "bottom": "beach",
+      "left": "water",
+      "weight": 0.2
+    },
+    {
+      "top": "water",
+      "right": "land",
+      "bottom": "water",
+      "left": "beach",
+      "weight": 0.2
+    },
+    {
+      "top": "water",
+      "right": "land",
+      "bottom": "water",
+      "left": "water",
+      "weight": 1
+    },
+    {
+      "top": "water",
+      "right": "beach",
+      "bottom": "land",
+      "left": "land",
+      "weight": 0.2
+    },
+    {
+      "top": "water",
+      "right": "beach",
+      "bottom": "land",
+      "left": "beach",
+      "weight": 0.2
+    },
+    {
+      "top": "water",
+      "right": "beach",
+      "bottom": "land",
+      "left": "water",
+      "weight": 0.2
+    },
+    {
+      "top": "water",
+      "right": "beach",
+      "bottom": "beach",
+      "left": "land",
+      "weight": 0.2
+    },
+    {
+      "top": "water",
+      "right": "beach",
+      "bottom": "beach",
+      "left": "beach",
+      "weight": 3
+    },
+    {
+      "top": "water",
+      "right": "beach",
+      "bottom": "beach",
+      "left": "water",
+      "weight": 2
+    },
+    {
+      "top": "water",
+      "right": "beach",
+      "bottom": "water",
+      "left": "water",
+      "weight": 1.5
+    },
+    {
+      "top": "water",
+      "right": "water",
+      "bottom": "land",
+      "left": "land",
+      "weight": 1
+    },
+    {
+      "top": "water",
+      "right": "water",
+      "bottom": "land",
+      "left": "beach",
+      "weight": 0.2
+    },
+    {
+      "top": "water",
+      "right": "water",
+      "bottom": "land",
+      "left": "water",
+      "weight": 1
+    },
+    {
+      "top": "water",
+      "right": "water",
+      "bottom": "beach",
+      "left": "land",
+      "weight": 0.2
+    },
+    {
+      "top": "water",
+      "right": "water",
+      "bottom": "beach",
+      "left": "beach",
+      "weight": 2
+    },
+    {
+      "top": "water",
+      "right": "water",
+      "bottom": "beach",
+      "left": "water",
+      "weight": 1.5
+    },
+    {
+      "top": "water",
+      "right": "water",
+      "bottom": "water",
+      "left": "land",
+      "weight": 1
+    },
+    {
+      "top": "water",
+      "right": "water",
+      "bottom": "water",
+      "left": "beach",
+      "weight": 1.5
+    },
+    {
+      "top": "water",
+      "right": "water",
+      "bottom": "water",
+      "left": "water",
+      "weight": 100
+    }
+  ]
+}

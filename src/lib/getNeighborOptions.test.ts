@@ -4,7 +4,9 @@ import {
   getRightOptions,
   getTopOptions,
 } from './getNeighborOptions';
-import { tiles } from './tiles';
+import { getTileSet } from './tileSets';
+
+const tiles = getTileSet('wires').tiles;
 
 describe('getTopOptions', () => {
   it('should return the options of the tile to the top if it exists', () => {
@@ -15,7 +17,7 @@ describe('getTopOptions', () => {
       { col: 1, row: 1, collapsed: false, options: [2] },
     ];
     const cols = 2;
-    const result = getTopOptions(2, grid, cols);
+    const result = getTopOptions(2, grid, cols, tiles);
     expect(result).toEqual(tiles[0].bottom);
   });
 
@@ -27,7 +29,7 @@ describe('getTopOptions', () => {
       { col: 1, row: 1, collapsed: true, options: [2] },
     ];
     const cols = 2;
-    const result = getTopOptions(0, grid, cols);
+    const result = getTopOptions(0, grid, cols, tiles);
     expect(result).toEqual([]);
   });
 
@@ -39,7 +41,7 @@ describe('getTopOptions', () => {
       { col: 1, row: 1, collapsed: true, options: [2] },
     ];
     const cols = 2;
-    const result = getTopOptions(2, grid, cols);
+    const result = getTopOptions(2, grid, cols, tiles);
     expect(result).toEqual([]);
   });
 });
@@ -53,7 +55,7 @@ describe('getRightOptions', () => {
       { col: 1, row: 1, collapsed: false, options: [2] },
     ];
     const cols = 2;
-    const result = getRightOptions(0, grid, cols);
+    const result = getRightOptions(0, grid, cols, tiles);
     expect(result).toEqual(tiles[0].left);
   });
 
@@ -65,7 +67,7 @@ describe('getRightOptions', () => {
       { col: 1, row: 1, collapsed: true, options: [0] },
     ];
     const cols = 2;
-    const result = getRightOptions(1, grid, cols);
+    const result = getRightOptions(1, grid, cols, tiles);
     expect(result).toEqual([]);
   });
 
@@ -77,7 +79,7 @@ describe('getRightOptions', () => {
       { col: 1, row: 1, collapsed: true, options: [2] },
     ];
     const cols = 2;
-    const result = getRightOptions(0, grid, cols);
+    const result = getRightOptions(0, grid, cols, tiles);
     expect(result).toEqual([]);
   });
 });
@@ -91,7 +93,7 @@ describe('getBottomOptions', () => {
       { col: 1, row: 1, collapsed: false, options: [2] },
     ];
     const cols = 2;
-    const result = getBottomOptions(0, grid, cols);
+    const result = getBottomOptions(0, grid, cols, tiles);
     expect(result).toEqual(tiles[0].top);
   });
 
@@ -103,7 +105,7 @@ describe('getBottomOptions', () => {
       { col: 1, row: 1, collapsed: true, options: [2] },
     ];
     const cols = 2;
-    const result = getBottomOptions(2, grid, cols);
+    const result = getBottomOptions(2, grid, cols, tiles);
     expect(result).toEqual([]);
   });
 
@@ -115,7 +117,7 @@ describe('getBottomOptions', () => {
       { col: 1, row: 1, collapsed: true, options: [2] },
     ];
     const cols = 2;
-    const result = getBottomOptions(0, grid, cols);
+    const result = getBottomOptions(0, grid, cols, tiles);
     expect(result).toEqual([]);
   });
 });
@@ -129,7 +131,7 @@ describe('getLeftOptions', () => {
       { col: 1, row: 1, collapsed: false, options: [2] },
     ];
     const cols = 2;
-    const result = getLeftOptions(1, grid, cols);
+    const result = getLeftOptions(1, grid, cols, tiles);
     expect(result).toEqual(tiles[0].right);
   });
 
@@ -141,7 +143,7 @@ describe('getLeftOptions', () => {
       { col: 1, row: 1, collapsed: true, options: [2] },
     ];
     const cols = 2;
-    const result = getLeftOptions(0, grid, cols);
+    const result = getLeftOptions(0, grid, cols, tiles);
     expect(result).toEqual([]);
   });
 
@@ -153,7 +155,7 @@ describe('getLeftOptions', () => {
       { col: 1, row: 1, collapsed: true, options: [2] },
     ];
     const cols = 2;
-    const result = getLeftOptions(1, grid, cols);
+    const result = getLeftOptions(1, grid, cols, tiles);
     expect(result).toEqual([]);
   });
 });

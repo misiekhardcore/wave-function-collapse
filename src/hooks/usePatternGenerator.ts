@@ -4,11 +4,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   collapseGrid,
+  DEFAULT_TILE_SET_ID,
   downloadCanvasAsImage,
   generateDownloadFilename,
   generateInitialGrid,
+  getTileSet,
 } from '@/lib';
-import type { TileObject } from '@/types';
+import type { Tile, TileObject, TileSet, TileSetId } from '@/types';
 
 export const SEED_TILES_COUNT = 10;
 export const TILE_SIZE = 10;
@@ -36,6 +38,8 @@ export type PatternGenerator = {
   grid: TileObject[];
   columns: number;
   rows: number;
+  tileSet: TileSet;
+  setTileSet: (id: TileSetId) => void;
   status: GenerationStatus;
   isRunning: boolean;
   isComplete: boolean;
@@ -56,8 +60,8 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
 
-function createGrid(columns: number, rows: number): TileObject[] {
-  return generateInitialGrid(SEED_TILES_COUNT, columns, rows);
+function createGrid(tiles: Tile[], columns: number, rows: number): TileObject[] {
+  return generateInitialGrid(SEED_TILES_COUNT, columns, rows, tiles);
 }
 
 /**
@@ -71,7 +75,11 @@ function createGrid(columns: number, rows: number): TileObject[] {
  * updater (React may invoke those twice).
  */
 export function usePatternGenerator(): PatternGenerator {
-  const [grid, setGrid] = useState<TileObject[]>(() => createGrid(DEFAULT_COLUMNS, DEFAULT_ROWS));
+  const [tileSetId, setTileSetId] = useState<TileSetId>(DEFAULT_TILE_SET_ID);
+  const tileSet = getTileSet(tileSetId);
+  const [grid, setGrid] = useState<TileObject[]>(() =>
+    createGrid(getTileSet(DEFAULT_TILE_SET_ID).tiles, DEFAULT_COLUMNS, DEFAULT_ROWS)
+  );
   const [columns, setColumnsState] = useState(DEFAULT_COLUMNS);
   const [rows, setRowsState] = useState(DEFAULT_ROWS);
   const [status, setStatus] = useState<GenerationStatus>('idle');
@@ -126,9 +134,9 @@ export function usePatternGenerator(): PatternGenerator {
       reset();
       setColumnsState(nextColumns);
       setRowsState(nextRows);
-      commitGrid(createGrid(nextColumns, nextRows));
+      commitGrid(createGrid(tileSet.tiles, nextColumns, nextRows));
     },
-    [commitGrid, reset]
+    [commitGrid, reset, tileSet]
   );
 
   const setColumns = useCallback(
@@ -152,15 +160,24 @@ export function usePatternGenerator(): PatternGenerator {
     [stopTimers]
   );
 
+  const setTileSet = useCallback(
+    (id: TileSetId) => {
+      reset();
+      setTileSetId(id);
+      commitGrid(createGrid(getTileSet(id).tiles, columns, rows));
+    },
+    [columns, rows, commitGrid, reset]
+  );
+
   const restart = useCallback(() => {
     reset();
-    commitGrid(createGrid(columns, rows));
-  }, [columns, rows, commitGrid, reset]);
+    commitGrid(createGrid(tileSet.tiles, columns, rows));
+  }, [columns, rows, commitGrid, reset, tileSet]);
 
   const animate = useCallback(() => {
     reset();
     const runId = runIdRef.current;
-    const initialGrid = createGrid(columns, rows);
+    const initialGrid = createGrid(tileSet.tiles, columns, rows);
     const frames = ANIMATION_DURATION_MS / ANIMATION_STEP_MS;
     const collapsesPerFrame = Math.max(1, Math.ceil(initialGrid.length / frames));
 
@@ -174,7 +191,7 @@ export function usePatternGenerator(): PatternGenerator {
       try {
         let nextGrid = gridRef.current;
         for (let step = 0; step < collapsesPerFrame; step++) {
-          nextGrid = collapseGrid(nextGrid, columns);
+          nextGrid = collapseGrid(nextGrid, columns, tileSet.tiles);
         }
 
         const isComplete = nextGrid.every((tile) => tile.collapsed);
@@ -184,12 +201,12 @@ export function usePatternGenerator(): PatternGenerator {
         finish(runId, 'stuck');
       }
     }, ANIMATION_STEP_MS);
-  }, [columns, rows, commitGrid, finish, reset]);
+  }, [columns, rows, commitGrid, finish, reset, tileSet]);
 
   const generate = useCallback(() => {
     reset();
     const runId = runIdRef.current;
-    const initialGrid = createGrid(columns, rows);
+    const initialGrid = createGrid(tileSet.tiles, columns, rows);
 
     setStartTime(Date.now());
     setStatus('running');
@@ -207,7 +224,7 @@ export function usePatternGenerator(): PatternGenerator {
         // more steps than it has cells.
         for (let step = 0; step < initialGrid.length; step++) {
           if (nextGrid.every((tile) => tile.collapsed)) break;
-          nextGrid = collapseGrid(nextGrid, columns);
+          nextGrid = collapseGrid(nextGrid, columns, tileSet.tiles);
         }
 
         const isComplete = nextGrid.every((tile) => tile.collapsed);
@@ -218,7 +235,7 @@ export function usePatternGenerator(): PatternGenerator {
         finish(runId, 'stuck');
       }
     }, 0);
-  }, [columns, rows, commitGrid, finish, reset]);
+  }, [columns, rows, commitGrid, finish, reset, tileSet]);
 
   const download = useCallback(() => {
     downloadCanvasAsImage(canvasRef.current, generateDownloadFilename());
@@ -235,6 +252,8 @@ export function usePatternGenerator(): PatternGenerator {
     grid,
     columns,
     rows,
+    tileSet,
+    setTileSet,
     status,
     isRunning: status === 'running',
     isComplete: totalTiles > 0 && collapsedTiles === totalTiles,
