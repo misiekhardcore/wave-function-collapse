@@ -64,12 +64,25 @@ describe('pickWeightedTile', () => {
     }
   });
 
-  it('should weigh a pair once that neighbour is decided', () => {
-    const tiles = [tile(0, 1, { left: { 0: 0.001 } }), tile(1, 1)];
+  it('should never pick a pair the cell rules out', () => {
+    const tiles = [tile(0, 1, { left: { 0: 0 } }), tile(1, 1)];
 
     for (let draw = 0; draw < 200; draw++) {
       expect(pickWeightedTile([0, 1], tiles, context(0))).toBe(1);
     }
+  });
+
+  it('should favour the pair the cell allows', () => {
+    const tiles = [tile(0, 1, { left: { 0: 0.001 } }), tile(1, 1)];
+    let favouring = 0;
+
+    for (let draw = 0; draw < 1000; draw++) {
+      if (pickWeightedTile([0, 1], tiles, context(0)) === 1) favouring++;
+    }
+
+    // The pair weighs a thousandth of its neighbour, so over a thousand draws
+    // the other tile should lose only a handful of them.
+    expect(favouring).toBeGreaterThan(985);
   });
 
   it('should weigh the same side differently for a different neighbour', () => {
