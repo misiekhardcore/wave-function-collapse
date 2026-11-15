@@ -1,7 +1,7 @@
 import type { Tile, TileObject } from '@/types';
 
 import { calculateOptions } from './calculateOptions';
-import { canPlaceTile } from './canPlaceTile';
+import { canPlaceTile, getPackagePartners } from './canPlaceTile';
 import { findTilesIndicesWithLeastOptions } from './findTilesIndicesWithLeastOptions';
 import { isCompatibleWithNeighbours } from './isCompatibleWithNeighbours';
 import { pickRandomArrayElement } from './pickRandomArrayElement';
@@ -9,6 +9,8 @@ import { pickWeightedTile } from './pickWeightedTile';
 
 /** True when any decided neighbour belongs to a chip package. */
 function touchesPackage(index: number, grid: TileObject[], cols: number, tiles: Tile[]): boolean {
+  const partners = getPackagePartners(tiles);
+
   const neighbours = [
     index - cols >= 0 ? index - cols : -1,
     index % cols < cols - 1 ? index + 1 : -1,
@@ -22,9 +24,9 @@ function touchesPackage(index: number, grid: TileObject[], cols: number, tiles: 
     const cell = grid[neighbour];
     if (!cell.collapsed) return false;
 
-    const art = tiles[cell.options[0]].art;
-
-    return art === 'chip' || art === 'chip-body';
+    // Package parts are the tiles sharing a seam label that occurs exactly
+    // twice, on opposite sides — the labels say so, so art never has to.
+    return partners.has(cell.options[0]);
   });
 }
 

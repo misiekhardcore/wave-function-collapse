@@ -20,7 +20,7 @@ The heart of the WFC algorithm — performs one iteration step.
  *
  * @param grid - Current state of all tiles with their options and collapsed status
  * @param cols - Number of columns in the grid (used for neighbor calculations)
- * @param tiles - Tile definitions of the active set (rules + art labels)
+ * @param tiles - Tile definitions of the active set (side labels + weights)
  * @returns Updated tile states after one collapse step, or early termination if stuck
  */
 export function collapseGrid(grid: TileObject[], cols: number, tiles: Tile[]): TileObject[];
@@ -121,11 +121,11 @@ The five bundled sets — `wires` (11 tiles), `pcb` (45), `maze` (16), `quilt` (
 }
 ```
 
-A tile is its four side labels plus two optional fields: `weight` (its relative chance of being picked, default 1) and `art` (which painter draws it). The tile's array position is its id, and its neighbours are **derived** from the labels — a tile accepts every tile whose opposite side carries the same label — so adding a tile never means maintaining a neighbour list. `src/lib/tileSets.ts` loads the files, validates them, and exposes `tileSets`, `getTileSet(id)` and `DEFAULT_TILE_SET_ID` (`'wires'`).
+A tile is its four side labels plus an optional `weight` (its relative chance of being picked, default 1). Nothing else is stored per tile: the artwork is derived from the same labels, so a tile cannot describe a picture its rules do not already imply. The tile's array position is its id, and its neighbours are **derived** from the labels — a tile accepts every tile whose opposite side carries the same label — so adding a tile never means maintaining a neighbour list. `src/lib/tileSets.ts` loads the files, validates them, and exposes `tileSets`, `getTileSet(id)` and `DEFAULT_TILE_SET_ID` (`'wires'`).
 
-`pcb` draws green copper traces on soldermask. Corners come in a rounded bend and a straight 45° run, straights in a true line and a 45° jog, tees meet at a via, and terminals end in a silver pad — silver appears only in those round pads. Most of its remaining tiles build microcontrollers: a 3 × 3 square and a 5 × 3 rectangle, one part per cell, joined by unique `chip:<package>:<cell>|<cell>` seam labels so a package can only come out assembled, with pin legs drawn in the clearance around every board-facing edge and a die on the centre part. Those parts are **weighted down** (`weight`), because a package costs nine or fifteen cells and would otherwise carpet the board.
+`pcb` draws green copper traces on soldermask. A corner bends through the centre, a straight holds its line, three or more traces meet at a via, and a tile with a single trace ends in a silver pad — silver appears only in those round pads. Every one of those looks is read from the labels: one trace side makes a terminal, so no flag is needed. Most of the remaining tiles build microcontrollers: a 3 × 3 square and a 5 × 3 rectangle, one part per cell, joined by unique `chip:<package>:<cell>|<cell>` seam labels so a package can only come out assembled, with pin legs drawn in the clearance around every board-facing edge and a die on the part standing on the middle cell of its package. Those parts are **weighted down** (`weight`), because a package costs nine or fifteen cells and would otherwise carpet the board.
 
-`terrain` describes **68** assignments of `land`, `beach` and `water` to its four sides: all 81 layouts except the 13 whose art is a single thin band of one ground through the middle of the tile (sand with water on both sides, a grass strip between sand, and so on), which read as seams rather than terrain. Weighting decides the look, not the rules: solid land (140) and water (100) outrank sand, so land and sea grow into regions instead of scattering one-cell ponds; a tile that is mostly sand on three sides (3) is the shore band, and a coast with no sand at all — land and water only (1), or all three grounds in one tile (0.2) — is rare, so sand reads as a beach rather than as filler. Each tile is painted as a block: the ground most of its sides carry, with a band of another ground along every side that disagrees, so a coastline runs along the tile edges and turns at right angles rather than cutting across a tile diagonally.
+`terrain` describes **68** assignments of `land`, `beach` and `water` to its four sides: all 81 layouts except the 13 that paint as a single thin band of one ground through the middle of the tile (sand with water on both sides, a grass strip between sand, and so on), which read as seams rather than terrain. Weighting decides the look, not the rules: solid land (140) and water (100) outrank sand, so land and sea grow into regions instead of scattering one-cell ponds; a tile that is mostly sand on three sides (3) is the shore band, and a coast with no sand at all — land and water only (1), or all three grounds in one tile (0.2) — is rare, so sand reads as a beach rather than as filler. Each tile is painted as a block: the ground most of its sides carry, with a band of another ground along every side that disagrees, so a coastline runs along the tile edges and turns at right angles rather than cutting across a tile diagonally.
 
 Tile art is addressed through `getTileArtSrc(setId, tileId)` in `src/lib/tileArt.ts`, which appends `?v=TILE_ART_VERSION` to the PNG path. The file names are stable across regenerations, so after `pnpm tiles` changes the art, bump that constant: otherwise browsers, the Next image optimiser and any CDN keep serving the previous bitmaps, and one pattern ends up mixing old and new tiles.
 
@@ -228,10 +228,8 @@ export interface Tile {
   bottom: ReadonlyArray<number>;
   /** Indices of tiles that can be placed to the left (west) of this one */
   left: ReadonlyArray<number>;
-  /** Label on each side; the adjacency lists above are derived from these */
+  /** Label on each side; the adjacency lists and the art are derived from these */
   edges: TileEdges;
-  /** Art variant (diagonal, jog, terminal, chip, chip-body); ignored by the solver */
-  art?: 'diagonal' | 'jog' | 'terminal' | 'chip' | 'chip-body';
   /** Relative chance of being collapsed into, default 1 */
   weight?: number;
 }

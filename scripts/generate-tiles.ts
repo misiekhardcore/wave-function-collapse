@@ -4,7 +4,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { SIDES, tileSets } from '../src/lib/tileSets';
-import type { Tile, TileEdge, TileEdges, TileSetId } from '../src/types';
+import type { Tile, TileEdges, TileSetId } from '../src/types';
 
 /**
  * Rasterises the tile art for every set to `public/tiles/<set>/<id>.png`.
@@ -54,9 +54,12 @@ const TERRAIN_COLORS: Record<string, string> = {
   water: '#5a8fc4',
 };
 
-const TERRAINS = Object.keys(TERRAIN_COLORS) as TileEdge[];
+const TERRAINS = Object.keys(TERRAIN_COLORS);
 
 type Painter = (context: CanvasContext, tile: Tile) => void;
+
+/** Some looks need the whole set to reason about (a package centre, say). */
+type PainterFactory = (tiles: Tile[]) => Painter;
 
 type Side = keyof TileEdges;
 
@@ -94,67 +97,110 @@ function paintPcbPad(context: CanvasContext, [x, y]: PcbPoint, radius: number) {
   context.fill();
 }
 
-/** A straight run with one 45° sidestep, the way a real trace changes lane. */
-function pcbJogPoints(vertical: boolean): PcbPoint[] {
-  const mid = SIZE / 2;
-  const lane = 7;
+/** A seam label reads `chip:<package>:<col>x<row>|<col>x<row>`. */
+const CHIP_SEAM = /^chip:([^:]+):(\d+)x(\d+)\|(\d+)x(\d+)$/;
 
-  if (vertical) {
-    return [
-      [mid, 0],
-      [mid, 8],
-      [mid - lane, 15],
-      [mid - lane, 25],
-      [mid, 32],
-      [mid, SIZE],
-    ];
-  }
+type PcbCell = { col: number; row: number };
 
-  return [
-    [0, mid],
-    [8, mid],
-    [15, mid - lane],
-    [25, mid - lane],
-    [32, mid],
-    [SIZE, mid],
-  ];
+const cellKey = (cell: PcbCell) => `${cell.col}x${cell.row}`;
+const sameCell = (a: PcbCell, b: PcbCell) => cellKey(a) === cellKey(b);
+const isSeam = (label: string) => label.startsWith('chip:');
+
+function parseSeam(label: string): { packageId: string; cells: [PcbCell, PcbCell] } | null {
+  const match = CHIP_SEAM.exec(label);
+  if (!match) return null;
+
+  const [, packageId, colA, rowA, colB, rowB] = match;
+
+  return {
+    packageId,
+    cells: [
+      { col: Number(colA), row: Number(rowA) },
+      { col: Number(colB), row: Number(rowB) },
+    ],
+  };
 }
 
 /**
- * Green copper on soldermask. Elbows bend through a via or run straight on the
- * 45°, straights hold their line or jog, tees meet at a via, and test points end
- * in a silver terminal pad. Silver appears nowhere else.
+ * The parts that carry a die, read from the seams rather than a tag.
+ *
+ * A seam names both cells it joins, so a package's parts describe its footprint
+ * and therefore where its middle is. The part standing on that middle cell is
+ * the one with the die; a package with an even span has no centre cell and none
+ * of its parts gets one.
  */
-function paintPcb(context: CanvasContext, tile: Tile) {
-  context.fillStyle = PCB.board;
-  context.fillRect(0, 0, SIZE, SIZE);
+function chipDieTileIds(tiles: Tile[]): Set<number> {
+  const cellsByPackage = new Map<string, PcbCell[]>();
+  const partCell = new Map<number, { packageId: string; cell: PcbCell }>();
 
-  if (tile.art === 'chip' || tile.art === 'chip-body') {
-    paintChipPart(context, tile);
-    return;
+  for (const tile of tiles) {
+    const seams = SIDES.map((side) => parseSeam(tile.edges[side])).filter(
+      (seam): seam is NonNullable<typeof seam> => seam !== null
+    );
+    if (seams.length === 0) continue;
+
+    // Every seam of a part names the cell the part itself sits on.
+    const [first] = seams;
+    const own = first.cells.find((cell) =>
+      seams.every((seam) => seam.cells.some((other) => sameCell(cell, other)))
+    );
+    if (!own) continue;
+
+    partCell.set(tile.id, { packageId: first.packageId, cell: own });
+    cellsByPackage.set(first.packageId, [
+      ...(cellsByPackage.get(first.packageId) ?? []),
+      ...seams.flatMap((seam) => seam.cells),
+    ]);
   }
 
-  const connected = SIDES.filter((side) => tile.edges[side] === 'green');
-  const middle: PcbPoint = [SIZE / 2, SIZE / 2];
-  const lines: PcbPoint[][] = [];
+  const centres = new Map<string, Set<string>>();
 
-  if (tile.art === 'diagonal' && connected.length === 2) {
-    lines.push([PCB_SIDE_POINTS[connected[0]], PCB_SIDE_POINTS[connected[1]]]);
-  } else if (tile.art === 'jog') {
-    lines.push(pcbJogPoints(connected.includes('top')));
-  } else {
-    for (const side of connected) lines.push([PCB_SIDE_POINTS[side], middle]);
+  for (const [packageId, cells] of cellsByPackage) {
+    const cols = cells.map((cell) => cell.col);
+    const rows = cells.map((cell) => cell.row);
+    const col = (Math.min(...cols) + Math.max(...cols)) / 2;
+    const row = (Math.min(...rows) + Math.max(...rows)) / 2;
+    if (!Number.isInteger(col) || !Number.isInteger(row)) continue;
+
+    centres.set(packageId, new Set([`${col}x${row}`]));
   }
 
-  paintPcbTrace(context, lines);
+  return new Set(
+    [...partCell.entries()]
+      .filter(([, { packageId, cell }]) => centres.get(packageId)?.has(cellKey(cell)))
+      .map(([id]) => id)
+  );
+}
 
-  if (tile.art === 'terminal') {
-    paintPcbPad(context, middle, 6);
-    return;
-  }
+/**
+ * Green copper on soldermask, with every look read from the tile's own labels:
+ * a seam side makes it a package part, one trace side ends in a test point, two
+ * traces bend cleanly and three or more meet at a via. Nothing about the
+ * drawing is stored next to the tile.
+ */
+function createPcbPainter(tiles: Tile[]): Painter {
+  const dieTileIds = chipDieTileIds(tiles);
 
-  // Only where three traces meet is a via worth drawing; a bend simply rounds.
-  if (tile.art === undefined && connected.length >= 3) paintPcbPad(context, middle, 4.5);
+  return (context, tile) => {
+    context.fillStyle = PCB.board;
+    context.fillRect(0, 0, SIZE, SIZE);
+
+    if (SIDES.some((side) => isSeam(tile.edges[side]))) {
+      paintChipPart(context, tile, dieTileIds.has(tile.id));
+      return;
+    }
+
+    const connected = SIDES.filter((side) => tile.edges[side] === 'green');
+    const middle: PcbPoint = [SIZE / 2, SIZE / 2];
+
+    paintPcbTrace(
+      context,
+      connected.map((side) => [PCB_SIDE_POINTS[side], middle])
+    );
+
+    if (connected.length === 1) paintPcbPad(context, middle, 6);
+    else if (connected.length >= 3) paintPcbPad(context, middle, 4.5);
+  };
 }
 
 type ChipCorners = { tl: boolean; tr: boolean; br: boolean; bl: boolean };
@@ -225,7 +271,7 @@ function paintChipPins(
  * One part of a chip package. Board sides get a clearance band for the pins, so
  * the parts assemble into a single rounded dark block whatever the footprint.
  */
-function paintChipPart(context: CanvasContext, tile: Tile) {
+function paintChipPart(context: CanvasContext, tile: Tile, isDie: boolean) {
   const margin = PCB_CHIP_MARGIN;
   const board = {
     top: tile.edges.top === 'open',
@@ -254,7 +300,7 @@ function paintChipPart(context: CanvasContext, tile: Tile) {
   context.fill();
 
   // Only the centre part carries the die; the edges of the package are pins.
-  if (tile.art !== 'chip-body') return;
+  if (!isDie) return;
 
   context.fillStyle = PCB.die;
   context.fillRect(x0 + 8, y0 + 8, x1 - x0 - 16, y1 - y0 - 16);
@@ -322,7 +368,7 @@ const TERRAIN_BAND = Math.round(SIZE * 0.4);
  * continuous.
  */
 function paintTerrain(context: CanvasContext, tile: Tile) {
-  const sidesWith = (terrain: TileEdge) => SIDES.filter((side) => tile.edges[side] === terrain);
+  const sidesWith = (terrain: string) => SIDES.filter((side) => tile.edges[side] === terrain);
   const base = TERRAINS.reduce((best, terrain) =>
     sidesWith(terrain).length > sidesWith(best).length ? terrain : best
   );
@@ -342,19 +388,21 @@ function paintTerrain(context: CanvasContext, tile: Tile) {
   }
 }
 
-const PAINTERS: Partial<Record<TileSetId, Painter>> = {
-  pcb: paintPcb,
-  maze: paintWalls,
-  quilt: paintQuilt,
-  terrain: paintTerrain,
+const PAINTERS: Partial<Record<TileSetId, PainterFactory>> = {
+  pcb: createPcbPainter,
+  maze: () => paintWalls,
+  quilt: () => paintQuilt,
+  terrain: () => paintTerrain,
 };
 
 async function main() {
   const outputRoot = join(process.cwd(), 'public', 'tiles');
 
   for (const set of tileSets) {
-    const painter = PAINTERS[set.id];
-    if (!painter) continue;
+    const createPainter = PAINTERS[set.id];
+    if (!createPainter) continue;
+
+    const painter = createPainter(set.tiles);
 
     const directory = join(outputRoot, set.id);
     await mkdir(directory, { recursive: true });

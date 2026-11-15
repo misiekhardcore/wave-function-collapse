@@ -47,7 +47,11 @@ describe('tile sets', () => {
     }
   });
 
-  const chipParts = () => getTileSet('pcb').tiles.filter((tile) => tile.art?.startsWith('chip'));
+  // A package part is the only kind of tile carrying a `chip:` seam label.
+  const chipParts = () =>
+    getTileSet('pcb').tiles.filter((tile) =>
+      SIDES.some((side) => tile.edges[side].startsWith('chip:'))
+    );
 
   /** Package ids are written into the seam labels: `chip:<id>:<cell>|<cell>`. */
   const packageIds = (parts: Tile[]) => [

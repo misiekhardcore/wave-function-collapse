@@ -50,7 +50,7 @@ An interactive **Wave Function Collapse algorithm** implementation and visualiza
 ### Tile System
 
 - ⚙️ **Five tile sets** the user can switch between: **Wires** (11 tiles), **PCB** (45, green traces with 45° variants and terminal pads, plus microcontrollers in 3 × 3 and 5 × 3 footprints), **Maze** (16), **Quilt** (27) and **Terrain** (68 land / sand / water layouts)
-- 🗂️ Each set is a JSON file in `src/tileSets/` — four side labels, an optional weight and art variant per tile — so a set can be edited without touching the solver
+- 🗂️ Each set is a JSON file in `src/tileSets/` — four side labels and an optional weight per tile — so a set can be edited without touching the solver
 - 🔗 Each tile is described by the label on its four sides; the solver derives every compatible neighbor from those labels
 - 🏝️ Terrain covers land, sand and water, weighted so ground grows into continents and seas and sand stays on the shore; every tile is painted as a block, so coastlines run along the tile edges and turn at right angles, and no layout is a single stripe of one ground down the middle
 - 👁️ Interactive preview panel showing the selected tile and the tiles allowed on each side
@@ -224,27 +224,28 @@ _Measured on modern desktop browsers with CanvasKit optimization enabled._
 
 ## 🧩 Extending the Tile Sets
 
-Add a preset by describing its tiles' edges in `src/lib/tileSets.ts` and letting `createTiles` derive the rules:
+Add a preset by dropping a JSON file into `src/tileSets/` and describing its tiles' four side labels:
 
-```typescript
-const CUSTOM_SPECS = [
-  { top: 'wire', right: 'open', bottom: 'wire', left: 'open' },
-  { top: 'open', right: 'wire', bottom: 'open', left: 'wire' },
-  // optional: art variant and weight
-  { top: 'wire', right: 'wire', bottom: 'open', left: 'open', art: 'diagonal', weight: 0.5 },
-];
-
-// src/lib/tileSets.ts
-{ id: 'custom', name: 'Custom', description: '…', tiles: createTiles(CUSTOM_SPECS) },
+```json
+{
+  "id": "custom",
+  "name": "Custom",
+  "description": "…",
+  "tiles": [
+    { "top": "wire", "right": "open", "bottom": "wire", "left": "open" },
+    { "top": "wire", "right": "wire", "bottom": "open", "left": "open", "weight": 0.5 }
+  ]
+}
 ```
 
-`art` only affects drawing; `weight` lowers how often a tile is collapsed into (default 1), which is how the PCB's multi-tile microcontrollers stay sparse.
+A tile is nothing but its labels and its `weight` — its relative chance of being collapsed into, default 1, which is how the PCB's multi-tile microcontrollers stay sparse. Its art is drawn from the same labels, so the picture can never disagree with the rules.
 
 Then:
 
-1. add the id to `TileSetId` in `src/types.ts`,
-2. add a painter for it to `scripts/generate-tiles.ts`,
-3. run `pnpm tiles` to write `public/tiles/custom/<id>.png`, and bump `TILE_ART_VERSION` in `src/lib/tileArt.ts` so browsers and image caches pick up the new art.
+1. import the file and list it in `TILE_SET_DATA` in `src/lib/tileSets.ts`,
+2. add the id to `TileSetId` in `src/types.ts`,
+3. add a painter for it to `scripts/generate-tiles.ts`,
+4. run `pnpm tiles` to write `public/tiles/custom/<id>.png`, and bump `TILE_ART_VERSION` in `src/lib/tileArt.ts` so browsers and image caches pick up the new art.
 
 The preset shows up in the **Tile set** dropdown automatically.
 

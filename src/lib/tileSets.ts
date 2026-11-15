@@ -1,4 +1,4 @@
-import type { Tile, TileArt, TileEdge, TileEdges, TileSet, TileSetId } from '@/types';
+import type { Tile, TileEdges, TileSet, TileSetId } from '@/types';
 
 import mazeData from '../tileSets/maze.json';
 import pcbData from '../tileSets/pcb.json';
@@ -9,7 +9,7 @@ import wiresData from '../tileSets/wires.json';
 type Side = keyof TileEdges;
 
 /** One tile of a set as it is written down in `src/tileSets/<id>.json`. */
-export type TileSpec = TileEdges & { art?: TileArt; weight?: number };
+export type TileSpec = TileEdges & { weight?: number };
 
 export type TileSetData = {
   id: string;
@@ -38,17 +38,16 @@ export const OPPOSITE_SIDE: Record<Side, Side> = {
  * on the other. A set only has to describe its tiles, never its neighbours.
  */
 export function createTiles(specs: TileSpec[]): Tile[] {
-  const idsWithLabel = (label: TileEdge, side: Side) =>
+  const idsWithLabel = (label: string, side: Side) =>
     specs.reduce<number[]>((ids, spec, id) => (spec[side] === label ? [...ids, id] : ids), []);
 
-  return specs.map(({ top, right, bottom, left, art, weight }, id) => ({
+  return specs.map(({ top, right, bottom, left, weight }, id) => ({
     id,
     top: idsWithLabel(top, 'bottom'),
     right: idsWithLabel(right, 'left'),
     bottom: idsWithLabel(bottom, 'top'),
     left: idsWithLabel(left, 'right'),
     edges: { top, right, bottom, left },
-    art,
     weight,
   }));
 }

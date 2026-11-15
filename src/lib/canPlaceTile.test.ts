@@ -1,4 +1,4 @@
-import type { TileObject } from '@/types';
+import type { Tile, TileObject } from '@/types';
 
 import { canPlaceTile } from './canPlaceTile';
 import { collapseGrid } from './collapseGrid';
@@ -6,9 +6,16 @@ import { generateInitialGrid } from './generateInitialGrid';
 import { getTileSet, OPPOSITE_SIDE, SIDES } from './tileSets';
 
 const { tiles } = getTileSet('pcb');
-const chipParts = tiles.filter((tile) => tile.art === 'chip' || tile.art === 'chip-body');
+
+// A package part is the only kind of tile carrying a `chip:` seam label.
+const hasSeam = (tile: Tile) => SIDES.some((side) => tile.edges[side].startsWith('chip:'));
+const chipParts = tiles.filter(hasSeam);
 const northWest = chipParts[0];
-const body = chipParts.find((tile) => tile.art === 'chip-body') as (typeof chipParts)[number];
+
+// The middle of the square package is its only part with four square seams.
+const body = chipParts.find((tile) =>
+  SIDES.every((side) => tile.edges[side].startsWith('chip:square:'))
+) as (typeof chipParts)[number];
 
 // Package ids live in the seam labels of the parts that belong to them.
 const widePart = chipParts.find((tile) =>
