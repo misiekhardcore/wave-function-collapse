@@ -1,483 +1,348 @@
 {
+  "version": 1,
   "id": "terrain",
   "name": "Terrain",
   "description": "Land, sand and water: every side carries the ground along it and every combination of the three is a tile, so a shore never runs out of shapes to follow a coast.",
-  "tiles": [
-    {
-      "top": "land",
-      "right": "land",
-      "bottom": "land",
-      "left": "land",
+  "tiles": {
+    "l-l-l-l": {
+      "image": "/tiles/terrain/0.png",
+      "sockets": ["l", "l", "l", "l"],
       "weight": 140
     },
-    {
-      "top": "land",
-      "right": "land",
-      "bottom": "land",
-      "left": "beach",
+    "l-l-l-b": {
+      "image": "/tiles/terrain/1.png",
+      "sockets": ["l", "l", "l", "b"],
       "weight": 1.5
     },
-    {
-      "top": "land",
-      "right": "land",
-      "bottom": "land",
-      "left": "water",
+    "l-l-l-w": {
+      "image": "/tiles/terrain/2.png",
+      "sockets": ["l", "l", "l", "w"],
       "weight": 1
     },
-    {
-      "top": "land",
-      "right": "land",
-      "bottom": "beach",
-      "left": "land",
+    "l-l-b-l": {
+      "image": "/tiles/terrain/3.png",
+      "sockets": ["l", "l", "b", "l"],
       "weight": 1.5
     },
-    {
-      "top": "land",
-      "right": "land",
-      "bottom": "beach",
-      "left": "beach",
+    "l-l-b-b": {
+      "image": "/tiles/terrain/4.png",
+      "sockets": ["l", "l", "b", "b"],
       "weight": 2
     },
-    {
-      "top": "land",
-      "right": "land",
-      "bottom": "beach",
-      "left": "water",
+    "l-l-b-w": {
+      "image": "/tiles/terrain/5.png",
+      "sockets": ["l", "l", "b", "w"],
       "weight": 0.2
     },
-    {
-      "top": "land",
-      "right": "land",
-      "bottom": "water",
-      "left": "land",
+    "l-l-w-l": {
+      "image": "/tiles/terrain/6.png",
+      "sockets": ["l", "l", "w", "l"],
       "weight": 1
     },
-    {
-      "top": "land",
-      "right": "land",
-      "bottom": "water",
-      "left": "beach",
+    "l-l-w-b": {
+      "image": "/tiles/terrain/7.png",
+      "sockets": ["l", "l", "w", "b"],
       "weight": 0.2
     },
-    {
-      "top": "land",
-      "right": "land",
-      "bottom": "water",
-      "left": "water",
+    "l-l-w-w": {
+      "image": "/tiles/terrain/8.png",
+      "sockets": ["l", "l", "w", "w"],
       "weight": 1
     },
-    {
-      "top": "land",
-      "right": "beach",
-      "bottom": "land",
-      "left": "land",
+    "l-b-l-l": {
+      "image": "/tiles/terrain/9.png",
+      "sockets": ["l", "b", "l", "l"],
       "weight": 1.5
     },
-    {
-      "top": "land",
-      "right": "beach",
-      "bottom": "beach",
-      "left": "land",
+    "l-b-b-l": {
+      "image": "/tiles/terrain/10.png",
+      "sockets": ["l", "b", "b", "l"],
       "weight": 2
     },
-    {
-      "top": "land",
-      "right": "beach",
-      "bottom": "beach",
-      "left": "beach",
+    "l-b-b-b": {
+      "image": "/tiles/terrain/11.png",
+      "sockets": ["l", "b", "b", "b"],
       "weight": 3
     },
-    {
-      "top": "land",
-      "right": "beach",
-      "bottom": "beach",
-      "left": "water",
+    "l-b-b-w": {
+      "image": "/tiles/terrain/12.png",
+      "sockets": ["l", "b", "b", "w"],
       "weight": 0.2
     },
-    {
-      "top": "land",
-      "right": "beach",
-      "bottom": "water",
-      "left": "land",
+    "l-b-w-l": {
+      "image": "/tiles/terrain/13.png",
+      "sockets": ["l", "b", "w", "l"],
       "weight": 0.2
     },
-    {
-      "top": "land",
-      "right": "beach",
-      "bottom": "water",
-      "left": "beach",
+    "l-b-w-b": {
+      "image": "/tiles/terrain/14.png",
+      "sockets": ["l", "b", "w", "b"],
       "weight": 0.2
     },
-    {
-      "top": "land",
-      "right": "beach",
-      "bottom": "water",
-      "left": "water",
+    "l-b-w-w": {
+      "image": "/tiles/terrain/15.png",
+      "sockets": ["l", "b", "w", "w"],
       "weight": 0.2
     },
-    {
-      "top": "land",
-      "right": "water",
-      "bottom": "land",
-      "left": "land",
+    "l-w-l-l": {
+      "image": "/tiles/terrain/16.png",
+      "sockets": ["l", "w", "l", "l"],
       "weight": 1
     },
-    {
-      "top": "land",
-      "right": "water",
-      "bottom": "beach",
-      "left": "land",
+    "l-w-b-l": {
+      "image": "/tiles/terrain/17.png",
+      "sockets": ["l", "w", "b", "l"],
       "weight": 0.2
     },
-    {
-      "top": "land",
-      "right": "water",
-      "bottom": "beach",
-      "left": "beach",
+    "l-w-b-b": {
+      "image": "/tiles/terrain/18.png",
+      "sockets": ["l", "w", "b", "b"],
       "weight": 0.2
     },
-    {
-      "top": "land",
-      "right": "water",
-      "bottom": "water",
-      "left": "land",
+    "l-w-w-l": {
+      "image": "/tiles/terrain/19.png",
+      "sockets": ["l", "w", "w", "l"],
       "weight": 1
     },
-    {
-      "top": "land",
-      "right": "water",
-      "bottom": "water",
-      "left": "beach",
+    "l-w-w-b": {
+      "image": "/tiles/terrain/20.png",
+      "sockets": ["l", "w", "w", "b"],
       "weight": 0.2
     },
-    {
-      "top": "land",
-      "right": "water",
-      "bottom": "water",
-      "left": "water",
+    "l-w-w-w": {
+      "image": "/tiles/terrain/21.png",
+      "sockets": ["l", "w", "w", "w"],
       "weight": 1
     },
-    {
-      "top": "beach",
-      "right": "land",
-      "bottom": "land",
-      "left": "land",
+    "b-l-l-l": {
+      "image": "/tiles/terrain/22.png",
+      "sockets": ["b", "l", "l", "l"],
       "weight": 1.5
     },
-    {
-      "top": "beach",
-      "right": "land",
-      "bottom": "land",
-      "left": "beach",
+    "b-l-l-b": {
+      "image": "/tiles/terrain/23.png",
+      "sockets": ["b", "l", "l", "b"],
       "weight": 2
     },
-    {
-      "top": "beach",
-      "right": "land",
-      "bottom": "land",
-      "left": "water",
+    "b-l-l-w": {
+      "image": "/tiles/terrain/24.png",
+      "sockets": ["b", "l", "l", "w"],
       "weight": 0.2
     },
-    {
-      "top": "beach",
-      "right": "land",
-      "bottom": "beach",
-      "left": "beach",
+    "b-l-b-b": {
+      "image": "/tiles/terrain/25.png",
+      "sockets": ["b", "l", "b", "b"],
       "weight": 3
     },
-    {
-      "top": "beach",
-      "right": "land",
-      "bottom": "beach",
-      "left": "water",
+    "b-l-b-w": {
+      "image": "/tiles/terrain/26.png",
+      "sockets": ["b", "l", "b", "w"],
       "weight": 0.2
     },
-    {
-      "top": "beach",
-      "right": "land",
-      "bottom": "water",
-      "left": "beach",
+    "b-l-w-b": {
+      "image": "/tiles/terrain/27.png",
+      "sockets": ["b", "l", "w", "b"],
       "weight": 0.2
     },
-    {
-      "top": "beach",
-      "right": "land",
-      "bottom": "water",
-      "left": "water",
+    "b-l-w-w": {
+      "image": "/tiles/terrain/28.png",
+      "sockets": ["b", "l", "w", "w"],
       "weight": 0.2
     },
-    {
-      "top": "beach",
-      "right": "beach",
-      "bottom": "land",
-      "left": "land",
+    "b-b-l-l": {
+      "image": "/tiles/terrain/29.png",
+      "sockets": ["b", "b", "l", "l"],
       "weight": 2
     },
-    {
-      "top": "beach",
-      "right": "beach",
-      "bottom": "land",
-      "left": "beach",
+    "b-b-l-b": {
+      "image": "/tiles/terrain/30.png",
+      "sockets": ["b", "b", "l", "b"],
       "weight": 3
     },
-    {
-      "top": "beach",
-      "right": "beach",
-      "bottom": "land",
-      "left": "water",
+    "b-b-l-w": {
+      "image": "/tiles/terrain/31.png",
+      "sockets": ["b", "b", "l", "w"],
       "weight": 0.2
     },
-    {
-      "top": "beach",
-      "right": "beach",
-      "bottom": "beach",
-      "left": "land",
+    "b-b-b-l": {
+      "image": "/tiles/terrain/32.png",
+      "sockets": ["b", "b", "b", "l"],
       "weight": 3
     },
-    {
-      "top": "beach",
-      "right": "beach",
-      "bottom": "beach",
-      "left": "beach",
+    "b-b-b-b": {
+      "image": "/tiles/terrain/33.png",
+      "sockets": ["b", "b", "b", "b"],
       "weight": 0.2
     },
-    {
-      "top": "beach",
-      "right": "beach",
-      "bottom": "beach",
-      "left": "water",
+    "b-b-b-w": {
+      "image": "/tiles/terrain/34.png",
+      "sockets": ["b", "b", "b", "w"],
       "weight": 3
     },
-    {
-      "top": "beach",
-      "right": "beach",
-      "bottom": "water",
-      "left": "land",
+    "b-b-w-l": {
+      "image": "/tiles/terrain/35.png",
+      "sockets": ["b", "b", "w", "l"],
       "weight": 0.2
     },
-    {
-      "top": "beach",
-      "right": "beach",
-      "bottom": "water",
-      "left": "beach",
+    "b-b-w-b": {
+      "image": "/tiles/terrain/36.png",
+      "sockets": ["b", "b", "w", "b"],
       "weight": 3
     },
-    {
-      "top": "beach",
-      "right": "beach",
-      "bottom": "water",
-      "left": "water",
+    "b-b-w-w": {
+      "image": "/tiles/terrain/37.png",
+      "sockets": ["b", "b", "w", "w"],
       "weight": 2
     },
-    {
-      "top": "beach",
-      "right": "water",
-      "bottom": "land",
-      "left": "land",
+    "b-w-l-l": {
+      "image": "/tiles/terrain/38.png",
+      "sockets": ["b", "w", "l", "l"],
       "weight": 0.2
     },
-    {
-      "top": "beach",
-      "right": "water",
-      "bottom": "land",
-      "left": "beach",
+    "b-w-l-b": {
+      "image": "/tiles/terrain/39.png",
+      "sockets": ["b", "w", "l", "b"],
       "weight": 0.2
     },
-    {
-      "top": "beach",
-      "right": "water",
-      "bottom": "beach",
-      "left": "land",
+    "b-w-b-l": {
+      "image": "/tiles/terrain/40.png",
+      "sockets": ["b", "w", "b", "l"],
       "weight": 0.2
     },
-    {
-      "top": "beach",
-      "right": "water",
-      "bottom": "beach",
-      "left": "beach",
+    "b-w-b-b": {
+      "image": "/tiles/terrain/41.png",
+      "sockets": ["b", "w", "b", "b"],
       "weight": 3
     },
-    {
-      "top": "beach",
-      "right": "water",
-      "bottom": "water",
-      "left": "land",
+    "b-w-w-l": {
+      "image": "/tiles/terrain/42.png",
+      "sockets": ["b", "w", "w", "l"],
       "weight": 0.2
     },
-    {
-      "top": "beach",
-      "right": "water",
-      "bottom": "water",
-      "left": "beach",
+    "b-w-w-b": {
+      "image": "/tiles/terrain/43.png",
+      "sockets": ["b", "w", "w", "b"],
       "weight": 2
     },
-    {
-      "top": "beach",
-      "right": "water",
-      "bottom": "water",
-      "left": "water",
+    "b-w-w-w": {
+      "image": "/tiles/terrain/44.png",
+      "sockets": ["b", "w", "w", "w"],
       "weight": 1.5
     },
-    {
-      "top": "water",
-      "right": "land",
-      "bottom": "land",
-      "left": "land",
+    "w-l-l-l": {
+      "image": "/tiles/terrain/45.png",
+      "sockets": ["w", "l", "l", "l"],
       "weight": 1
     },
-    {
-      "top": "water",
-      "right": "land",
-      "bottom": "land",
-      "left": "beach",
+    "w-l-l-b": {
+      "image": "/tiles/terrain/46.png",
+      "sockets": ["w", "l", "l", "b"],
       "weight": 0.2
     },
-    {
-      "top": "water",
-      "right": "land",
-      "bottom": "land",
-      "left": "water",
+    "w-l-l-w": {
+      "image": "/tiles/terrain/47.png",
+      "sockets": ["w", "l", "l", "w"],
       "weight": 1
     },
-    {
-      "top": "water",
-      "right": "land",
-      "bottom": "beach",
-      "left": "beach",
+    "w-l-b-b": {
+      "image": "/tiles/terrain/48.png",
+      "sockets": ["w", "l", "b", "b"],
       "weight": 0.2
     },
-    {
-      "top": "water",
-      "right": "land",
-      "bottom": "beach",
-      "left": "water",
+    "w-l-b-w": {
+      "image": "/tiles/terrain/49.png",
+      "sockets": ["w", "l", "b", "w"],
       "weight": 0.2
     },
-    {
-      "top": "water",
-      "right": "land",
-      "bottom": "water",
-      "left": "beach",
+    "w-l-w-b": {
+      "image": "/tiles/terrain/50.png",
+      "sockets": ["w", "l", "w", "b"],
       "weight": 0.2
     },
-    {
-      "top": "water",
-      "right": "land",
-      "bottom": "water",
-      "left": "water",
+    "w-l-w-w": {
+      "image": "/tiles/terrain/51.png",
+      "sockets": ["w", "l", "w", "w"],
       "weight": 1
     },
-    {
-      "top": "water",
-      "right": "beach",
-      "bottom": "land",
-      "left": "land",
+    "w-b-l-l": {
+      "image": "/tiles/terrain/52.png",
+      "sockets": ["w", "b", "l", "l"],
       "weight": 0.2
     },
-    {
-      "top": "water",
-      "right": "beach",
-      "bottom": "land",
-      "left": "beach",
+    "w-b-l-b": {
+      "image": "/tiles/terrain/53.png",
+      "sockets": ["w", "b", "l", "b"],
       "weight": 0.2
     },
-    {
-      "top": "water",
-      "right": "beach",
-      "bottom": "land",
-      "left": "water",
+    "w-b-l-w": {
+      "image": "/tiles/terrain/54.png",
+      "sockets": ["w", "b", "l", "w"],
       "weight": 0.2
     },
-    {
-      "top": "water",
-      "right": "beach",
-      "bottom": "beach",
-      "left": "land",
+    "w-b-b-l": {
+      "image": "/tiles/terrain/55.png",
+      "sockets": ["w", "b", "b", "l"],
       "weight": 0.2
     },
-    {
-      "top": "water",
-      "right": "beach",
-      "bottom": "beach",
-      "left": "beach",
+    "w-b-b-b": {
+      "image": "/tiles/terrain/56.png",
+      "sockets": ["w", "b", "b", "b"],
       "weight": 3
     },
-    {
-      "top": "water",
-      "right": "beach",
-      "bottom": "beach",
-      "left": "water",
+    "w-b-b-w": {
+      "image": "/tiles/terrain/57.png",
+      "sockets": ["w", "b", "b", "w"],
       "weight": 2
     },
-    {
-      "top": "water",
-      "right": "beach",
-      "bottom": "water",
-      "left": "water",
+    "w-b-w-w": {
+      "image": "/tiles/terrain/58.png",
+      "sockets": ["w", "b", "w", "w"],
       "weight": 1.5
     },
-    {
-      "top": "water",
-      "right": "water",
-      "bottom": "land",
-      "left": "land",
+    "w-w-l-l": {
+      "image": "/tiles/terrain/59.png",
+      "sockets": ["w", "w", "l", "l"],
       "weight": 1
     },
-    {
-      "top": "water",
-      "right": "water",
-      "bottom": "land",
-      "left": "beach",
+    "w-w-l-b": {
+      "image": "/tiles/terrain/60.png",
+      "sockets": ["w", "w", "l", "b"],
       "weight": 0.2
     },
-    {
-      "top": "water",
-      "right": "water",
-      "bottom": "land",
-      "left": "water",
+    "w-w-l-w": {
+      "image": "/tiles/terrain/61.png",
+      "sockets": ["w", "w", "l", "w"],
       "weight": 1
     },
-    {
-      "top": "water",
-      "right": "water",
-      "bottom": "beach",
-      "left": "land",
+    "w-w-b-l": {
+      "image": "/tiles/terrain/62.png",
+      "sockets": ["w", "w", "b", "l"],
       "weight": 0.2
     },
-    {
-      "top": "water",
-      "right": "water",
-      "bottom": "beach",
-      "left": "beach",
+    "w-w-b-b": {
+      "image": "/tiles/terrain/63.png",
+      "sockets": ["w", "w", "b", "b"],
       "weight": 2
     },
-    {
-      "top": "water",
-      "right": "water",
-      "bottom": "beach",
-      "left": "water",
+    "w-w-b-w": {
+      "image": "/tiles/terrain/64.png",
+      "sockets": ["w", "w", "b", "w"],
       "weight": 1.5
     },
-    {
-      "top": "water",
-      "right": "water",
-      "bottom": "water",
-      "left": "land",
+    "w-w-w-l": {
+      "image": "/tiles/terrain/65.png",
+      "sockets": ["w", "w", "w", "l"],
       "weight": 1
     },
-    {
-      "top": "water",
-      "right": "water",
-      "bottom": "water",
-      "left": "beach",
+    "w-w-w-b": {
+      "image": "/tiles/terrain/66.png",
+      "sockets": ["w", "w", "w", "b"],
       "weight": 1.5
     },
-    {
-      "top": "water",
-      "right": "water",
-      "bottom": "water",
-      "left": "water",
+    "w-w-w-w": {
+      "image": "/tiles/terrain/67.png",
+      "sockets": ["w", "w", "w", "w"],
       "weight": 100
     }
-  ]
+  }
 }

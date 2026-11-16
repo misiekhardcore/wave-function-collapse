@@ -1,103 +1,88 @@
 {
+  "version": 1,
   "id": "maze",
   "name": "Maze",
   "description": "Walled corridors that link up into rooms and passages.",
-  "tiles": [
-    {
-      "top": "open",
-      "right": "open",
-      "bottom": "open",
-      "left": "open"
+  "tiles": {
+    "o-o-o-o": {
+      "image": "/tiles/maze/0.png",
+      "sockets": ["o", "o", "o", "o"],
+      "weight": 1
     },
-    {
-      "top": "wall",
-      "right": "open",
-      "bottom": "open",
-      "left": "open"
+    "w-o-o-o": {
+      "image": "/tiles/maze/1.png",
+      "sockets": ["w", "o", "o", "o"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "wall",
-      "bottom": "open",
-      "left": "open"
+    "o-w-o-o": {
+      "image": "/tiles/maze/2.png",
+      "sockets": ["o", "w", "o", "o"],
+      "weight": 1
     },
-    {
-      "top": "wall",
-      "right": "wall",
-      "bottom": "open",
-      "left": "open"
+    "w-w-o-o": {
+      "image": "/tiles/maze/3.png",
+      "sockets": ["w", "w", "o", "o"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "open",
-      "bottom": "wall",
-      "left": "open"
+    "o-o-w-o": {
+      "image": "/tiles/maze/4.png",
+      "sockets": ["o", "o", "w", "o"],
+      "weight": 1
     },
-    {
-      "top": "wall",
-      "right": "open",
-      "bottom": "wall",
-      "left": "open"
+    "w-o-w-o": {
+      "image": "/tiles/maze/5.png",
+      "sockets": ["w", "o", "w", "o"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "wall",
-      "bottom": "wall",
-      "left": "open"
+    "o-w-w-o": {
+      "image": "/tiles/maze/6.png",
+      "sockets": ["o", "w", "w", "o"],
+      "weight": 1
     },
-    {
-      "top": "wall",
-      "right": "wall",
-      "bottom": "wall",
-      "left": "open"
+    "w-w-w-o": {
+      "image": "/tiles/maze/7.png",
+      "sockets": ["w", "w", "w", "o"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "open",
-      "bottom": "open",
-      "left": "wall"
+    "o-o-o-w": {
+      "image": "/tiles/maze/8.png",
+      "sockets": ["o", "o", "o", "w"],
+      "weight": 1
     },
-    {
-      "top": "wall",
-      "right": "open",
-      "bottom": "open",
-      "left": "wall"
+    "w-o-o-w": {
+      "image": "/tiles/maze/9.png",
+      "sockets": ["w", "o", "o", "w"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "wall",
-      "bottom": "open",
-      "left": "wall"
+    "o-w-o-w": {
+      "image": "/tiles/maze/10.png",
+      "sockets": ["o", "w", "o", "w"],
+      "weight": 1
     },
-    {
-      "top": "wall",
-      "right": "wall",
-      "bottom": "open",
-      "left": "wall"
+    "w-w-o-w": {
+      "image": "/tiles/maze/11.png",
+      "sockets": ["w", "w", "o", "w"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "open",
-      "bottom": "wall",
-      "left": "wall"
+    "o-o-w-w": {
+      "image": "/tiles/maze/12.png",
+      "sockets": ["o", "o", "w", "w"],
+      "weight": 1
     },
-    {
-      "top": "wall",
-      "right": "open",
-      "bottom": "wall",
-      "left": "wall"
+    "w-o-w-w": {
+      "image": "/tiles/maze/13.png",
+      "sockets": ["w", "o", "w", "w"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "wall",
-      "bottom": "wall",
-      "left": "wall"
+    "o-w-w-w": {
+      "image": "/tiles/maze/14.png",
+      "sockets": ["o", "w", "w", "w"],
+      "weight": 1
     },
-    {
-      "top": "wall",
-      "right": "wall",
-      "bottom": "wall",
-      "left": "wall"
+    "w-w-w-w": {
+      "image": "/tiles/maze/15.png",
+      "sockets": ["w", "w", "w", "w"],
+      "weight": 1
     }
-  ]
+  }
 }

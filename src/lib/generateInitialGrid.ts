@@ -1,4 +1,4 @@
-import type { Tile, TileObject } from '@/types';
+import type { Bias, Tile, TileObject } from '@/types';
 
 import { canPlaceTile } from './canPlaceTile';
 import { isCompatibleWithNeighbours } from './isCompatibleWithNeighbours';
@@ -8,7 +8,8 @@ export function generateInitialGrid(
   countOfInitialTiles: number,
   cols: number,
   rows: number,
-  tiles: Tile[]
+  tiles: Tile[],
+  bias: Bias = 'constant'
 ): TileObject[] {
   const grid: TileObject[] = Array.from({ length: cols * rows }).map((_, idx) => ({
     col: idx % cols,
@@ -22,7 +23,7 @@ export function generateInitialGrid(
   let attempts = 0;
 
   // A seed that disagrees with a seed beside it breaks the board from the very
-  // start: every cell around the pair is then asked for two labels at once, and
+  // start: every cell around the pair is then asked for two sockets at once, and
   // the run has to give up a seam somewhere. So a cell is only seeded with a
   // tile its already-decided neighbours accept, and a cell with no such tile is
   // left for the solver.
@@ -46,7 +47,7 @@ export function generateInitialGrid(
 
     grid[index] = {
       ...grid[index],
-      options: [pickWeightedTile(placeable, tiles)],
+      options: [pickWeightedTile(placeable, tiles, { index, grid, cols, bias })],
       collapsed: true,
     };
     seeded.push(index);

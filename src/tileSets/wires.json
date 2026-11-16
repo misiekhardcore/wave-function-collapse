@@ -1,73 +1,63 @@
 {
+  "version": 1,
   "id": "wires",
   "name": "Wires",
   "description": "Circuit traces in ink that branch, bend and cross.",
-  "tiles": [
-    {
-      "top": "open",
-      "right": "open",
-      "bottom": "open",
-      "left": "open"
+  "tiles": {
+    "o-o-o-o": {
+      "image": "/tiles/wires/0.png",
+      "sockets": ["o", "o", "o", "o"],
+      "weight": 1
     },
-    {
-      "top": "wire",
-      "right": "wire",
-      "bottom": "open",
-      "left": "wire"
+    "w-w-o-w": {
+      "image": "/tiles/wires/1.png",
+      "sockets": ["w", "w", "o", "w"],
+      "weight": 1
     },
-    {
-      "top": "wire",
-      "right": "wire",
-      "bottom": "wire",
-      "left": "open"
+    "w-w-w-o": {
+      "image": "/tiles/wires/2.png",
+      "sockets": ["w", "w", "w", "o"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "wire",
-      "bottom": "wire",
-      "left": "wire"
+    "o-w-w-w": {
+      "image": "/tiles/wires/3.png",
+      "sockets": ["o", "w", "w", "w"],
+      "weight": 1
     },
-    {
-      "top": "wire",
-      "right": "open",
-      "bottom": "wire",
-      "left": "wire"
+    "w-o-w-w": {
+      "image": "/tiles/wires/4.png",
+      "sockets": ["w", "o", "w", "w"],
+      "weight": 1
     },
-    {
-      "top": "wire",
-      "right": "open",
-      "bottom": "wire",
-      "left": "open"
+    "w-o-w-o": {
+      "image": "/tiles/wires/5.png",
+      "sockets": ["w", "o", "w", "o"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "wire",
-      "bottom": "open",
-      "left": "wire"
+    "o-w-o-w": {
+      "image": "/tiles/wires/6.png",
+      "sockets": ["o", "w", "o", "w"],
+      "weight": 1
     },
-    {
-      "top": "wire",
-      "right": "open",
-      "bottom": "open",
-      "left": "wire"
+    "w-o-o-w": {
+      "image": "/tiles/wires/7.png",
+      "sockets": ["w", "o", "o", "w"],
+      "weight": 1
     },
-    {
-      "top": "wire",
-      "right": "wire",
-      "bottom": "open",
-      "left": "open"
+    "w-w-o-o": {
+      "image": "/tiles/wires/8.png",
+      "sockets": ["w", "w", "o", "o"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "wire",
-      "bottom": "wire",
-      "left": "open"
+    "o-w-w-o": {
+      "image": "/tiles/wires/9.png",
+      "sockets": ["o", "w", "w", "o"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "open",
-      "bottom": "wire",
-      "left": "wire"
+    "o-o-w-w": {
+      "image": "/tiles/wires/10.png",
+      "sockets": ["o", "o", "w", "w"],
+      "weight": 1
     }
-  ]
+  }
 }

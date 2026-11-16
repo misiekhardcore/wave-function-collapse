@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 import { Panel } from '@/components/Panel';
 import { getTileArtSrc } from '@/lib';
-import type { Tile, TileSet, TileSetId } from '@/types';
+import type { Tile, TileSet } from '@/types';
 
 export function TilesPreview({ tileSet }: { tileSet: TileSet }) {
   const { tiles } = tileSet;
@@ -37,11 +37,12 @@ export function TilesPreview({ tileSet }: { tileSet: TileSet }) {
             className="h-auto p-1 data-[state=on]:border-primary data-[state=on]:bg-primary/10"
           >
             <Image
-              src={getTileArtSrc(tileSet.id, tile.id)}
+              src={getTileArtSrc(tile)}
               alt=""
               width={28}
               height={28}
               unoptimized
+              style={tileTransform(tile)}
               className="block [image-rendering:pixelated]"
             />
           </ToggleGroupItem>
@@ -52,41 +53,26 @@ export function TilesPreview({ tileSet }: { tileSet: TileSet }) {
 
       <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center justify-items-center gap-x-2 gap-y-4">
         <span aria-hidden />
-        <NeighborGroup
-          title="Above"
-          tileSetId={tileSet.id}
-          tiles={collectTiles(selected.top, tiles)}
-        />
+        <NeighborGroup title="Above" tiles={collectTiles(selected.top, tiles)} />
         <span aria-hidden />
 
-        <NeighborGroup
-          title="Left"
-          tileSetId={tileSet.id}
-          tiles={collectTiles(selected.left, tiles)}
-        />
+        <NeighborGroup title="Left" tiles={collectTiles(selected.left, tiles)} />
         <div className="flex flex-col items-center gap-1.5">
           <Image
-            src={getTileArtSrc(tileSet.id, selected.id)}
+            src={getTileArtSrc(selected)}
             alt={`Tile ${selected.id}`}
             width={48}
             height={48}
             unoptimized
+            style={tileTransform(selected)}
             className="block rounded-sm ring-2 ring-primary ring-offset-2 ring-offset-card [image-rendering:pixelated]"
           />
           <span className="text-xs font-medium">Tile {selected.id}</span>
         </div>
-        <NeighborGroup
-          title="Right"
-          tileSetId={tileSet.id}
-          tiles={collectTiles(selected.right, tiles)}
-        />
+        <NeighborGroup title="Right" tiles={collectTiles(selected.right, tiles)} />
 
         <span aria-hidden />
-        <NeighborGroup
-          title="Below"
-          tileSetId={tileSet.id}
-          tiles={collectTiles(selected.bottom, tiles)}
-        />
+        <NeighborGroup title="Below" tiles={collectTiles(selected.bottom, tiles)} />
         <span aria-hidden />
       </div>
     </Panel>
@@ -97,9 +83,14 @@ function collectTiles(ids: number[], tiles: Tile[]): Tile[] {
   return ids.map((id) => tiles[id]).filter(Boolean);
 }
 
-type NeighborGroupProps = { title: string; tileSetId: TileSetId; tiles: Tile[] };
+/** A variant is the same PNG turned and, when the tile asks for it, mirrored. */
+function tileTransform(tile: Tile) {
+  return { transform: `rotate(${tile.rotation}deg) scaleX(${tile.flipped ? -1 : 1})` };
+}
 
-function NeighborGroup({ title, tileSetId, tiles }: NeighborGroupProps) {
+type NeighborGroupProps = { title: string; tiles: Tile[] };
+
+function NeighborGroup({ title, tiles }: NeighborGroupProps) {
   return (
     <div className="flex w-full max-w-32 flex-col items-center gap-1.5">
       <span className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
@@ -109,11 +100,12 @@ function NeighborGroup({ title, tileSetId, tiles }: NeighborGroupProps) {
         {tiles.map((tile) => (
           <Image
             key={tile.id}
-            src={getTileArtSrc(tileSetId, tile.id)}
+            src={getTileArtSrc(tile)}
             alt={`Tile ${tile.id}`}
             width={22}
             height={22}
             unoptimized
+            style={tileTransform(tile)}
             className="block rounded-[3px] ring-1 ring-border [image-rendering:pixelated]"
           />
         ))}

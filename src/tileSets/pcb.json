@@ -1,307 +1,269 @@
 {
+  "version": 1,
   "id": "pcb",
   "name": "PCB",
   "description": "Green board: copper traces, terminal pads and microcontroller packages.",
-  "tiles": [
-    {
-      "top": "open",
-      "right": "open",
-      "bottom": "open",
-      "left": "open"
+  "connections": [
+    ["s1", "s1", 1],
+    ["s2", "s2", 1],
+    ["s3", "s3", 1],
+    ["s4", "s4", 1],
+    ["s5", "s5", 1],
+    ["s6", "s6", 1],
+    ["s7", "s7", 1],
+    ["s8", "s8", 1],
+    ["s9", "s9", 1],
+    ["s10", "s10", 1],
+    ["s11", "s11", 1],
+    ["s12", "s12", 1],
+    ["s13", "s13", 1],
+    ["s14", "s14", 1],
+    ["s15", "s15", 1],
+    ["s16", "s16", 1],
+    ["s17", "s17", 1],
+    ["s18", "s18", 1],
+    ["s19", "s19", 1],
+    ["s20", "s20", 1],
+    ["s21", "s21", 1],
+    ["s22", "s22", 1],
+    ["s23", "s23", 1],
+    ["s24", "s24", 1],
+    ["s25", "s25", 1],
+    ["s26", "s26", 1],
+    ["s27", "s27", 1],
+    ["s28", "s28", 1],
+    ["s29", "s29", 1],
+    ["s30", "s30", 1],
+    ["s31", "s31", 1],
+    ["s32", "s32", 1],
+    ["s33", "s33", 1],
+    ["s34", "s34", 1]
+  ],
+  "tiles": {
+    "o-o-o-o": {
+      "image": "/tiles/pcb/0.png",
+      "sockets": ["o", "o", "o", "o"],
+      "weight": 1
     },
-    {
-      "top": "green",
-      "right": "open",
-      "bottom": "open",
-      "left": "green"
+    "g-o-o-g": {
+      "image": "/tiles/pcb/1.png",
+      "sockets": ["g", "o", "o", "g"],
+      "weight": 1
     },
-    {
-      "top": "green",
-      "right": "open",
-      "bottom": "open",
-      "left": "green"
+    "g-o-o-g-2": {
+      "image": "/tiles/pcb/2.png",
+      "sockets": ["g", "o", "o", "g"],
+      "weight": 1
     },
-    {
-      "top": "green",
-      "right": "green",
-      "bottom": "open",
-      "left": "open"
+    "g-g-o-o": {
+      "image": "/tiles/pcb/3.png",
+      "sockets": ["g", "g", "o", "o"],
+      "weight": 1
     },
-    {
-      "top": "green",
-      "right": "green",
-      "bottom": "open",
-      "left": "open"
+    "g-g-o-o-2": {
+      "image": "/tiles/pcb/4.png",
+      "sockets": ["g", "g", "o", "o"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "open",
-      "bottom": "green",
-      "left": "green"
+    "o-o-g-g": {
+      "image": "/tiles/pcb/5.png",
+      "sockets": ["o", "o", "g", "g"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "open",
-      "bottom": "green",
-      "left": "green"
+    "o-o-g-g-2": {
+      "image": "/tiles/pcb/6.png",
+      "sockets": ["o", "o", "g", "g"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "green",
-      "bottom": "green",
-      "left": "open"
+    "o-g-g-o": {
+      "image": "/tiles/pcb/7.png",
+      "sockets": ["o", "g", "g", "o"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "green",
-      "bottom": "green",
-      "left": "open"
+    "o-g-g-o-2": {
+      "image": "/tiles/pcb/8.png",
+      "sockets": ["o", "g", "g", "o"],
+      "weight": 1
     },
-    {
-      "top": "green",
-      "right": "open",
-      "bottom": "green",
-      "left": "open"
+    "g-o-g-o": {
+      "image": "/tiles/pcb/9.png",
+      "sockets": ["g", "o", "g", "o"],
+      "weight": 1
     },
-    {
-      "top": "green",
-      "right": "open",
-      "bottom": "green",
-      "left": "open",
+    "g-o-g-o-2": {
+      "image": "/tiles/pcb/10.png",
+      "sockets": ["g", "o", "g", "o"],
       "weight": 0.5
     },
-    {
-      "top": "open",
-      "right": "green",
-      "bottom": "open",
-      "left": "green"
+    "o-g-o-g": {
+      "image": "/tiles/pcb/11.png",
+      "sockets": ["o", "g", "o", "g"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "green",
-      "bottom": "open",
-      "left": "green",
+    "o-g-o-g-2": {
+      "image": "/tiles/pcb/12.png",
+      "sockets": ["o", "g", "o", "g"],
       "weight": 0.5
     },
-    {
-      "top": "green",
-      "right": "green",
-      "bottom": "open",
-      "left": "green"
+    "g-g-o-g": {
+      "image": "/tiles/pcb/13.png",
+      "sockets": ["g", "g", "o", "g"],
+      "weight": 1
     },
-    {
-      "top": "green",
-      "right": "green",
-      "bottom": "green",
-      "left": "open"
+    "g-g-g-o": {
+      "image": "/tiles/pcb/14.png",
+      "sockets": ["g", "g", "g", "o"],
+      "weight": 1
     },
-    {
-      "top": "open",
-      "right": "green",
-      "bottom": "green",
-      "left": "green"
+    "o-g-g-g": {
+      "image": "/tiles/pcb/15.png",
+      "sockets": ["o", "g", "g", "g"],
+      "weight": 1
     },
-    {
-      "top": "green",
-      "right": "open",
-      "bottom": "green",
-      "left": "green"
+    "g-o-g-g": {
+      "image": "/tiles/pcb/16.png",
+      "sockets": ["g", "o", "g", "g"],
+      "weight": 1
     },
-    {
-      "top": "green",
-      "right": "open",
-      "bottom": "open",
-      "left": "open",
+    "g-o-o-o": {
+      "image": "/tiles/pcb/17.png",
+      "sockets": ["g", "o", "o", "o"],
       "weight": 0.3
     },
-    {
-      "top": "open",
-      "right": "green",
-      "bottom": "open",
-      "left": "open",
+    "o-g-o-o": {
+      "image": "/tiles/pcb/18.png",
+      "sockets": ["o", "g", "o", "o"],
       "weight": 0.3
     },
-    {
-      "top": "open",
-      "right": "open",
-      "bottom": "green",
-      "left": "open",
+    "o-o-g-o": {
+      "image": "/tiles/pcb/19.png",
+      "sockets": ["o", "o", "g", "o"],
       "weight": 0.3
     },
-    {
-      "top": "open",
-      "right": "open",
-      "bottom": "open",
-      "left": "green",
+    "o-o-o-g": {
+      "image": "/tiles/pcb/20.png",
+      "sockets": ["o", "o", "o", "g"],
       "weight": 0.3
     },
-    {
-      "top": "open",
-      "right": "chip:square:0x0|1x0",
-      "bottom": "chip:square:0x0|0x1",
-      "left": "open",
+    "o-s1-s2-o": {
+      "image": "/tiles/pcb/21.png",
+      "sockets": ["o", "s1", "s2", "o"],
       "weight": 0.3
     },
-    {
-      "top": "open",
-      "right": "chip:square:1x0|2x0",
-      "bottom": "chip:square:1x0|1x1",
-      "left": "chip:square:0x0|1x0",
+    "o-s3-s4-s1": {
+      "image": "/tiles/pcb/22.png",
+      "sockets": ["o", "s3", "s4", "s1"],
       "weight": 0.3
     },
-    {
-      "top": "open",
-      "right": "open",
-      "bottom": "chip:square:2x0|2x1",
-      "left": "chip:square:1x0|2x0",
+    "o-o-s5-s3": {
+      "image": "/tiles/pcb/23.png",
+      "sockets": ["o", "o", "s5", "s3"],
       "weight": 0.3
     },
-    {
-      "top": "chip:square:0x0|0x1",
-      "right": "chip:square:0x1|1x1",
-      "bottom": "chip:square:0x1|0x2",
-      "left": "open",
+    "s2-s6-s7-o": {
+      "image": "/tiles/pcb/24.png",
+      "sockets": ["s2", "s6", "s7", "o"],
       "weight": 0.3
     },
-    {
-      "top": "chip:square:1x0|1x1",
-      "right": "chip:square:1x1|2x1",
-      "bottom": "chip:square:1x1|1x2",
-      "left": "chip:square:0x1|1x1",
+    "s4-s8-s9-s6": {
+      "image": "/tiles/pcb/25.png",
+      "sockets": ["s4", "s8", "s9", "s6"],
       "weight": 0.3
     },
-    {
-      "top": "chip:square:2x0|2x1",
-      "right": "open",
-      "bottom": "chip:square:2x1|2x2",
-      "left": "chip:square:1x1|2x1",
+    "s5-o-s10-s8": {
+      "image": "/tiles/pcb/26.png",
+      "sockets": ["s5", "o", "s10", "s8"],
       "weight": 0.3
     },
-    {
-      "top": "chip:square:0x1|0x2",
-      "right": "chip:square:0x2|1x2",
-      "bottom": "open",
-      "left": "open",
+    "s7-s11-o-o": {
+      "image": "/tiles/pcb/27.png",
+      "sockets": ["s7", "s11", "o", "o"],
       "weight": 0.3
     },
-    {
-      "top": "chip:square:1x1|1x2",
-      "right": "chip:square:1x2|2x2",
-      "bottom": "open",
-      "left": "chip:square:0x2|1x2",
+    "s9-s12-o-s11": {
+      "image": "/tiles/pcb/28.png",
+      "sockets": ["s9", "s12", "o", "s11"],
       "weight": 0.3
     },
-    {
-      "top": "chip:square:2x1|2x2",
-      "right": "open",
-      "bottom": "open",
-      "left": "chip:square:1x2|2x2",
+    "s10-o-o-s12": {
+      "image": "/tiles/pcb/29.png",
+      "sockets": ["s10", "o", "o", "s12"],
       "weight": 0.3
     },
-    {
-      "top": "open",
-      "right": "chip:wide:0x0|1x0",
-      "bottom": "chip:wide:0x0|0x1",
-      "left": "open",
+    "o-s13-s14-o": {
+      "image": "/tiles/pcb/30.png",
+      "sockets": ["o", "s13", "s14", "o"],
       "weight": 0.2
     },
-    {
-      "top": "open",
-      "right": "chip:wide:1x0|2x0",
-      "bottom": "chip:wide:1x0|1x1",
-      "left": "chip:wide:0x0|1x0",
+    "o-s15-s16-s13": {
+      "image": "/tiles/pcb/31.png",
+      "sockets": ["o", "s15", "s16", "s13"],
       "weight": 0.2
     },
-    {
-      "top": "open",
-      "right": "chip:wide:2x0|3x0",
-      "bottom": "chip:wide:2x0|2x1",
-      "left": "chip:wide:1x0|2x0",
+    "o-s17-s18-s15": {
+      "image": "/tiles/pcb/32.png",
+      "sockets": ["o", "s17", "s18", "s15"],
       "weight": 0.2
     },
-    {
-      "top": "open",
-      "right": "chip:wide:3x0|4x0",
-      "bottom": "chip:wide:3x0|3x1",
-      "left": "chip:wide:2x0|3x0",
+    "o-s19-s20-s17": {
+      "image": "/tiles/pcb/33.png",
+      "sockets": ["o", "s19", "s20", "s17"],
       "weight": 0.2
     },
-    {
-      "top": "open",
-      "right": "open",
-      "bottom": "chip:wide:4x0|4x1",
-      "left": "chip:wide:3x0|4x0",
+    "o-o-s21-s19": {
+      "image": "/tiles/pcb/34.png",
+      "sockets": ["o", "o", "s21", "s19"],
       "weight": 0.2
     },
-    {
-      "top": "chip:wide:0x0|0x1",
-      "right": "chip:wide:0x1|1x1",
-      "bottom": "chip:wide:0x1|0x2",
-      "left": "open",
+    "s14-s22-s23-o": {
+      "image": "/tiles/pcb/35.png",
+      "sockets": ["s14", "s22", "s23", "o"],
       "weight": 0.2
     },
-    {
-      "top": "chip:wide:1x0|1x1",
-      "right": "chip:wide:1x1|2x1",
-      "bottom": "chip:wide:1x1|1x2",
-      "left": "chip:wide:0x1|1x1",
+    "s16-s24-s25-s22": {
+      "image": "/tiles/pcb/36.png",
+      "sockets": ["s16", "s24", "s25", "s22"],
       "weight": 0.2
     },
-    {
-      "top": "chip:wide:2x0|2x1",
-      "right": "chip:wide:2x1|3x1",
-      "bottom": "chip:wide:2x1|2x2",
-      "left": "chip:wide:1x1|2x1",
+    "s18-s26-s27-s24": {
+      "image": "/tiles/pcb/37.png",
+      "sockets": ["s18", "s26", "s27", "s24"],
       "weight": 0.2
     },
-    {
-      "top": "chip:wide:3x0|3x1",
-      "right": "chip:wide:3x1|4x1",
-      "bottom": "chip:wide:3x1|3x2",
-      "left": "chip:wide:2x1|3x1",
+    "s20-s28-s29-s26": {
+      "image": "/tiles/pcb/38.png",
+      "sockets": ["s20", "s28", "s29", "s26"],
       "weight": 0.2
     },
-    {
-      "top": "chip:wide:4x0|4x1",
-      "right": "open",
-      "bottom": "chip:wide:4x1|4x2",
-      "left": "chip:wide:3x1|4x1",
+    "s21-o-s30-s28": {
+      "image": "/tiles/pcb/39.png",
+      "sockets": ["s21", "o", "s30", "s28"],
       "weight": 0.2
     },
-    {
-      "top": "chip:wide:0x1|0x2",
-      "right": "chip:wide:0x2|1x2",
-      "bottom": "open",
-      "left": "open",
+    "s23-s31-o-o": {
+      "image": "/tiles/pcb/40.png",
+      "sockets": ["s23", "s31", "o", "o"],
       "weight": 0.2
     },
-    {
-      "top": "chip:wide:1x1|1x2",
-      "right": "chip:wide:1x2|2x2",
-      "bottom": "open",
-      "left": "chip:wide:0x2|1x2",
+    "s25-s32-o-s31": {
+      "image": "/tiles/pcb/41.png",
+      "sockets": ["s25", "s32", "o", "s31"],
       "weight": 0.2
     },
-    {
-      "top": "chip:wide:2x1|2x2",
-      "right": "chip:wide:2x2|3x2",
-      "bottom": "open",
-      "left": "chip:wide:1x2|2x2",
+    "s27-s33-o-s32": {
+      "image": "/tiles/pcb/42.png",
+      "sockets": ["s27", "s33", "o", "s32"],
       "weight": 0.2
     },
-    {
-      "top": "chip:wide:3x1|3x2",
-      "right": "chip:wide:3x2|4x2",
-      "bottom": "open",
-      "left": "chip:wide:2x2|3x2",
+    "s29-s34-o-s33": {
+      "image": "/tiles/pcb/43.png",
+      "sockets": ["s29", "s34", "o", "s33"],
       "weight": 0.2
     },
-    {
-      "top": "chip:wide:4x1|4x2",
-      "right": "open",
-      "bottom": "open",
-      "left": "chip:wide:3x2|4x2",
+    "s30-o-o-s34": {
+      "image": "/tiles/pcb/44.png",
+      "sockets": ["s30", "o", "o", "s34"],
       "weight": 0.2
     }
-  ]
+  }
 }

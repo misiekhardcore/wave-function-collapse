@@ -28,7 +28,7 @@ export function TileSetPicker({ value, onChange }: TileSetPickerProps) {
     <Panel title="Tile set" description="Choose the rules the pattern is built from.">
       <Field>
         <FieldLabel htmlFor="tile-set">Preset</FieldLabel>
-        <Select value={value} onValueChange={(next) => onChange(next as TileSetId)}>
+        <Select value={value} onValueChange={(next) => onChange(next)}>
           <SelectTrigger id="tile-set" className="w-full">
             <SelectValue />
           </SelectTrigger>

@@ -1,12 +1,10 @@
-import type { Tile, TileEdges, TileObject } from '@/types';
+import type { Side, Tile, TileObject } from '@/types';
 
 import { OPPOSITE_SIDE, SIDES } from './tileSets';
 
-type Side = keyof TileEdges;
-
 /**
- * A seam is an edge label carried by exactly two tiles, on opposite sides. Such
- * a label glues a multi-tile structure together (a PCB chip package is built
+ * A seam is an edge socket carried by exactly two tiles, on opposite sides. Such
+ * a socket glues a multi-tile structure together (a PCB chip package is built
  * from one per interior edge).
  *
  * The map is keyed by the tile array so the scan happens once per tile set.
@@ -29,22 +27,28 @@ export function getPackagePartners(tiles: Tile[]): Map<number, Map<Side, number>
   const cached = partnersByTiles.get(tiles);
   if (cached) return cached;
 
-  const byLabel = new Map<string, { tileId: number; side: Side }[]>();
+  const occurrences = new Map<string, { tileId: number; side: Side }[]>();
 
   for (const tile of tiles) {
-    for (const side of SIDES) {
-      const label = tile.edges[side];
-      byLabel.set(label, [...(byLabel.get(label) ?? []), { tileId: tile.id, side }]);
-    }
+    SIDES.forEach((side, index) => {
+      const socket = tile.sockets[index];
+
+      occurrences.set(socket, [...(occurrences.get(socket) ?? []), { tileId: tile.id, side }]);
+    });
   }
 
   const partners = new Map<number, Map<Side, number>>();
 
-  for (const entries of byLabel.values()) {
+  for (const entries of occurrences.values()) {
     if (entries.length !== 2) continue;
 
     const [first, second] = entries;
+
+    // A socket the whole set shares is a surface, not a seam: only a socket
+    // written once on each of two tiles binds them together.
+    if (first.tileId === second.tileId) continue;
     if (OPPOSITE_SIDE[first.side] !== second.side) continue;
+    if (!tiles[first.tileId][first.side].includes(second.tileId)) continue;
 
     setPartner(partners, first.tileId, first.side, second.tileId);
     setPartner(partners, second.tileId, second.side, first.tileId);
@@ -66,8 +70,8 @@ function neighbourIndex(index: number, side: Side, count: number, cols: number):
 /**
  * True when the neighbours outside a package accept the package's bare-board
  * sides. A cell beside the package may already be decided, in which case it must
- * carry the same label on the side they share; an undecided cell only needs one
- * option that does.
+ * be one of the tiles the part allows there; an undecided cell only needs one
+ * option that is.
  */
 function ringAccepts(
   expected: Map<number, number>,
@@ -82,13 +86,12 @@ function ringAccepts(
       const neighbour = neighbourIndex(cellIndex, side, grid.length, cols);
       if (neighbour === -1 || expected.has(neighbour)) continue;
 
-      const label = part.edges[side];
-      const opposite = OPPOSITE_SIDE[side];
+      const allowed = part[side];
       const cell = grid[neighbour];
 
       if (cell.collapsed) {
-        if (tiles[cell.options[0]].edges[opposite] !== label) return false;
-      } else if (!cell.options.some((option) => tiles[option].edges[opposite] === label)) {
+        if (!allowed.includes(cell.options[0])) return false;
+      } else if (!cell.options.some((option) => allowed.includes(option))) {
         return false;
       }
     }
@@ -101,10 +104,10 @@ function ringAccepts(
  * True when the tile can be placed at the index without splitting a package.
  *
  * Every cell the package would occupy must still be open and must still accept
- * its part, the board around the package must share its bare-board labels, and
- * the package must sit inside the board. A structure either fits whole or is not
- * chosen at all, which keeps chip packages from turning into half-built blocks
- * or stranding the tiles around them.
+ * its part, the board around the package must accept the package's surface
+ * sockets, and the package must sit inside the board. A structure either fits
+ * whole or is not chosen at all, which keeps chip packages from turning into
+ * half-built blocks or stranding the tiles around them.
  */
 export function canPlaceTile(
   tileId: number,

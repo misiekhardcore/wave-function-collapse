@@ -11,7 +11,7 @@ import {
 } from 'react';
 
 import { getTileArtSrc } from '@/lib';
-import type { TileObject, TileSet } from '@/types';
+import type { Tile, TileObject, TileSet } from '@/types';
 
 type CanvasGridProps = {
   grid: TileObject[];
@@ -38,6 +38,31 @@ const FALLBACK_PALETTE: CanvasPalette = {
 
 /** Beyond 2x the extra pixels cost far more than they add. */
 const MAX_PIXEL_RATIO = 2;
+
+/**
+ * Draws one variant. The rotation and mirroring belong to the variant, not to
+ * the art, so every angle of a tile is the same PNG turned on the canvas.
+ */
+function drawVariant(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  variant: Tile,
+  x: number,
+  y: number,
+  size: number
+) {
+  if (variant.rotation === 0 && !variant.flipped) {
+    context.drawImage(image, x, y, size, size);
+    return;
+  }
+
+  context.save();
+  context.translate(x + size / 2, y + size / 2);
+  context.rotate((variant.rotation * Math.PI) / 180);
+  if (variant.flipped) context.scale(-1, 1);
+  context.drawImage(image, -size / 2, -size / 2, size, size);
+  context.restore();
+}
 
 function subscribeToColorScheme(onStoreChange: () => void) {
   if (typeof document === 'undefined') return () => {};
@@ -96,7 +121,7 @@ export const CanvasGrid = forwardRef<HTMLCanvasElement, CanvasGridProps>(functio
 
     return tileSet.tiles.map((tile) => {
       const image = new window.Image();
-      image.src = getTileArtSrc(tileSet.id, tile.id);
+      image.src = getTileArtSrc(tile);
       return image;
     });
   }, [tileSet]);
@@ -151,10 +176,11 @@ export const CanvasGrid = forwardRef<HTMLCanvasElement, CanvasGridProps>(functio
       const tile = grid[index];
       const x = (index % cols) * tileSize;
       const y = Math.floor(index / cols) * tileSize;
-      const image = tile.options.length === 1 ? images[tile.options[0]] : undefined;
+      const variant = tile.options.length === 1 ? tileSet.tiles[tile.options[0]] : undefined;
+      const image = variant ? images[variant.id] : undefined;
 
-      if (image?.complete && image.naturalWidth > 0) {
-        context.drawImage(image, x, y, tileSize, tileSize);
+      if (variant && image?.complete && image.naturalWidth > 0) {
+        drawVariant(context, image, variant, x, y, tileSize);
         continue;
       }
 

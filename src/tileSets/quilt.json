@@ -1,169 +1,143 @@
 {
+  "version": 1,
   "id": "quilt",
   "name": "Quilt",
   "description": "Colour-blocked corners sewn into a patchwork.",
-  "tiles": [
-    {
-      "top": "color-a",
-      "right": "color-a",
-      "bottom": "color-a",
-      "left": "color-a"
+  "tiles": {
+    "a-a-a-a": {
+      "image": "/tiles/quilt/0.png",
+      "sockets": ["a", "a", "a", "a"],
+      "weight": 1
     },
-    {
-      "top": "color-b",
-      "right": "color-b",
-      "bottom": "color-b",
-      "left": "color-b"
+    "b-b-b-b": {
+      "image": "/tiles/quilt/1.png",
+      "sockets": ["b", "b", "b", "b"],
+      "weight": 1
     },
-    {
-      "top": "color-c",
-      "right": "color-c",
-      "bottom": "color-c",
-      "left": "color-c"
+    "c-c-c-c": {
+      "image": "/tiles/quilt/2.png",
+      "sockets": ["c", "c", "c", "c"],
+      "weight": 1
     },
-    {
-      "top": "color-a",
-      "right": "color-a",
-      "bottom": "color-b",
-      "left": "color-b"
+    "a-a-b-b": {
+      "image": "/tiles/quilt/3.png",
+      "sockets": ["a", "a", "b", "b"],
+      "weight": 1
     },
-    {
-      "top": "color-a",
-      "right": "color-b",
-      "bottom": "color-a",
-      "left": "color-b"
+    "a-b-a-b": {
+      "image": "/tiles/quilt/4.png",
+      "sockets": ["a", "b", "a", "b"],
+      "weight": 1
     },
-    {
-      "top": "color-a",
-      "right": "color-b",
-      "bottom": "color-b",
-      "left": "color-a"
+    "a-b-b-a": {
+      "image": "/tiles/quilt/5.png",
+      "sockets": ["a", "b", "b", "a"],
+      "weight": 1
     },
-    {
-      "top": "color-a",
-      "right": "color-a",
-      "bottom": "color-a",
-      "left": "color-b"
+    "a-a-a-b": {
+      "image": "/tiles/quilt/6.png",
+      "sockets": ["a", "a", "a", "b"],
+      "weight": 1
     },
-    {
-      "top": "color-a",
-      "right": "color-a",
-      "bottom": "color-c",
-      "left": "color-c"
+    "a-a-c-c": {
+      "image": "/tiles/quilt/7.png",
+      "sockets": ["a", "a", "c", "c"],
+      "weight": 1
     },
-    {
-      "top": "color-a",
-      "right": "color-c",
-      "bottom": "color-a",
-      "left": "color-c"
+    "a-c-a-c": {
+      "image": "/tiles/quilt/8.png",
+      "sockets": ["a", "c", "a", "c"],
+      "weight": 1
     },
-    {
-      "top": "color-a",
-      "right": "color-c",
-      "bottom": "color-c",
-      "left": "color-a"
+    "a-c-c-a": {
+      "image": "/tiles/quilt/9.png",
+      "sockets": ["a", "c", "c", "a"],
+      "weight": 1
     },
-    {
-      "top": "color-a",
-      "right": "color-a",
-      "bottom": "color-a",
-      "left": "color-c"
+    "a-a-a-c": {
+      "image": "/tiles/quilt/10.png",
+      "sockets": ["a", "a", "a", "c"],
+      "weight": 1
     },
-    {
-      "top": "color-b",
-      "right": "color-b",
-      "bottom": "color-a",
-      "left": "color-a"
+    "b-b-a-a": {
+      "image": "/tiles/quilt/11.png",
+      "sockets": ["b", "b", "a", "a"],
+      "weight": 1
     },
-    {
-      "top": "color-b",
-      "right": "color-a",
-      "bottom": "color-b",
-      "left": "color-a"
+    "b-a-b-a": {
+      "image": "/tiles/quilt/12.png",
+      "sockets": ["b", "a", "b", "a"],
+      "weight": 1
     },
-    {
-      "top": "color-b",
-      "right": "color-a",
-      "bottom": "color-a",
-      "left": "color-b"
+    "b-a-a-b": {
+      "image": "/tiles/quilt/13.png",
+      "sockets": ["b", "a", "a", "b"],
+      "weight": 1
     },
-    {
-      "top": "color-b",
-      "right": "color-b",
-      "bottom": "color-b",
-      "left": "color-a"
+    "b-b-b-a": {
+      "image": "/tiles/quilt/14.png",
+      "sockets": ["b", "b", "b", "a"],
+      "weight": 1
     },
-    {
-      "top": "color-b",
-      "right": "color-b",
-      "bottom": "color-c",
-      "left": "color-c"
+    "b-b-c-c": {
+      "image": "/tiles/quilt/15.png",
+      "sockets": ["b", "b", "c", "c"],
+      "weight": 1
     },
-    {
-      "top": "color-b",
-      "right": "color-c",
-      "bottom": "color-b",
-      "left": "color-c"
+    "b-c-b-c": {
+      "image": "/tiles/quilt/16.png",
+      "sockets": ["b", "c", "b", "c"],
+      "weight": 1
     },
-    {
-      "top": "color-b",
-      "right": "color-c",
-      "bottom": "color-c",
-      "left": "color-b"
+    "b-c-c-b": {
+      "image": "/tiles/quilt/17.png",
+      "sockets": ["b", "c", "c", "b"],
+      "weight": 1
     },
-    {
-      "top": "color-b",
-      "right": "color-b",
-      "bottom": "color-b",
-      "left": "color-c"
+    "b-b-b-c": {
+      "image": "/tiles/quilt/18.png",
+      "sockets": ["b", "b", "b", "c"],
+      "weight": 1
     },
-    {
-      "top": "color-c",
-      "right": "color-c",
-      "bottom": "color-a",
-      "left": "color-a"
+    "c-c-a-a": {
+      "image": "/tiles/quilt/19.png",
+      "sockets": ["c", "c", "a", "a"],
+      "weight": 1
     },
-    {
-      "top": "color-c",
-      "right": "color-a",
-      "bottom": "color-c",
-      "left": "color-a"
+    "c-a-c-a": {
+      "image": "/tiles/quilt/20.png",
+      "sockets": ["c", "a", "c", "a"],
+      "weight": 1
     },
-    {
-      "top": "color-c",
-      "right": "color-a",
-      "bottom": "color-a",
-      "left": "color-c"
+    "c-a-a-c": {
+      "image": "/tiles/quilt/21.png",
+      "sockets": ["c", "a", "a", "c"],
+      "weight": 1
     },
-    {
-      "top": "color-c",
-      "right": "color-c",
-      "bottom": "color-c",
-      "left": "color-a"
+    "c-c-c-a": {
+      "image": "/tiles/quilt/22.png",
+      "sockets": ["c", "c", "c", "a"],
+      "weight": 1
     },
-    {
-      "top": "color-c",
-      "right": "color-c",
-      "bottom": "color-b",
-      "left": "color-b"
+    "c-c-b-b": {
+      "image": "/tiles/quilt/23.png",
+      "sockets": ["c", "c", "b", "b"],
+      "weight": 1
     },
-    {
-      "top": "color-c",
-      "right": "color-b",
-      "bottom": "color-c",
-      "left": "color-b"
+    "c-b-c-b": {
+      "image": "/tiles/quilt/24.png",
+      "sockets": ["c", "b", "c", "b"],
+      "weight": 1
     },
-    {
-      "top": "color-c",
-      "right": "color-b",
-      "bottom": "color-b",
-      "left": "color-c"
+    "c-b-b-c": {
+      "image": "/tiles/quilt/25.png",
+      "sockets": ["c", "b", "b", "c"],
+      "weight": 1
     },
-    {
-      "top": "color-c",
-      "right": "color-c",
-      "bottom": "color-c",
-      "left": "color-b"
+    "c-c-c-b": {
+      "image": "/tiles/quilt/26.png",
+      "sockets": ["c", "c", "c", "b"],
+      "weight": 1
     }
-  ]
+  }
 }

@@ -50,11 +50,13 @@ An interactive **Wave Function Collapse algorithm** implementation and visualiza
 ### Tile System
 
 - ⚙️ **Five tile sets** the user can switch between: **Wires** (11 tiles), **PCB** (45, green traces with 45° variants and terminal pads, plus microcontrollers in 3 × 3 and 5 × 3 footprints), **Maze** (16), **Quilt** (27) and **Terrain** (68 land / sand / water layouts)
-- 🗂️ Each set is a JSON file in `src/tileSets/` — four side labels and an optional weight per tile — so a set can be edited without touching the solver
-- 🔗 Each tile is described by the label on its four sides; the solver derives every compatible neighbor from those labels
-- 🏝️ Terrain covers land, sand and water, weighted so ground grows into continents and seas and sand stays on the shore; every tile is painted as a block, so coastlines run along the tile edges and turn at right angles, and no layout is a single stripe of one ground down the middle
+- 🗂️ Each set is a JSON file in `src/tileSets/` — a PNG per tile and four edge sockets, checked by a zod schema — so a tile is added without touching the solver
+- 🔗 Edges connect on their own when one socket is the reverse of the other, so no tile lists its neighbours; a `connections` entry adds a pair the sockets do not imply, reweighs one, or forbids it with a weight of zero
+- 🔄 A tile declares the angles it should appear at, and whether it should be mirrored; its weight is split between those variants and the one PNG is turned when it is drawn, so a four-way tile is not four times as common
+- 🏝️ Terrain covers land, sand and water, weighed tile by tile so ground grows into continents and seas and sand stays on the shore; coastlines run along the tile edges and turn at right angles, and no layout is a single stripe of one ground down the middle
+- 🌫️ A set can bias its weights: `constant` spreads them evenly, `noise` varies them from cell to cell for a patchier pattern
 - 👁️ Interactive preview panel showing the selected tile and the tiles allowed on each side
-- 🖼️ Tile art is generated from the same edge data with `pnpm tiles`
+- 🖼️ Tile art is one PNG per tile, read from the tile's `image` and drawn with the variant's rotation and mirror
 
 ### Developer Experience
 
@@ -94,11 +96,12 @@ wfc/
 │   │   ├── calculateOptions.ts    ← Constraint propagation solver
 │   │   ├── findTilesIndicesWithLeastOptions.ts  ← MRV heuristic implementation
 │   │   ├── getNeighborOptions.ts  ← Tile compatibility checker
-│   │   ├── tileSets.ts            ← Tile set definitions + adjacency builder
+│   │   ├── tileSetSchema.ts       ← zod schema for the JSON sets
+│   │   ├── tileSets.ts            ← Loads and validates the sets, builds adjacency
+│   │   ├── tileArt.ts             ← Tile image URLs
+│   │   ├── bias.ts                ← Per-cell weight bias
 │   │   └── ...utils               ← Helper functions (random pick, etc.)
 │   └── types.ts                  # TypeScript interfaces: Tile, TileSet, TileObject
-├── scripts/
-│   └── generate-tiles.ts         # Writes the PNGs for every set (`pnpm tiles`)
 ├── public/tiles/                  # Per-set tile art: <set>/<id>.png
 ├── docs/                          # API documentation
 └── tests/
@@ -160,19 +163,31 @@ pnpm prettier:fix                  # Prettier auto-format        │    findTile
 
 ## 📁 Tile Definitions (Sample)
 
-Every tile is declared as the label on each of its four sides. `createTiles` turns those labels into the adjacency lists the solver reads: two tiles may sit side by side when the labels that meet are equal, so a label used on one side is always available for a neighbor to match on the other side.
+Every tile is a name, one PNG, and four edge sockets written north, east, south and west. A socket is read clockwise around the tile, so a shore that is land to the north and water to the south has an east edge `lw` and a west edge `wl`.
 
-```typescript
-// A tile from the wire set: the trace leaves on every side but the right one
-{ top: 'wire', right: 'open', bottom: 'wire', left: 'wire' }
-
-// Derived compatibility: only tiles with `wire` on their bottom fit above it
-top: [2, 3, 4, 5, 9, 10];
+```json
+{
+  "version": 1,
+  "name": "coast",
+  "connections": [["w", "l", 0.3]],
+  "tiles": {
+    "water": { "image": "tiles/water.png", "sockets": ["w", "w", "w", "w"], "weight": 4 },
+    "land": { "image": "tiles/land.png", "sockets": ["l", "l", "l", "l"], "weight": 5 },
+    "shore": {
+      "image": "tiles/shore.png",
+      "sockets": ["l", "lw", "w", "wl"],
+      "rotate": [0, 90, 180, 270],
+      "weight": 2
+    }
+  }
+}
 ```
 
-The algorithm ensures that when placing a tile at position `(row, col)`, its edges must be compatible with already-placed neighboring tiles.
+Two edges connect on their own when one is the reverse of the other: `w` meets `w`, and `lw` meets `wl`. Nothing lists its neighbours. `connections` is only for the rest: `["w", "l", 0.3]` makes the abrupt coast three tenths as likely as the sockets would allow, and a weight of `0` forbids a match that would otherwise be automatic. `weight` is the tile's frequency, split evenly across the variants that `rotate` (and `flip`) produce, so a four-way shore is not four times as common as a fixed tile.
 
-A label carried by exactly two tiles on opposite sides acts as a **seam**: it glues a multi-tile structure together. The PCB microcontrollers are packages of 3 × 3 or 5 × 3 parts joined by one seam per interior edge, and `canPlaceTile` only accepts one when all of its cells fit, so a package is always placed whole.
+The algorithm ensures that when placing a tile at position `(row, col)`, its sockets must agree with already-placed neighboring tiles.
+
+A socket carried by exactly two tiles, on opposite sides, is a **seam**: it glues a multi-tile structure together. The PCB microcontrollers are packages of 3 × 3 or 5 × 3 parts joined by one seam per interior edge, and `canPlaceTile` only accepts one when all of its cells fit, so a package is always placed whole.
 
 ## 🎨 UI Controls Explained
 
@@ -220,34 +235,43 @@ _Measured on modern desktop browsers with CanvasKit optimization enabled._
 - **Jest + Image Snapshots** — Visual regression testing for Canvas rendering ✅
 - **ESLint + Prettier** — Linting and formatting with Next.js config preset
 - **Husky + lint-staged** — Git hooks that validate before committing
-- **ts-node + jiti** — Fast TypeScript execution in development
+- **ts-node** — TypeScript execution for tooling
 
 ## 🧩 Extending the Tile Sets
 
-Add a preset by dropping a JSON file into `src/tileSets/` and describing its tiles' four side labels:
+Add a preset by dropping a JSON file into `src/tileSets/`. A tile is a name, an image, four sockets and a weight; the rest is optional:
 
 ```json
 {
-  "id": "custom",
-  "name": "Custom",
-  "description": "…",
-  "tiles": [
-    { "top": "wire", "right": "open", "bottom": "wire", "left": "open" },
-    { "top": "wire", "right": "wire", "bottom": "open", "left": "open", "weight": 0.5 }
-  ]
+  "version": 1,
+  "id": "coast",
+  "name": "Coast",
+  "description": "Land meeting water, with a beach in between.",
+  "bias": "constant",
+  "connections": [["w", "l", 0.3]],
+  "tiles": {
+    "water": { "image": "tiles/coast/water.png", "sockets": ["w", "w", "w", "w"], "weight": 4 },
+    "land": { "image": "tiles/coast/land.png", "sockets": ["l", "l", "l", "l"], "weight": 5 },
+    "shore": {
+      "image": "tiles/coast/shore.png",
+      "sockets": ["l", "lw", "w", "wl"],
+      "rotate": [0, 90, 180, 270],
+      "weight": 2
+    }
+  }
 }
 ```
 
-A tile is nothing but its labels and its `weight` — its relative chance of being collapsed into, default 1, which is how the PCB's multi-tile microcontrollers stay sparse. Its art is drawn from the same labels, so the picture can never disagree with the rules.
+`version` must be `1`; `bias` is `constant` or `noise`; `rotate` lists quarter turns and `flip` adds a mirrored variant at each of them. Images are paths under `public`, with or without a leading slash. The loader validates a set with [zod](src/lib/tileSetSchema.ts) when it loads, so a typo fails loudly instead of producing a pattern with a hole in it: it rejects a socket no tile can meet, a rotation that is not a quarter turn or is listed twice, a connection to a socket no tile carries, a forbidden pair that could not happen anyway, and a weight that is not positive.
+
+The weights are read as a tile's frequency multiplied by the pair multipliers around it, averaged over the neighbours already settled, so a tile beside four neighbours weighs what one multiplier says instead of that number to the fourth power.
 
 Then:
 
-1. import the file and list it in `TILE_SET_DATA` in `src/lib/tileSets.ts`,
-2. add the id to `TileSetId` in `src/types.ts`,
-3. add a painter for it to `scripts/generate-tiles.ts`,
-4. run `pnpm tiles` to write `public/tiles/custom/<id>.png`, and bump `TILE_ART_VERSION` in `src/lib/tileArt.ts` so browsers and image caches pick up the new art.
+1. draw one PNG per tile — a variant is that same image turned and mirrored, so one file is enough — and point the tile's `image` at it,
+2. import the file and list it in `SET_DATA` in `src/lib/tileSets.ts`. Ids follow the order the tiles are written; the set's `id` defaults to the slug of its name.
 
-The preset shows up in the **Tile set** dropdown automatically.
+If you replace a PNG in place, bump `TILE_ART_VERSION` in `src/lib/tileArt.ts` so browsers and image caches pick up the new art. The preset shows up in the **Tile set** dropdown automatically.
 
 ## 📚 Algorithm Reference Implementation Notes
 
@@ -291,11 +315,12 @@ GitHub: [@misiekhardcore](https://github.com/misiekhardcore)
 ### `src/lib/index.ts` Exports
 
 ```typescript
-collapseGrid(grid, cols, tiles): TileObject[]  // Collapse one step of the algorithm
-generateInitialGrid(seedCount, cols, rows, tiles): TileObject[]  // Initialize grid with seed tiles
-tileSets: ReadonlyArray<TileSet>       // Five presets, 11–35 tiles each
+collapseGrid(grid, cols, tiles, bias?): TileObject[]  // Collapse one step of the algorithm
+generateInitialGrid(seedCount, cols, rows, tiles, bias?): TileObject[]  // Initialize grid with seed tiles
+tileSets: ReadonlyArray<TileSet>       // Five presets, 11–68 tiles each
 getTileSet(id): TileSet                 // Look a preset up by id
 DEFAULT_TILE_SET_ID: TileSetId          // 'wires'
+getTileArtSrc(tile): string             // PNG URL, with the art version appended
 getElapsedTime(startTime?: number, endTime?: number): string
 ```
 
