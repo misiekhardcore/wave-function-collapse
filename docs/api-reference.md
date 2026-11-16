@@ -20,10 +20,16 @@ The heart of the WFC algorithm — performs one iteration step.
  *
  * @param grid - Current state of all tiles with their options and collapsed status
  * @param cols - Number of columns in the grid (used for neighbor calculations)
- * @param tiles - Tile definitions of the active set (side labels + neighbour lists)
+ * @param tiles - Tile definitions of the active set (sockets and derived neighbours)
+ * @param bias - How the set's weights are spread across cells; constant by default
  * @returns Updated tile states after one collapse step, or early termination if stuck
  */
-export function collapseGrid(grid: TileObject[], cols: number, tiles: Tile[]): TileObject[];
+export function collapseGrid(
+  grid: TileObject[],
+  cols: number,
+  tiles: Tile[],
+  bias?: Bias
+): TileObject[];
 ```
 
 **Algorithm Flow:**
@@ -49,13 +55,15 @@ Creates the initial state with seed tiles already fixed.
  * @param cols - Grid width in columns
  * @param rows - Grid height in rows
  * @param tiles - Tile definitions of the active set; its length bounds the options
+ * @param bias - How the set's weights are spread across cells; constant by default
  * @returns Complete grid state with initialized seeds and empty cells ready for solving
  */
 export function generateInitialGrid(
   countOfInitialTiles: number,
   cols: number,
   rows: number,
-  tiles: Tile[]
+  tiles: Tile[],
+  bias?: Bias
 ): TileObject[];
 ```
 
@@ -70,30 +78,33 @@ export function generateInitialGrid(
 
 ### Tile Compatibility Rules
 
-A tile declares, on each of its four sides, the tiles that may sit there. Nothing is inferred from anything else: `createTiles` copies those lists onto the tile, and the solver reads only them.
+A tile declares four edge sockets, written north, east, south and west and read clockwise around the tile. Two edges connect when one is the reverse of the other, so the neighbour pairs are derived, not listed: `w` meets `w`, `lw` meets `wl`, and nothing else meets either.
 
 ```typescript
-// The written tile: what may sit on each side, and the labels the art uses
+// One tile of a coast set: land to the north, water to the south, and two
+// shore edges running between them.
 {
-  top: 'wire', right: 'wire', bottom: 'open', left: 'wire',
-  neighbours: {
-    top:    [2, 3, 4, 5, 9, 10], // tiles carrying `wire` along their bottom
-    right:  [1, 3, 4, 6, 7, 10],
-    bottom: [0, 3, 6, 9, 10],
-    left:   [1, 2, 3, 6, 8, 9]
-  }
+  image: 'tiles/shore.png',
+  sockets: ['l', 'lw', 'w', 'wl'],
+  weight: 2,
+  rotate: [0, 90, 180, 270],
 }
 ```
 
 ```typescript
 interface Tile {
   id: number;
-  top: ReadonlyArray<number>; // Neighbours written for this side
+  name: string; // The key the tile is written under
+  image: string; // PNG under public
+  rotation: number; // Degrees clockwise applied when drawn
+  flipped: boolean; // Mirrored before it is rotated
+  sockets: Sockets; // North, east, south, west after the variant's transform
+  weight: number; // The tile's weight, split across its variants
+  top: ReadonlyArray<number>; // Derived neighbours, one list per side
   right: ReadonlyArray<number>;
   bottom: ReadonlyArray<number>;
   left: ReadonlyArray<number>;
-  edges: TileEdges; // Labels the artwork is drawn from
-  pairWeights: Record<keyof TileEdges, Record<number, number>>; // Weight of every pair
+  pairWeights: Record<Side, Record<number, number>>; // Multiplier per pair
 }
 ```
 
@@ -102,61 +113,58 @@ interface Tile {
 ```typescript
 {
   id: 1,
-  top:     [2, 3, 4, 5, 9, 10], // Can connect to tiles {2,3,4,5,9,10} above
+  name: 'w-w-o-w',
+  sockets: ['w', 'w', 'o', 'w'],
+  top:     [2, 3, 4, 5, 9, 10], // Every tile carrying `w` on its bottom
   right:   [1, 3, 4, 6, 7, 10],
   bottom:  [0, 3, 6, 9, 10],
-  left:    [1, 2, 3, 6, 8, 9],  // Can connect to tiles {1,2,3,6,8,9} on the left
-  edges:   { top: 'wire', right: 'wire', bottom: 'open', left: 'wire' }
+  left:    [1, 2, 3, 6, 8, 9],
 }
 ```
 
 ### Tile set definitions
 
-The five bundled sets — `wires` (11 tiles), `pcb` (45), `maze` (16), `quilt` (27) and `terrain` (68) — are data, not code. Each one is a JSON file in `src/tileSets/`:
-
-````json
-{
-  "id": "wires",
-  "name": "Wires",
-  "description": "Circuit traces in ink that branch, bend and cross.",
-  "tiles": [
-    {
-      "top": "open",
-      "right": "open",
-      "bottom": "open",
-      "left": "open",
-      "neighbours": {
-        "top": [0, 1, 6, 7, 8],
-        "right": [0, 2, 5, 8, 9],
-        "bottom": [0, 3, 6, 9, 10],
-        "left": [0, 4, 5, 7, 10]
-      }
-    }
-  ]
-}
-```A tile is its four labels and its four neighbour lists. A side is either a list of ids — every pair weighed alike — or a map from id to that pair's weight, which is the only place frequency lives:
+The five bundled sets — `wires` (11 tiles), `pcb` (45), `maze` (16), `quilt` (27) and `terrain` (68) — are data, not code. Each one is a JSON file in `src/tileSets/`, validated with the zod schema in `src/lib/tileSetSchema.ts`:
 
 ```json
-{ "top": "land", "right": "beach", "bottom": "land", "left": "land",
-  "neighbours": {
-    "top": [7, 9],
-    "right": { "12": 0.25, "31": 3 },
-    "bottom": [3, 5],
-    "left": [0, 4]
-  } }
-````
+{
+  "version": 1,
+  "name": "coast",
+  "connections": [["w", "l", 0.3]],
+  "tiles": {
+    "water": { "image": "tiles/water.png", "sockets": ["w", "w", "w", "w"], "weight": 4 },
+    "land": { "image": "tiles/land.png", "sockets": ["l", "l", "l", "l"], "weight": 5 },
+    "shore": {
+      "image": "tiles/shore.png",
+      "sockets": ["l", "lw", "w", "wl"],
+      "rotate": [0, 90, 180, 270],
+      "weight": 2
+    }
+  }
+}
+```
 
-That right side makes the tile a quarter as likely when tile 12 is on its right and three times as likely when tile 31 is, even if those two carry the same right-hand label; the lists all weigh one. Frequency is entirely in those numbers: a tile that should be equally likely beside every neighbour it accepts carries the same number on every pair, which is how the PCB's microcontrollers stay sparse (0.2 and 0.3 everywhere) while solid land weighs 140.
+| Field         | Meaning                                                                                                                        |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `version`     | Must be `1`.                                                                                                                   |
+| `id`          | Optional; defaults to the slug of `name`.                                                                                      |
+| `bias`        | `constant` (default) or `noise`, which multiplies each weight at a cell by a factor between 0.5 and 1.5 derived from the cell. |
+| `connections` | `[socketA, socketB, weight]` for pairs the sockets do not imply, to reweigh automatic ones, or `0` to forbid one.              |
+| `tiles`       | A map from tile name to its definition.                                                                                        |
 
-At a cell, a tile is weighed by the **mean** of the pairs already settled around it, and by the mean of all its pairs where nothing is. Averaging rather than multiplying keeps a number meaningful on its own: four decided neighbours weigh a tile what one of its pairs says, not that number to the fourth power.
+A tile has an `image` under `public`, four `sockets`, a `weight`, the `rotate` angles it should be instantiated at, and an optional `flip` that adds a mirrored variant at each of them. A tile's weight is split evenly across its variants, and variants whose sockets come out identical are merged, so a symmetric four-way tile is not four times as common as a fixed one.
 
-The labels are what the artwork is drawn from, so a set cannot describe a picture its rules contradict: the loader rejects a pair whose labels disagree. It also rejects a side that is missing or names a tile outside the set, an id listed twice, a weight that is not positive, and a pair only one of the two tiles names. The tile's array position is its id. `src/lib/tileSets.ts` loads the files, validates them, and exposes `tileSets`, `getTileSet(id)` and `DEFAULT_TILE_SET_ID` (`'wires'`).
+At a cell, a tile weighs its weight times the **mean** of the pair multipliers already settled around it, and the mean over all its pairs where nothing is settled. Averaging rather than multiplying keeps a multiplier meaningful on its own: four decided neighbours weigh a tile what one says, not that number to the fourth power.
 
-`pcb` draws green copper traces on soldermask. A corner bends through the centre, a straight holds its line, three or more traces meet at a via, and a tile with a single trace ends in a silver pad — silver appears only in those round pads. Every one of those looks is read from the labels: one trace side makes a terminal, so no flag is needed. Most of the remaining tiles build microcontrollers: a 3 × 3 square and a 5 × 3 rectangle, one part per cell, joined by unique `chip:<package>:<cell>|<cell>` seam labels so a package can only come out assembled, with pin legs drawn in the clearance around every board-facing edge and a die on the part standing on the middle cell of its package. Those parts are **weighed down** on every pair (0.2 or 0.3), because a package costs nine or fifteen cells and would otherwise carpet the board.
+Validation is part of loading, so a typo fails loudly instead of leaving a hole in a pattern: a set is rejected for an unknown version or field, a socket that is empty or holds a space, anything but four sockets, a weight that is not positive, a rotation that is not a quarter turn or is listed twice, a connection naming a socket no tile carries, the same connection twice, a weight of `0` on a pair the sockets would not allow anyway, and a tile with a socket nothing can meet. `src/lib/tileSets.ts` loads the files, expands the variants, derives the neighbour lists and exposes `tileSets`, `getTileSet(id)` and `DEFAULT_TILE_SET_ID` (`'wires'`).
 
-`terrain` describes **68** assignments of `land`, `beach` and `water` to its four sides: all 81 layouts except the 13 that paint as a single thin band of one ground through the middle of the tile (sand with water on both sides, a grass strip between sand, and so on), which read as seams rather than terrain. Weighting decides the look, not the rules: solid land (140) and water (100) outrank sand, so land and sea grow into regions instead of scattering one-cell ponds; a tile that is mostly sand on three sides (3) is the shore band, and a coast with no sand at all — land and water only (1), or all three grounds in one tile (0.2) — is rare, so sand reads as a beach rather than as filler. Each tile is painted as a block: the ground most of its sides carry, with a band of another ground along every side that disagrees, so a coastline runs along the tile edges and turns at right angles rather than cutting across a tile diagonally.
+`wires`, `maze`, `quilt` and `terrain` use one-letter sockets and no connections: `o`/`w` for open and wire, `o`/`w` for open and wall, `a`/`b`/`c` for the quilt colours, and `l`/`b`/`w` for land, beach and water. A socket carried by exactly two tiles, on opposite sides, is a **seam**; `pcb` adds `g` for a green trace and one `sN` socket per package edge, tied by a `connections` entry, so the microcontrollers can only assemble from the right parts.
 
-Tile art is addressed through `getTileArtSrc(setId, tileId)` in `src/lib/tileArt.ts`, which appends `?v=TILE_ART_VERSION` to the PNG path. The file names are stable across regenerations, so after `pnpm tiles` changes the art, bump that constant: otherwise browsers, the Next image optimiser and any CDN keep serving the previous bitmaps, and one pattern ends up mixing old and new tiles.
+`pcb` draws green copper traces on soldermask, with a 3 × 3 square and a 5 × 3 rectangular microcontroller built one part per cell. Those parts weigh 0.2 or 0.3, because a package costs nine or fifteen cells and would otherwise carpet the board.
+
+`terrain` describes **68** assignments of `land`, `beach` and `water` to its four sides: all 81 layouts except the 13 that read as a single thin band of one ground through the middle of the tile (sand with water on both sides, a grass strip between sand, and so on). Weighting decides the look, not the rules: solid land (140) and water (100) outrank sand, so land and sea grow into regions instead of scattering one-cell ponds; a tile that is mostly sand on three sides (3) is the shore band, and a coast with no sand at all — land and water only (1), or all three grounds in one tile (0.2) — is rare, so sand reads as a beach rather than as filler.
+
+Tile images are addressed through `getTileArtSrc(tile)` in `src/lib/tileArt.ts`, which resolves the tile's `image` against `public` and appends `?v=TILE_ART_VERSION`. The renderer applies the variant's rotation and mirror when it draws, so one PNG serves every angle of a tile. Bump that constant when you replace a PNG in place, or browsers, the Next image optimiser and any CDN keep serving the previous bitmap.
 
 ---
 
@@ -204,19 +212,20 @@ function pickRandomArrayElement<T>(array: T[]): {
 
 ```typescript
 /**
- * Picks one of the given tile ids, honouring the weight of the pair it would
- * make with each neighbour already settled at the cell.
+ * Picks one of the given tile ids, honouring the tile's weight and the
+ * multiplier of the pair it would make with each settled neighbour.
  */
 function pickWeightedTile(
   options: number[],
   tiles: Tile[],
-  context?: { index: number; grid: TileObject[]; cols: number }
+  context?: { index: number; grid: TileObject[]; cols: number; bias: Bias }
 ): number;
 ```
 
 Used both for the seed tiles in `generateInitialGrid` and for every collapse in
 `collapseGrid`, which pass the cell so a tile is weighed by its settled
-neighbours. Without a context the tile's average pair decides.
+neighbours and by the bias at that cell. Without a context the tile's average
+pair decides and no bias applies.
 
 ---
 
@@ -224,9 +233,9 @@ neighbours. Without a context the tile's average pair decides.
 
 ```typescript
 /**
- * The weight a tile carries at one cell: the mean of the pairs settled around
- * it, or its overall mean when nothing is. An open side, or a side at the edge
- * of the board, does not count.
+ * The weight a tile carries at one cell: the tile's own weight times the mean of
+ * the pair multipliers settled around it, or the mean over all its pairs when
+ * nothing is. An open side, or a side at the edge of the board, does not count.
  */
 function getTileWeight(tile: Tile, index: number, grid: TileObject[], cols: number): number;
 function getAverageWeight(tile: Tile): number;
@@ -251,8 +260,8 @@ function canPlaceTile(
 ): boolean;
 ```
 
-A _package_ is any group of tiles glued by seam labels — an edge label carried
-by exactly two tiles, on opposite sides. The PCB microcontrollers are 3 × 3 or
+A _package_ is any group of tiles glued by seam sockets — a socket carried by
+exactly two tiles, on opposite sides. The PCB microcontrollers are 3 × 3 or
 5 × 3 parts joined by one seam per interior edge, so a package is placed whole
 or not at all; one that would run off the board or overlap a decided cell is
 never chosen.
@@ -264,52 +273,50 @@ never chosen.
 ### `Tile` (src/types.ts)
 
 ```typescript
+export type Side = 'top' | 'right' | 'bottom' | 'left';
+
+/** The four edges of a tile, north, east, south and west. */
+export type Sockets = [string, string, string, string];
+
 export interface Tile {
-  /** Unique identifier for the tile type */
+  /** Position in the expanded set; variants get their own ids */
   id: number;
-  /** Indices of compatible tiles that can be placed above this one's top edge */
+  /** The key the tile is written under */
+  name: string;
+  /** PNG under public */
+  image: string;
+  /** Degrees clockwise applied when the image is drawn */
+  rotation: number;
+  /** True when the image is mirrored before it is rotated */
+  flipped: boolean;
+  /** Edges after the variant's rotation and mirroring */
+  sockets: Sockets;
+  /** The tile's weight, split evenly across its variants */
+  weight: number;
+  /** Derived neighbours, one list per side */
   top: ReadonlyArray<number>;
-  /** Compatible neighbors on the right side (tile to its east) */
   right: ReadonlyArray<number>;
-  /** Compatible neighbors below this tile's bottom edge */
   bottom: ReadonlyArray<number>;
-  /** Indices of tiles that can be placed to the left (west) of this one */
   left: ReadonlyArray<number>;
-  /** Label on each side; what the art is drawn from */
-  edges: TileEdges;
-  /** Weight of every neighbour pair: side, then the id of the tile on that side */
-  pairWeights: Record<keyof TileEdges, Record<number, number>>;
+  /** Multiplier on the tile's weight per pair: side, then the tile on that side */
+  pairWeights: Record<Side, Record<number, number>>;
 }
-
-/** A written set, as loaded from `src/tileSets/<id>.json` before it is built. */
-export type TileSpec = TileEdges & {
-  /** Per side: neighbour ids, or the weight of each of them */
-  neighbours: Record<keyof TileEdges, number[] | Record<number, number>>;
-};
-
-/**
- * A side label. Two sides may meet only when their labels are identical, so a
- * label names a whole class of neighbour pairs; seams inside a multi-tile chip
- * package are labels too (`chip:<package>:<cell>|<cell>`), carried by exactly
- * two parts on opposite sides.
- */
-export type TileEdges = {
-  top: string;
-  right: string;
-  bottom: string;
-  left: string;
-};
 ```
 
 ### `TileSet` (src/types.ts)
 
 ```typescript
-export type TileSetId = 'wires' | 'pcb' | 'maze' | 'quilt' | 'terrain';
+/** A set's id; any string, so a new file needs no type change. */
+export type TileSetId = string;
+
+/** How the set's weights are spread across the board. */
+export type Bias = 'constant' | 'noise';
 
 export type TileSet = {
   id: TileSetId;
   name: string;
   description: string;
+  bias: Bias;
   tiles: Tile[];
 };
 ```

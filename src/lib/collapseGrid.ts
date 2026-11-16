@@ -1,4 +1,4 @@
-import type { Tile, TileObject } from '@/types';
+import type { Bias, Tile, TileObject } from '@/types';
 
 import { calculateOptions } from './calculateOptions';
 import { canPlaceTile, getPackagePartners } from './canPlaceTile';
@@ -24,13 +24,18 @@ function touchesPackage(index: number, grid: TileObject[], cols: number, tiles: 
     const cell = grid[neighbour];
     if (!cell.collapsed) return false;
 
-    // Package parts are the tiles sharing a seam label that occurs exactly
-    // twice, on opposite sides — the labels say so, so art never has to.
+    // Package parts are the tiles sharing a seam socket that occurs exactly
+    // twice, on opposite sides — the sockets say so, so art never has to.
     return partners.has(cell.options[0]);
   });
 }
 
-export function collapseGrid(grid: TileObject[], cols: number, tiles: Tile[]): TileObject[] {
+export function collapseGrid(
+  grid: TileObject[],
+  cols: number,
+  tiles: Tile[],
+  bias: Bias = 'constant'
+): TileObject[] {
   const tilesWithNewOptions = calculateOptions(grid, cols, tiles);
   const leastOptionsTilesIndices = findTilesIndicesWithLeastOptions(tilesWithNewOptions);
 
@@ -65,6 +70,7 @@ export function collapseGrid(grid: TileObject[], cols: number, tiles: Tile[]): T
     index: randomTileIndex,
     grid: tilesWithNewOptions,
     cols,
+    bias,
   });
 
   tilesWithNewOptions[randomTileIndex].collapsed = true;

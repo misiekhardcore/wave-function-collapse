@@ -1,7 +1,7 @@
-import type { TileSetId } from '@/types';
+import type { Tile } from '@/types';
 
 /**
- * Bumped whenever `pnpm tiles` changes the rasterised art.
+ * Bumped whenever the checked-in tile art changes.
  *
  * Tile URLs are otherwise stable across builds, so a browser, the Next image
  * optimiser or any CDN in front of the app would keep serving the previous PNG
@@ -10,6 +10,15 @@ import type { TileSetId } from '@/types';
  */
 export const TILE_ART_VERSION = 8;
 
-export function getTileArtSrc(tileSetId: TileSetId, tileId: number): string {
-  return `/tiles/${tileSetId}/${tileId}.png?v=${TILE_ART_VERSION}`;
+/**
+ * The PNG a tile is drawn with.
+ *
+ * The path is read from the set's `image`, which points into `public` with or
+ * without a leading slash. One image serves every variant of a tile: the
+ * rotation and mirroring are applied when it is drawn.
+ */
+export function getTileArtSrc(tile: Tile): string {
+  const path = tile.image.startsWith('/') ? tile.image : `/${tile.image}`;
+
+  return `${path}${path.includes('?') ? '&' : '?'}v=${TILE_ART_VERSION}`;
 }

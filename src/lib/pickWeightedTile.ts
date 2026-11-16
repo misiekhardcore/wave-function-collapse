@@ -1,24 +1,27 @@
-import type { Tile, TileObject } from '@/types';
+import type { Bias, Tile, TileObject } from '@/types';
 
+import { getBiasFactor } from './bias';
 import { getAverageWeight, getTileWeight } from './getTileWeight';
 
 /**
  * The cell a tile is being weighed for. Without it every tile is weighed by its
- * average pair; with it, by the pairs settled around that cell.
+ * average pair; with it, by the pairs settled around that cell and by how much
+ * the set's bias counts there.
  */
 export type WeightContext = {
   index: number;
   grid: TileObject[];
   cols: number;
+  bias: Bias;
 };
 
 /**
- * Picks one of the given tile ids, honouring the weight of the pair it would
- * make with each neighbour already settled at the cell.
+ * Picks one of the given tile ids, honouring the weight of the tile and of the
+ * pair it would make with each neighbour already settled at the cell.
  *
- * The weight lives on the pair, so a set can make one tile common beside one
- * neighbour and rare beside another without anything being inferred. Without a
- * context the tile's average pair decides, which is what seeds use.
+ * A set only overrides the pairs it cares about, so the multiplier is one almost
+ * everywhere; the tile's own weight does the rest. Without a context the tile's
+ * average pair decides, which is what seeds use.
  */
 export function pickWeightedTile(
   options: number[],
@@ -27,7 +30,8 @@ export function pickWeightedTile(
 ): number {
   const weights = options.map((id) =>
     context
-      ? getTileWeight(tiles[id], context.index, context.grid, context.cols)
+      ? getTileWeight(tiles[id], context.index, context.grid, context.cols) *
+        getBiasFactor(context.bias, context.index)
       : getAverageWeight(tiles[id])
   );
   const total = weights.reduce((sum, weight) => sum + weight, 0);

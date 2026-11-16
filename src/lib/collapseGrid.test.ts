@@ -1,6 +1,7 @@
 import { collapseGrid } from './collapseGrid';
 import { generateInitialGrid } from './generateInitialGrid';
-import { getTileSet, SIDES } from './tileSets';
+import { getTileSet } from './tileSets';
+import { reverseSocket } from './tileSetSchema';
 
 const tiles = getTileSet('wires').tiles;
 
@@ -40,7 +41,7 @@ describe('collapseGrid', () => {
 describe('collapseGrid with the terrain set', () => {
   const COLS = 30;
 
-  it('never leaves two neighbouring tiles whose labels disagree', () => {
+  it('never leaves two neighbouring sockets that do not meet', () => {
     for (let run = 0; run < 3; run++) {
       const { grid, tiles } = solve('terrain', COLS, 20);
 
@@ -53,21 +54,19 @@ describe('collapseGrid with the terrain set', () => {
         const east = index % COLS === COLS - 1 ? undefined : grid[index + 1];
         const south = index + COLS < grid.length ? grid[index + COLS] : undefined;
 
-        if (east) seams.push([tile.edges.right, tiles[east.options[0]].edges.left]);
-        if (south) seams.push([tile.edges.bottom, tiles[south.options[0]].edges.top]);
+        if (east) seams.push([tile.sockets[1], tiles[east.options[0]].sockets[3]]);
+        if (south) seams.push([tile.sockets[2], tiles[south.options[0]].sockets[0]]);
       }
 
-      expect(seams.filter(([here, there]) => here !== there)).toEqual([]);
+      expect(seams.filter(([here, there]) => there !== reverseSocket(here))).toEqual([]);
     }
   });
 
   it('fills the whole board, so no cell is left without a tile', () => {
     const { grid, tiles } = solve('terrain', COLS, 20);
-    const terrains = new Set(
-      grid.flatMap((cell) => SIDES.map((side) => tiles[cell.options[0]].edges[side]))
-    );
+    const sockets = new Set(grid.flatMap((cell) => tiles[cell.options[0]].sockets));
 
     expect(grid.every((cell) => cell.collapsed)).toBe(true);
-    expect([...terrains].sort()).toEqual(['beach', 'land', 'water']);
+    expect([...sockets].sort()).toEqual(['b', 'l', 'w']);
   });
 });

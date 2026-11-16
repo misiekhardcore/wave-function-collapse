@@ -1,27 +1,34 @@
-import type { Tile } from '@/types';
+import type { Bias, Sockets, Tile } from '@/types';
 
 import { pickWeightedTile } from './pickWeightedTile';
 
 const NO_PAIRS: Tile['pairWeights'] = { top: {}, right: {}, bottom: {}, left: {} };
+const SOCKETS: Sockets = ['o', 'o', 'o', 'o'];
 
 /** Tile ids double as indexes into the array, exactly as in a tile set. */
-function tile(id: number, pairWeights: Partial<Tile['pairWeights']> = {}): Tile {
+function tile(id: number, pairWeights: Partial<Tile['pairWeights']> = {}, weight = 1): Tile {
   return {
     id,
+    name: `tile-${id}`,
+    image: '/tiles/test.png',
+    rotation: 0,
+    flipped: false,
+    sockets: SOCKETS,
+    weight,
     top: [],
     right: [],
     bottom: [],
     left: [],
-    edges: { top: 'open', right: 'open', bottom: 'open', left: 'open' },
     pairWeights: { ...NO_PAIRS, ...pairWeights },
   };
 }
 
 /** Two cells side by side, the left one already decided as `neighbourTileId`. */
-function context(neighbourTileId: number) {
+function context(neighbourTileId: number, bias: Bias = 'constant') {
   return {
     index: 1,
     cols: 2,
+    bias,
     grid: [
       { col: 0, row: 0, options: [neighbourTileId], collapsed: true },
       { col: 1, row: 0, options: [0, 1], collapsed: false },
@@ -54,6 +61,18 @@ describe('pickWeightedTile', () => {
       if (pickWeightedTile([0, 1], tiles, context(0)) === 0) heavy++;
     }
 
+    expect(heavy).toBeGreaterThan(200);
+  });
+
+  it('should favour the heavier tile', () => {
+    const tiles = [tile(0, {}, 4), tile(1)];
+    let heavy = 0;
+
+    for (let draw = 0; draw < 300; draw++) {
+      if (pickWeightedTile([0, 1], tiles, context(0)) === 0) heavy++;
+    }
+
+    // Four against one means about 80 per cent of the draws.
     expect(heavy).toBeGreaterThan(200);
   });
 

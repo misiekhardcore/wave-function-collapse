@@ -1,8 +1,6 @@
-import type { Tile, TileEdges, TileObject } from '@/types';
+import type { Side, Tile, TileObject } from '@/types';
 
 import { SIDES } from './tileSets';
-
-type Side = keyof TileEdges;
 
 function neighbourIndex(index: number, side: Side, count: number, cols: number): number {
   if (side === 'top') return index - cols >= 0 ? index - cols : -1;
@@ -12,35 +10,42 @@ function neighbourIndex(index: number, side: Side, count: number, cols: number):
   return index % cols < cols - 1 ? index + 1 : -1;
 }
 
-/** Mean of every pair a tile declares, cached on the tile itself. */
-const averages = new WeakMap<Tile, number>();
+function mean(values: number[]): number {
+  return values.length > 0 ? values.reduce((sum, value) => sum + value, 0) / values.length : 1;
+}
 
-/**
- * What a tile weighs where nothing around it is settled yet: the mean of every
- * pair it allows. A tile that is equally likely beside every neighbour it
- * accepts therefore carries that one number everywhere.
- */
-export function getAverageWeight(tile: Tile): number {
-  const cached = averages.get(tile);
+/** Mean of every pair multiplier a tile declares, cached on the tile itself. */
+const pairAverages = new WeakMap<Tile, number>();
+
+function averagePairWeight(tile: Tile): number {
+  const cached = pairAverages.get(tile);
   if (cached !== undefined) return cached;
 
-  const weights = SIDES.flatMap((side) => Object.values(tile.pairWeights[side]));
-  const mean =
-    weights.length > 0 ? weights.reduce((sum, weight) => sum + weight, 0) / weights.length : 1;
+  const average = mean(SIDES.flatMap((side) => Object.values(tile.pairWeights[side])));
 
-  averages.set(tile, mean);
+  pairAverages.set(tile, average);
 
-  return mean;
+  return average;
 }
 
 /**
- * The weight the tile carries at one cell: the mean of the pairs already settled
- * around it. A side whose neighbour is still open, or a side at the edge of the
- * board, says nothing — and a cell with nothing settled around it falls back to
- * the tile's overall mean.
+ * What a tile weighs where nothing around it is settled yet: its own weight
+ * times the mean of every pair it allows, which is just its own weight when the
+ * set overrides no pair.
+ */
+export function getAverageWeight(tile: Tile): number {
+  return tile.weight * averagePairWeight(tile);
+}
+
+/**
+ * The weight the tile carries at one cell: its own weight times the mean of the
+ * pairs already settled around it. A side whose neighbour is still open, or a
+ * side at the edge of the board, says nothing — and a cell with nothing settled
+ * around it falls back to the tile's average pair.
  *
- * Weighting by the mean rather than the product keeps a pair's number meaningful
- * on its own: four neighbours do not make a tile four times rarer than one.
+ * Weighting by the mean rather than the product keeps a pair's multiplier
+ * meaningful on its own: four neighbours do not make a tile four times rarer
+ * than one.
  */
 export function getTileWeight(tile: Tile, index: number, grid: TileObject[], cols: number): number {
   let total = 0;
@@ -57,5 +62,5 @@ export function getTileWeight(tile: Tile, index: number, grid: TileObject[], col
     settled++;
   }
 
-  return settled === 0 ? getAverageWeight(tile) : total / settled;
+  return tile.weight * (settled === 0 ? averagePairWeight(tile) : total / settled);
 }

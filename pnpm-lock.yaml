@@ -205,6 +205,9 @@ importers:
       tailwindcss:
         specifier: 4.3.5
         version: 4.3.5
+      zod:
+        specifier: 4.6.7
+        version: 4.6.7
     devDependencies:
       '@eslint/eslintrc':
         specifier: 3.3.7
@@ -281,9 +284,6 @@ importers:
       jest-image-snapshot:
         specifier: 6.5.2
         version: 6.5.2(jest@30.5.2(@types/node@26.6.6)(supports-color@8.1.1)(ts-node@10.9.2(@types/node@26.6.6)(typescript@6.0.3)))
-      jiti:
-        specifier: 2.7.0
-        version: 2.7.0
       lint-staged:
         specifier: 17.6.0
         version: 17.6.0

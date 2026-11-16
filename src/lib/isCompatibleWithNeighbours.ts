@@ -1,4 +1,4 @@
-import type { Tile, TileObject } from '@/types';
+import type { Side, Tile, TileObject } from '@/types';
 
 /**
  * True when the tile can sit at the index next to every decided neighbour.
@@ -6,7 +6,7 @@ import type { Tile, TileObject } from '@/types';
  * Option lists can go stale: `calculateOptions` keeps a cell's options when the
  * intersection with its neighbours is empty, so the list is not on its own a
  * guarantee that a tile still fits. Collapsing through this check means the
- * pattern never gains an edge whose two labels disagree.
+ * pattern never gains an edge whose two sockets disagree.
  */
 export function isCompatibleWithNeighbours(
   tileId: number,
@@ -18,7 +18,7 @@ export function isCompatibleWithNeighbours(
   const tile = tiles[tileId];
   if (!tile) return false;
 
-  const check = (neighbour: number | undefined, side: keyof Tile['edges']) => {
+  const check = (neighbour: number | undefined, side: Side) => {
     if (neighbour === undefined) return true;
 
     const cell = grid[neighbour];

@@ -1,19 +1,25 @@
-import type { Tile, TileEdges, TileObject } from '@/types';
+import type { Side, Sockets, Tile, TileObject } from '@/types';
 
-import { getTileWeight } from './getTileWeight';
+import { getAverageWeight, getTileWeight } from './getTileWeight';
 
 const COLS = 3;
+const SOCKETS: Sockets = ['l', 'b', 'w', 'l'];
 
-type Weights = Partial<Record<keyof TileEdges, Record<number, number>>>;
+type Weights = Partial<Record<Side, Record<number, number>>>;
 
-function tile(weights: Weights = {}): Tile {
+function tile(weights: Weights = {}, weight = 1): Tile {
   return {
     id: 0,
+    name: 'tile',
+    image: '/tiles/test.png',
+    rotation: 0,
+    flipped: false,
+    sockets: SOCKETS,
+    weight,
     top: [],
     right: [],
     bottom: [],
     left: [],
-    edges: { top: 'land', right: 'beach', bottom: 'water', left: 'land' },
     pairWeights: { top: {}, right: {}, bottom: {}, left: {}, ...weights },
   };
 }
@@ -42,6 +48,13 @@ describe('getTileWeight', () => {
     expect(getTileWeight(tile(), CENTRE, grid(), COLS)).toBe(1);
   });
 
+  it('should multiply the mean pair by the tile weight', () => {
+    const weighted = tile({ right: { 7: 2 } }, 10);
+
+    expect(getTileWeight(weighted, CENTRE, grid({ [RIGHT]: 7 }), COLS)).toBe(20);
+    expect(getAverageWeight(weighted)).toBe(20);
+  });
+
   it('should weigh the pair settled on a side', () => {
     expect(getTileWeight(tile({ right: { 7: 0.25 } }), CENTRE, grid({ [RIGHT]: 7 }), COLS)).toBe(
       0.25
@@ -60,7 +73,7 @@ describe('getTileWeight', () => {
   });
 
   it('should weigh the same side differently for a different neighbour', () => {
-    // Two neighbours that both carry this tile's right label, weighed apart.
+    // Two neighbours that both carry this tile's right socket, weighed apart.
     const weighted = tile({ right: { 7: 0.1, 8: 10 } });
 
     expect(getTileWeight(weighted, CENTRE, grid({ [RIGHT]: 7 }), COLS)).toBeCloseTo(0.1);

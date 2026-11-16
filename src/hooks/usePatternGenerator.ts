@@ -10,7 +10,7 @@ import {
   generateInitialGrid,
   getTileSet,
 } from '@/lib';
-import type { Tile, TileObject, TileSet, TileSetId } from '@/types';
+import type { TileObject, TileSet, TileSetId } from '@/types';
 
 export const SEED_TILES_COUNT = 10;
 export const TILE_SIZE = 10;
@@ -60,8 +60,8 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
 
-function createGrid(tiles: Tile[], columns: number, rows: number): TileObject[] {
-  return generateInitialGrid(SEED_TILES_COUNT, columns, rows, tiles);
+function createGrid(tileSet: TileSet, columns: number, rows: number): TileObject[] {
+  return generateInitialGrid(SEED_TILES_COUNT, columns, rows, tileSet.tiles, tileSet.bias);
 }
 
 /**
@@ -78,7 +78,7 @@ export function usePatternGenerator(): PatternGenerator {
   const [tileSetId, setTileSetId] = useState<TileSetId>(DEFAULT_TILE_SET_ID);
   const tileSet = getTileSet(tileSetId);
   const [grid, setGrid] = useState<TileObject[]>(() =>
-    createGrid(getTileSet(DEFAULT_TILE_SET_ID).tiles, DEFAULT_COLUMNS, DEFAULT_ROWS)
+    createGrid(getTileSet(DEFAULT_TILE_SET_ID), DEFAULT_COLUMNS, DEFAULT_ROWS)
   );
   const [columns, setColumnsState] = useState(DEFAULT_COLUMNS);
   const [rows, setRowsState] = useState(DEFAULT_ROWS);
@@ -134,7 +134,7 @@ export function usePatternGenerator(): PatternGenerator {
       reset();
       setColumnsState(nextColumns);
       setRowsState(nextRows);
-      commitGrid(createGrid(tileSet.tiles, nextColumns, nextRows));
+      commitGrid(createGrid(tileSet, nextColumns, nextRows));
     },
     [commitGrid, reset, tileSet]
   );
@@ -164,20 +164,20 @@ export function usePatternGenerator(): PatternGenerator {
     (id: TileSetId) => {
       reset();
       setTileSetId(id);
-      commitGrid(createGrid(getTileSet(id).tiles, columns, rows));
+      commitGrid(createGrid(getTileSet(id), columns, rows));
     },
     [columns, rows, commitGrid, reset]
   );
 
   const restart = useCallback(() => {
     reset();
-    commitGrid(createGrid(tileSet.tiles, columns, rows));
+    commitGrid(createGrid(tileSet, columns, rows));
   }, [columns, rows, commitGrid, reset, tileSet]);
 
   const animate = useCallback(() => {
     reset();
     const runId = runIdRef.current;
-    const initialGrid = createGrid(tileSet.tiles, columns, rows);
+    const initialGrid = createGrid(tileSet, columns, rows);
     const frames = ANIMATION_DURATION_MS / ANIMATION_STEP_MS;
     const collapsesPerFrame = Math.max(1, Math.ceil(initialGrid.length / frames));
 
@@ -191,7 +191,7 @@ export function usePatternGenerator(): PatternGenerator {
       try {
         let nextGrid = gridRef.current;
         for (let step = 0; step < collapsesPerFrame; step++) {
-          nextGrid = collapseGrid(nextGrid, columns, tileSet.tiles);
+          nextGrid = collapseGrid(nextGrid, columns, tileSet.tiles, tileSet.bias);
         }
 
         const isComplete = nextGrid.every((tile) => tile.collapsed);
@@ -206,7 +206,7 @@ export function usePatternGenerator(): PatternGenerator {
   const generate = useCallback(() => {
     reset();
     const runId = runIdRef.current;
-    const initialGrid = createGrid(tileSet.tiles, columns, rows);
+    const initialGrid = createGrid(tileSet, columns, rows);
 
     setStartTime(Date.now());
     setStatus('running');
@@ -224,7 +224,7 @@ export function usePatternGenerator(): PatternGenerator {
         // more steps than it has cells.
         for (let step = 0; step < initialGrid.length; step++) {
           if (nextGrid.every((tile) => tile.collapsed)) break;
-          nextGrid = collapseGrid(nextGrid, columns, tileSet.tiles);
+          nextGrid = collapseGrid(nextGrid, columns, tileSet.tiles, tileSet.bias);
         }
 
         const isComplete = nextGrid.every((tile) => tile.collapsed);
