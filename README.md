@@ -194,7 +194,7 @@ A socket carried by exactly two tiles, on opposite sides, is a **seam**: it glue
 | Control                        | Action                                                                          |
 | ------------------------------ | ------------------------------------------------------------------------------- |
 | **Columns / Rows**             | Set the grid dimensions with the number field or slider → regenerates instantly |
-| **Generate pattern** (instant) | Solve the whole grid in one go                                                  |
+| **Generate pattern** (instant) | Solve the whole grid at once, with the progress readout climbing as it runs     |
 | **Watch it solve** (animated)  | Step through the algorithm frame by frame, about 20 s for a full grid           |
 | **Restart**                    | Reset to the current size with fresh seed tiles (also cancels a run in flight)  |
 | **PNG**                        | Save the completed grid as an image; disabled until the pattern is solved       |

@@ -32,6 +32,19 @@ const ANIMATION_STEP_MS = 50;
  */
 const ANIMATION_DURATION_MS = 20_000;
 
+/**
+ * Progress updates an instant run reports before it finishes, however cheap the
+ * solve is. Solving in one task used to freeze the page until the pattern was
+ * done, so the readout jumped from 0% to 100%; a run now solves in slices.
+ */
+const GENERATE_PROGRESS_UPDATES = 30;
+
+/** Longest a slice of an instant run may hold the main thread before yielding. */
+const GENERATE_SLICE_MS = 100;
+
+/** A small grid solves in one or two slices, so it stays effectively instant. */
+const GENERATE_MIN_STEPS_PER_SLICE = 50;
+
 export type GenerationStatus = 'idle' | 'running' | 'complete' | 'stuck';
 
 export type PatternGenerator = {
@@ -64,6 +77,10 @@ function createGrid(tileSet: TileSet, columns: number, rows: number): TileObject
   return generateInitialGrid(SEED_TILES_COUNT, columns, rows, tileSet.tiles, tileSet.bias);
 }
 
+function countCollapsed(grid: TileObject[]): number {
+  return grid.reduce((count, tile) => count + (tile.collapsed ? 1 : 0), 0);
+}
+
 /**
  * Owns the pattern grid and the two ways of solving it.
  *
@@ -85,6 +102,10 @@ export function usePatternGenerator(): PatternGenerator {
   const [status, setStatus] = useState<GenerationStatus>('idle');
   const [startTime, setStartTime] = useState<number>();
   const [endTime, setEndTime] = useState<number>();
+  // Tiles an instant run has resolved while its grid is still private: the
+  // readout climbs, the canvas keeps painting the seeded grid, and only the
+  // finished pattern is committed.
+  const [pendingCollapsedTiles, setPendingCollapsedTiles] = useState<number | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gridRef = useRef(grid);
@@ -120,6 +141,7 @@ export function usePatternGenerator(): PatternGenerator {
     setStatus('idle');
     setStartTime(undefined);
     setEndTime(undefined);
+    setPendingCollapsedTiles(null);
   }, [stopTimers]);
 
   useEffect(() => {
@@ -156,6 +178,7 @@ export function usePatternGenerator(): PatternGenerator {
       stopTimers();
       setEndTime(Date.now());
       setStatus(nextStatus);
+      setPendingCollapsedTiles(null);
     },
     [stopTimers]
   );
@@ -210,31 +233,64 @@ export function usePatternGenerator(): PatternGenerator {
 
     setStartTime(Date.now());
     setStatus('running');
+    setPendingCollapsedTiles(countCollapsed(initialGrid));
     commitGrid(initialGrid);
 
-    // Yield once so "solving" is painted before the synchronous loop takes over.
-    timeoutRef.current = setTimeout(() => {
+    // The solver works on a private copy that survives the slices below, so the
+    // grid React is rendering is never mutated while it solves.
+    let workGrid = gridRef.current;
+    let remainingSteps = initialGrid.length;
+    // collapseGrid resolves one cell per call, so the grid can never need more
+    // steps than it has cells.
+    const stepsPerSlice = Math.max(
+      GENERATE_MIN_STEPS_PER_SLICE,
+      Math.ceil(initialGrid.length / GENERATE_PROGRESS_UPDATES)
+    );
+
+    /**
+     * Solves one batch, reports the progress, then yields. The intermediate
+     * grids stay private: an instant run lights up the readout instead of
+     * redrawing the canvas with every half-solved pattern.
+     */
+    const solveSlice = () => {
       if (runIdRef.current !== runId) return;
 
-      // Solve a private copy so the array React is rendering is never mutated
-      // underneath it while the loop runs.
-      let nextGrid = gridRef.current.slice();
-      try {
-        // collapseGrid resolves one cell per call, so the grid can never need
-        // more steps than it has cells.
-        for (let step = 0; step < initialGrid.length; step++) {
-          if (nextGrid.every((tile) => tile.collapsed)) break;
-          nextGrid = collapseGrid(nextGrid, columns, tileSet.tiles, tileSet.bias);
-        }
+      const sliceStart = Date.now();
+      let steps = 0;
 
-        const isComplete = nextGrid.every((tile) => tile.collapsed);
-        commitGrid(nextGrid);
-        finish(runId, isComplete ? 'complete' : 'stuck');
+      try {
+        while (steps < stepsPerSlice && remainingSteps > 0) {
+          // Counting per step would be a full pass over the grid every time;
+          // the short-circuiting check is enough to stop at a solved grid.
+          if (!workGrid.some((tile) => !tile.collapsed)) break;
+
+          workGrid = collapseGrid(workGrid, columns, tileSet.tiles, tileSet.bias);
+          steps += 1;
+          remainingSteps -= 1;
+
+          if (Date.now() - sliceStart >= GENERATE_SLICE_MS) break;
+        }
       } catch {
-        commitGrid(nextGrid);
+        commitGrid(workGrid);
         finish(runId, 'stuck');
+        return;
       }
-    }, 0);
+
+      const collapsed = countCollapsed(workGrid);
+      const isComplete = collapsed === workGrid.length;
+
+      if (isComplete || remainingSteps === 0) {
+        commitGrid(workGrid);
+        finish(runId, isComplete ? 'complete' : 'stuck');
+        return;
+      }
+
+      setPendingCollapsedTiles(collapsed);
+      timeoutRef.current = setTimeout(solveSlice, 0);
+    };
+
+    // Yield once so "solving" is painted before the solver takes over.
+    timeoutRef.current = setTimeout(solveSlice, 0);
   }, [columns, rows, commitGrid, finish, reset, tileSet]);
 
   const download = useCallback(() => {
@@ -243,7 +299,7 @@ export function usePatternGenerator(): PatternGenerator {
 
   const { collapsedTiles, totalTiles } = useMemo(() => {
     return {
-      collapsedTiles: grid.reduce((count, tile) => count + (tile.collapsed ? 1 : 0), 0),
+      collapsedTiles: countCollapsed(grid),
       totalTiles: grid.length,
     };
   }, [grid]);
@@ -257,7 +313,7 @@ export function usePatternGenerator(): PatternGenerator {
     status,
     isRunning: status === 'running',
     isComplete: totalTiles > 0 && collapsedTiles === totalTiles,
-    collapsedTiles,
+    collapsedTiles: pendingCollapsedTiles ?? collapsedTiles,
     totalTiles,
     startTime,
     endTime,

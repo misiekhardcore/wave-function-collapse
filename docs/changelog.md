@@ -27,7 +27,7 @@
 
 - Number fields keep a local draft and commit on blur or Enter, so a value can be typed from scratch instead of snapping to the minimum on the first keystroke. Sliders regenerate the grid on release only.
 - Animated mode is throttled to a fixed frame delay and resolves several tiles per frame, keeping a full 100×70 solve at roughly 20 seconds instead of either freezing or running for minutes. Restart cancels a run in flight.
-- Instant mode no longer performs side effects inside a state updater; it yields a frame so the "solving" state is painted before the synchronous loop starts.
+- Instant mode now solves in short slices instead of one long task, so its progress bar and percentage climb while it runs. The intermediate grids stay private: the canvas keeps painting the seeded grid and only the finished pattern is drawn, so solving does not repaint the tiles it has already resolved.
 - The tile picker is a group of `aria-pressed` buttons with focus rings and screen-reader labels instead of clickable images, and the stage exposes a progress bar plus an `aria-live` status.
 
 #### Docs
