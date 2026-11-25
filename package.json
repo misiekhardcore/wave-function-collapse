@@ -1,6 +1,6 @@
 {
   "name": "wave-function-collapse",
-  "packageManager": "pnpm@12.22.0",
+  "packageManager": "pnpm@12.23.0",
   "description": "Interactive Wave Function Collapse algorithm visualizer and pattern generator built with Next.js, TypeScript, React, and Canvas.",
   "version": "1.0.0",
   "author": {
